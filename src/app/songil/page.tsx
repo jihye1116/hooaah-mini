@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { RefreshCcw, Image as ImageIcon, ArrowLeft } from 'lucide-react';
-import LoadingOverlay from '@/components/LoadingOverlay';
+import LoadingOverlay from '@/app/songil/components/LoadingOverlay';
 
 export default function PalmUploader() {
   const router = useRouter();
@@ -129,6 +129,9 @@ export default function PalmUploader() {
       setIsLoading(true);
       localStorage.setItem('temp_upload_image', imageSrc);
       // TODO: 실제 처리 로직을 여기에 추가
+      setTimeout(() => {
+        router.push(`/songil/result?contents=${contentsType}`);
+      }, 2000); // 2초 후 이동
       // setTimeout(() => {
       //   router.push(`/songil/result?contents=${contentsType}`);
       // }, 2000); // 2초 후 이동
