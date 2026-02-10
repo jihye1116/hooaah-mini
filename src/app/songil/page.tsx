@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { RefreshCcw, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import LoadingOverlay from '@/app/songil/components/LoadingOverlay';
-import guideImage from '@/assets/images/guide.svg';
+import guideImage from '@/assets/images/songil/guide.svg';
+
 
 export default function PalmUploader() {
   const router = useRouter();
@@ -236,7 +237,7 @@ export default function PalmUploader() {
     // userId 가져오기 (인증 로직이 있다면 추가)
     // const userId = getUserId(); // 필요시 구현
 
-    const apiUrl = `${backendBase}/openai/palmistry?imageUrl=${encodeURIComponent(imageUrl)}&category=${contentsType}&language="ko"`;
+    const apiUrl = `${backendBase}/openai/palmistry?imageUrl=${encodeURIComponent(imageUrl)}&category=${contentsType}&language=ko`;
 
     const response = await fetch(apiUrl, {
       headers: {

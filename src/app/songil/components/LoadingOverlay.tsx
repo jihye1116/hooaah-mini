@@ -31,7 +31,7 @@ export default function LoadingOverlay({
           <Lottie
             lottieRef={lottieRef}
             animationData={lottieData}
-            loop={true}
+            loop={false}
             autoplay={true}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onEnterFrame={(e: any) => {

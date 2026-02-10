@@ -7,6 +7,20 @@ import { ChevronLeft } from 'lucide-react';
 import OtherContents from '@/app/songil/components/OtherContents';
 import BottomFloating from '@/app/songil/components/BottomFloating';
 
+// 손 이미지 import
+import dragonHand from '@/assets/images/songil/hands/dragon.png';
+import phoenixHand from '@/assets/images/songil/hands/phoenix.png';
+import snakeHand from '@/assets/images/songil/hands/snake.png';
+import monkeyHand from '@/assets/images/songil/hands/monkey.png';
+import buddhaHand from '@/assets/images/songil/hands/buddha.png';
+import tigerHand from '@/assets/images/songil/hands/tiger.png';
+
+// 손금 라인 이미지 import
+import lifeLineImage from '@/assets/images/songil/palmistry/life.png';
+import emotionLineImage from '@/assets/images/songil/palmistry/emotion.png';
+import destinyLineImage from '@/assets/images/songil/palmistry/destiny.png';
+import intelligenceLineImage from '@/assets/images/songil/palmistry/intelligence.png';
+
 type LineData = {
   score: string;
   summary: string;
@@ -75,6 +89,24 @@ const HAND_INFO: Record<
   },
 };
 
+// 손 이미지 매핑
+const HAND_IMAGES: Record<string, any> = {
+  dragon: dragonHand,
+  phoenix: phoenixHand,
+  snake: snakeHand,
+  monkey: monkeyHand,
+  buddha: buddhaHand,
+  tiger: tigerHand,
+};
+
+// 손금 라인 이미지 매핑
+const LINE_IMAGES: Record<string, any> = {
+  life: lifeLineImage,
+  emotion: emotionLineImage,
+  destiny: destinyLineImage,
+  intelligence: intelligenceLineImage,
+};
+
 // ----------------------------------------------------------------------
 // 3. 재사용 컴포넌트 (Components)
 // ----------------------------------------------------------------------
@@ -125,22 +157,30 @@ const LineDetailSection = ({
   iconPath: string;
   title: string;
   data: LineData;
-}) => (
-  <div className="mb-8 last:mb-0">
-    {/* 구분선 */}
-    <div className="w-full h-[2px] bg-[#F5F6F8] my-6 mx-auto w-[90%]" />
+}) => {
+  const lineKey = iconPath.toLowerCase();
+  const lineImage = LINE_IMAGES[lineKey];
 
-    <div className="flex flex-col items-center text-center mb-4">
-      {/* 아이콘 Placeholder */}
-      <div className="w-[115px] h-[115px] bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 text-xs">
-        {iconPath} Image
+  return (
+    <div className="mb-8 last:mb-0">
+      {/* 구분선 */}
+      <div className="w-full h-[2px] bg-[#F5F6F8] my-6 mx-auto w-[90%]" />
+
+      <div className="flex flex-col items-center text-center mb-4">
+        {/* 손금 라인 이미지 */}
+        <div className="w-[115px] h-[115px] flex items-center justify-center mb-4 overflow-hidden">
+          {lineImage ? (
+            <Image src={lineImage} alt={iconPath} width={115} height={115} className="object-cover" />
+          ) : (
+            <span className="text-gray-400 text-xs">{iconPath} Image</span>
+          )}
+        </div>
+
+        <h3 className="text-lg font-bold text-[#111111] mb-1">{title}</h3>
+        <p className="text-sm font-semibold text-[#696969]">{data.summary}</p>
       </div>
 
-      <h3 className="text-lg font-bold text-[#111111] mb-1">{title}</h3>
-      <p className="text-sm font-semibold text-[#696969]">{data.summary}</p>
-    </div>
-
-    <div className="space-y-2 px-2">
+      <div className="space-y-2 px-2">
       {data.description.map((desc, idx) => (
         <p
           key={idx}
@@ -149,9 +189,10 @@ const LineDetailSection = ({
           • {desc}
         </p>
       ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ----------------------------------------------------------------------
 // 4. 메인 페이지 (Page)
@@ -228,13 +269,13 @@ export default function PalmistryResultPage() {
         <div className="mx-4 mb-8 relative">
           <div className="bg-white border-[3px] border-[#FCC1B9] rounded-[50px] p-8 flex flex-col items-center">
             {/* 손 타입 이미지 Placeholder */}
-            <div className="w-full aspect-square bg-gray-100 rounded-[50px] overflow-hidden mb-6 relative">
-              {/* <Image
-                src={`https://via.placeholder.com/400x400?text=${result.hand}`}
+            <div className="w-full aspect-square rounded-[50px] overflow-hidden mb-6 relative">
+              <Image
+                src={HAND_IMAGES[result["hand"] ?? "dragon"]}
                 alt={result.hand}
                 fill
                 className="object-cover"
-              /> */}
+              />
             </div>
 
             <div className="bg-[#EA6653] text-white px-6 py-2 rounded-2xl font-bold text-lg mb-3 ">
