@@ -122,21 +122,189 @@ export default function PalmUploader() {
     setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
   };
 
-  // 7. 확인 및 업로드 이동
+  // 7. 이미지 업로드
+  const uploadImage = async (): Promise<string> => {
+    if (!imageSrc) return '';
+
+    try {
+      const backendBase = process.env.NEXT_PUBLIC_BACKEND_BASE;
+      if (!backendBase) {
+        throw new Error('BACKEND_BASE environment variable is not set');
+      }
+
+      // base64를 Blob으로 변환
+      const response = await fetch(imageSrc);
+      const blob = await response.blob();
+
+      // 이미지 압축 (quality: 100, EXIF 보존)
+      const compressedBlob = await compressImage(blob);
+
+      // FormData 생성
+      const formData = new FormData();
+      const timestamp = Date.now();
+      formData.append(
+        'image',
+        compressedBlob,
+        `compressed_image_${timestamp}.jpg`,
+      );
+
+      // 서버로 업로드
+      const uploadResponse = await fetch(`${backendBase}/upload/palmistry`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+        body: formData,
+      });
+
+      if (uploadResponse.status === 201) {
+        const imageUrl = await uploadResponse.text();
+
+        // Analytics 로깅
+        console.log('손길 이미지 업로드', {
+          screen_name: '손길 컨텐츠 화면',
+          screen_class: 'palmDrama_uploader',
+          event_class: 'palmDrama_image_upload',
+        });
+
+        return imageUrl;
+      } else {
+        throw new Error('Image upload failed');
+      }
+    } catch (error) {
+      console.error('이미지 업로드 오류:', error);
+
+      // Analytics 에러 로깅
+      console.log('손길 이미지 업로드 오류', {
+        screen_name: '손길 컨텐츠 화면',
+        screen_class: 'palmDrama_uploader',
+      });
+
+      throw error;
+    }
+  };
+
+  // 이미지 압축 함수
+  const compressImage = async (blob: Blob): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      img.onload = () => {
+        // 원본 크기 유지
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        if (ctx) {
+          // 이미지 그리기
+          ctx.drawImage(img, 0, 0);
+
+          // quality: 100으로 압축 (JPEG)
+          canvas.toBlob(
+            (compressedBlob) => {
+              if (compressedBlob) {
+                resolve(compressedBlob);
+              } else {
+                reject(new Error('Image compression failed'));
+              }
+            },
+            'image/jpeg',
+            1.0, // quality: 100%
+          );
+        } else {
+          reject(new Error('Canvas context is null'));
+        }
+      };
+
+      img.onerror = () => {
+        reject(new Error('Image load failed'));
+      };
+
+      img.src = URL.createObjectURL(blob);
+    });
+  };
+
+  // 8. 손금 분석 결과 가져오기
+  const getPalmistryResult = async (imageUrl: string) => {
+    const backendBase = process.env.NEXT_PUBLIC_BACKEND_BASE;
+    if (!backendBase) {
+      throw new Error('BACKEND_BASE environment variable is not set');
+    }
+
+    // userId 가져오기 (인증 로직이 있다면 추가)
+    // const userId = getUserId(); // 필요시 구현
+
+    const language = navigator.language.split('-')[0] || 'ko';
+
+    const apiUrl = `${backendBase}/openai/palmistry?imageUrl=${encodeURIComponent(imageUrl)}&category=${contentsType}&language=${language}`;
+
+    const response = await fetch(apiUrl, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(`Failed to get palmistry result: ${response.status}`);
+    }
+
+    const resultText = await response.text();
+
+    // 에러 응답 체크
+    if (resultText.includes('"error": true')) {
+      console.error('Error in palmistry result:', resultText);
+      throw new Error('Analysis failed');
+    }
+
+    return resultText;
+  };
+
+  // 9. 확인 및 분석 처리
   const handleConfirm = async () => {
     if (!imageSrc) return;
+
     try {
       setIsLoading(true);
-      localStorage.setItem('temp_upload_image', imageSrc);
-      // TODO: 실제 처리 로직을 여기에 추가
-      setTimeout(() => {
-        router.push(`/songil/result?contents=${contentsType}`);
-      }, 2000); // 2초 후 이동
-      // setTimeout(() => {
-      //   router.push(`/songil/result?contents=${contentsType}`);
-      // }, 2000); // 2초 후 이동
-    } catch (e) {
-      console.error(e);
+      setErrorText(null);
+
+      // 1단계: 이미지 업로드
+      const uploadedImageUrl = await uploadImage();
+
+      if (!uploadedImageUrl) {
+        setErrorText('이미지 업로드에 실패했습니다.');
+        setIsLoading(false);
+        return;
+      }
+
+      // 2단계: Premium 콘텐츠 체크
+      if (contentsType.includes('premium')) {
+        // Premium 콘텐츠는 다른 입력 화면으로 이동
+        const line = contentsType.replace(' premium', '');
+        localStorage.setItem('temp_upload_image', uploadedImageUrl);
+        router.push(
+          `/songil/input?line=${line}&resultImage=${encodeURIComponent(uploadedImageUrl)}`,
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      // 3단계: 손금 분석 결과 가져오기
+      const resultText = await getPalmistryResult(uploadedImageUrl);
+
+      // 4단계: 결과 저장 및 페이지 이동
+      localStorage.setItem('palmistry_result', resultText);
+      localStorage.setItem('palmistry_image', uploadedImageUrl);
+
+      router.push(`/songil/result?contents=${contentsType}`);
+    } catch (error) {
+      console.error('Error:', error);
+      setErrorText(
+        error instanceof Error
+          ? error.message
+          : '오류가 발생했습니다. 다시 시도해주세요.',
+      );
+    } finally {
       setIsLoading(false);
     }
   };
@@ -171,7 +339,7 @@ export default function PalmUploader() {
 
         {/* 이미지 */}
         <div className="px-8 mb-8 flex-1 flex items-center justify-center">
-          <div className="relative w-full aspect-3/4 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 shadow-lg">
+          <div className="relative w-full aspect-3/4 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
             <Image
               src={imageSrc}
               alt="Captured"
@@ -195,7 +363,7 @@ export default function PalmUploader() {
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="flex-1 h-14 rounded-xl bg-[#F97B68] text-white font-bold text-lg shadow-lg disabled:opacity-50"
+            className="flex-1 h-14 rounded-xl bg-[#F97B68] text-white font-bold text-lg disabled:opacity-50"
           >
             {isLoading ? '처리중...' : '확인'}
           </button>
@@ -237,9 +405,7 @@ export default function PalmUploader() {
         <button onClick={() => router.back()} className="p-2">
           <ArrowLeft className="text-white w-6 h-6" />
         </button>
-        <span className="ml-2 text-white font-bold text-lg drop-shadow-md">
-          손금 촬영
-        </span>
+        <span className="ml-2 text-white font-bold text-lg">손금 촬영</span>
       </div>
 
       {/* 가이드라인 박스 */}

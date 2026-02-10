@@ -7,7 +7,7 @@ const BottomFloating = () => (
       <button className="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold">
         공유하기
       </button>
-      <button className="flex-1 bg-[#F97B68] text-white py-4 rounded-xl font-bold shadow-lg shadow-[#F97B68]/30">
+      <button className="flex-1 bg-[#F97B68] text-white py-4 rounded-xl font-bold">
         저장하기
       </button>
     </div>

@@ -186,12 +186,12 @@ export default function PalmistryResultPage() {
           <div className="bg-white border-[3px] border-[#FCC1B9] rounded-[50px] p-8 flex flex-col items-center">
             {/* 손 타입 이미지 Placeholder */}
             <div className="w-full aspect-square bg-gray-100 rounded-[50px] overflow-hidden mb-6 relative">
-              <Image
+              {/* <Image
                 src={`https://via.placeholder.com/400x400?text=${result.hand}`}
                 alt={result.hand}
                 fill
                 className="object-cover"
-              />
+              /> */}
             </div>
 
             <div className="bg-[#EA6653] text-white px-6 py-2 rounded-2xl font-bold text-lg mb-3 ">
@@ -230,12 +230,12 @@ export default function PalmistryResultPage() {
           <div className="flex gap-5">
             {/* 왼쪽: 유저 손 이미지 */}
             <div className="w-[100px] h-[140px] rounded-[20px] overflow-hidden bg-gray-100 shrink-0 relative">
-              <Image
+              {/* <Image
                 src={resultImageUrl}
                 alt="User Hand"
                 fill
                 className="object-cover"
-              />
+              /> */}
             </div>
 
             {/* 오른쪽: 프로그레스 바 리스트 */}
