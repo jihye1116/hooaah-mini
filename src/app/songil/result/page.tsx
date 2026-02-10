@@ -91,7 +91,7 @@ const WhiteBox = ({
   className?: string;
 }) => (
   <div
-    className={`bg-white border-2 border-[#F5F6F8] rounded-[20px] p-6 shadow-sm ${className}`}
+    className={`bg-white border-2 border-[#F5F6F8] rounded-[20px] p-6 ${className}`}
   >
     {children}
   </div>
@@ -164,9 +164,9 @@ export default function PalmistryResultPage() {
   const resultImageUrl = 'https://via.placeholder.com/150x200?text=User+Hand';
 
   return (
-    <div className="min-h-screen bg-white pb-[120px] relative">
+    <div className="min-h-screen bg-[#F5F3F1] pb-[120px] relative">
       {/* 헤더 (뒤로가기) */}
-      <header className="pt-4 px-4 pb-2 sticky top-0 bg-white z-10">
+      <header className="pt-4 px-4 pb-2 sticky top-0  z-10">
         <Link href="/songil" className="inline-block p-2 -ml-2">
           <ChevronLeft className="w-6 h-6 text-[#696969]" />
         </Link>
@@ -183,7 +183,7 @@ export default function PalmistryResultPage() {
 
         {/* 손 타입 카드 (Main Card) */}
         <div className="mx-4 mb-8 relative">
-          <div className="bg-white border-[3px] border-[#FCC1B9] rounded-[50px] p-8 shadow-[0_5px_0_0_#FCC1B9] flex flex-col items-center">
+          <div className="bg-white border-[3px] border-[#FCC1B9] rounded-[50px] p-8 flex flex-col items-center">
             {/* 손 타입 이미지 Placeholder */}
             <div className="w-full aspect-square bg-gray-100 rounded-[50px] overflow-hidden mb-6 relative">
               <Image
@@ -194,7 +194,7 @@ export default function PalmistryResultPage() {
               />
             </div>
 
-            <div className="bg-[#EA6653] text-white px-6 py-2 rounded-2xl font-bold text-lg mb-3 shadow-sm">
+            <div className="bg-[#EA6653] text-white px-6 py-2 rounded-2xl font-bold text-lg mb-3 ">
               {handInfo.title}
             </div>
 
