@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft } from 'lucide-react';
-import OtherContents from '../components/OtherContents';
-import BottomFloating from '../components/BottomFloating';
+import OtherContents from '@/app/songil/components/OtherContents';
+import BottomFloating from '@/app/songil/components/BottomFloating';
 
 type LineData = {
   score: number;

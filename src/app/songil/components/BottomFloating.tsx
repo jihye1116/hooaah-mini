@@ -1,7 +1,7 @@
 'use client';
 
 const BottomFloating = () => (
-  <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+  <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-8 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
     {/* BottomFloating 컴포넌트 자리 */}
     <div className="flex gap-3">
       <button className="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold">

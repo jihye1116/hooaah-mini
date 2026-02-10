@@ -1,20 +1,20 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "후아 미니",
-  description: "",
+  title: '후아 미니',
+  description: '',
 };
 
 export default function RootLayout({
@@ -33,7 +33,6 @@ export default function RootLayout({
           <div className="w-full max-w-[480px] min-h-screen bg-white shadow-xl overflow-x-hidden">
             {/* 3. 실제 콘텐츠 */}
             {children}
-            
           </div>
         </div>
       </body>
