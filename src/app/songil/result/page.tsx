@@ -8,7 +8,7 @@ import OtherContents from '@/app/songil/components/OtherContents';
 import BottomFloating from '@/app/songil/components/BottomFloating';
 
 type LineData = {
-  score: number;
+  score: string;
   summary: string;
   description: string[];
 };
@@ -19,53 +19,24 @@ type PalmistryResult = {
   intelligence: LineData;
   emotion: LineData;
   destiny: LineData;
-};
-
-// ----------------------------------------------------------------------
-// 2. 더미 데이터 (Dummy Data)
-// ----------------------------------------------------------------------
-
-const DUMMY_RESULT: PalmistryResult = {
-  hand: 'water', // water, fire, earth, air
-  life: {
-    score: 85,
-    summary: '강한 생명력과 활력이 넘치는 타입입니다.',
-    description: [
-      '체력이 좋고 회복력이 빠릅니다.',
-      '주변 사람들에게 긍정적인 에너지를 줍니다.',
-      '새로운 환경에 적응하는 능력이 탁월합니다.',
-    ],
-  },
-  intelligence: {
-    score: 72,
-    summary: '논리적이고 이성적인 판단을 중요시합니다.',
-    description: [
-      '문제를 해결할 때 감정보다 이성을 앞세웁니다.',
-      '학구열이 높고 새로운 지식을 습득하는 것을 즐깁니다.',
-    ],
-  },
-  emotion: {
-    score: 90,
-    summary: '풍부한 감수성과 공감 능력을 가졌습니다.',
-    description: [
-      '타인의 감정을 잘 이해하고 배려합니다.',
-      '예술적인 감각이 뛰어나며 낭만적입니다.',
-    ],
-  },
-  destiny: {
-    score: 65,
-    summary: '스스로 운명을 개척해 나가는 스타일입니다.',
-    description: [
-      '초년보다는 중년 이후에 안정을 찾습니다.',
-      '목표를 향해 꾸준히 노력하는 끈기가 있습니다.',
-    ],
-  },
+  total?: string;
+  error: boolean;
+  errorText: string;
 };
 
 const HAND_INFO: Record<
   string,
   { title: string; subtitle: string; description: string[] }
 > = {
+  dragon: {
+    title: '용의 손 (Dragon Hand)',
+    subtitle: '강인하고 추진력 있는 리더',
+    description: [
+      '손바닥이 넓고 손가락이 힘찬 형태입니다.',
+      '목표 지향적이고 야심이 있습니다.',
+      '리더십이 뛰어나 사람들을 이끄는 능력이 있습니다.',
+    ],
+  },
   water: {
     title: '물의 손 (Water Hand)',
     subtitle: '감수성이 풍부하고 직관적인 예술가',
@@ -75,7 +46,33 @@ const HAND_INFO: Record<
       '직관력이 뛰어나 사람의 마음을 잘 읽습니다.',
     ],
   },
-  // 다른 손 타입 데이터 추가 가능
+  fire: {
+    title: '불의 손 (Fire Hand)',
+    subtitle: '열정적이고 활동적인 모험가',
+    description: [
+      '손바닥이 짧고 손가락이 짧은 형태입니다.',
+      '열정적이고 활동적인 성격입니다.',
+      '모험을 즐기고 변화를 두려워하지 않습니다.',
+    ],
+  },
+  earth: {
+    title: '땅의 손 (Earth Hand)',
+    subtitle: '현실적이고 안정적인 실천가',
+    description: [
+      '손바닥이 넓고 네모진 형태입니다.',
+      '현실적이고 실용적인 사고를 합니다.',
+      '안정성을 추구하며 신뢰할 수 있는 성격입니다.',
+    ],
+  },
+  air: {
+    title: '바람의 손 (Air Hand)',
+    subtitle: '지적이고 소통 능력이 뛰어난 사교가',
+    description: [
+      '손바닥이 정사각형이고 손가락이 긴 형태입니다.',
+      '지적 호기심이 많고 소통을 중요시합니다.',
+      '분석적이고 논리적인 사고를 합니다.',
+    ],
+  },
 };
 
 // ----------------------------------------------------------------------
@@ -98,22 +95,26 @@ const WhiteBox = ({
 );
 
 // 점수 프로그레스 바 (Result Image 옆 그래프)
-const ScoreRow = ({ label, score }: { label: string; score: number }) => (
-  <div className="flex items-center gap-2 mb-3 last:mb-0">
-    <div className="w-[60px] text-xs font-semibold text-[#696969] shrink-0">
-      {label}
+const ScoreRow = ({ label, score }: { label: string; score: string }) => {
+  const scoreNum = parseInt(score, 10) || 0;
+
+  return (
+    <div className="flex items-center gap-2 mb-3 last:mb-0">
+      <div className="w-[60px] text-xs font-semibold text-[#696969] shrink-0">
+        {label}
+      </div>
+      <div className="flex-1 h-[10px] bg-[#E3E3E6] rounded-full overflow-hidden">
+        <div
+          className="h-full bg-[#F97B68] rounded-full transition-all duration-1000 ease-out"
+          style={{ width: `${scoreNum}%` }}
+        />
+      </div>
+      <div className="w-[30px] text-right text-xs font-semibold text-[#696969]">
+        {scoreNum}%
+      </div>
     </div>
-    <div className="flex-1 h-[10px] bg-[#E3E3E6] rounded-full overflow-hidden">
-      <div
-        className="h-full bg-[#F97B68] rounded-full transition-all duration-1000 ease-out"
-        style={{ width: `${score}%` }}
-      />
-    </div>
-    <div className="w-[30px] text-right text-xs font-semibold text-[#696969]">
-      {score}%
-    </div>
-  </div>
-);
+  );
+};
 
 // 상세 설명 섹션 (아이콘 + 제목 + 요약 + 리스트)
 const LineDetailSection = ({
@@ -157,11 +158,53 @@ const LineDetailSection = ({
 // ----------------------------------------------------------------------
 
 export default function PalmistryResultPage() {
-  const [result] = useState<PalmistryResult>(DUMMY_RESULT);
-  const handInfo = HAND_INFO[result.hand] || HAND_INFO['water'];
+  // localStorage에서 초기 데이터 로드 (lazy initialization)
+  const [result] = useState<PalmistryResult | null>(() => {
+    if (typeof window === 'undefined') return null;
 
-  // Flutter의 resultImage (업로드한 손 사진) 더미 URL
-  const resultImageUrl = 'https://via.placeholder.com/150x200?text=User+Hand';
+    const savedResult = localStorage.getItem('palmistry_result');
+    if (!savedResult) return null;
+
+    try {
+      const parsedResult = JSON.parse(savedResult) as PalmistryResult;
+
+      // 에러 체크
+      if (parsedResult.error) {
+        console.error('Palmistry result has error:', parsedResult.errorText);
+      }
+
+      return parsedResult;
+    } catch (error) {
+      console.error('Failed to parse palmistry result:', error);
+      return null;
+    }
+  });
+
+  const [resultImageUrl] = useState<string>(() => {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem('palmistry_image') || '';
+  });
+
+  // 결과가 없는 경우
+  if (!result) {
+    return (
+      <div className="min-h-screen bg-[#F5F3F1] flex items-center justify-center">
+        <div className="text-center px-5">
+          <div className="text-lg font-semibold text-[#696969] mb-4">
+            분석 결과를 찾을 수 없습니다.
+          </div>
+          <Link
+            href="/songil"
+            className="inline-block px-6 py-3 bg-[#F97B68] text-white rounded-xl font-bold"
+          >
+            다시 촬영하기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const handInfo = HAND_INFO[result.hand] || HAND_INFO['water'];
 
   return (
     <div className="min-h-screen bg-[#F5F3F1] pb-[120px] relative">
@@ -230,12 +273,18 @@ export default function PalmistryResultPage() {
           <div className="flex gap-5">
             {/* 왼쪽: 유저 손 이미지 */}
             <div className="w-[100px] h-[140px] rounded-[20px] overflow-hidden bg-gray-100 shrink-0 relative">
-              {/* <Image
-                src={resultImageUrl}
-                alt="User Hand"
-                fill
-                className="object-cover"
-              /> */}
+              {resultImageUrl ? (
+                <Image
+                  src={resultImageUrl}
+                  alt="User Hand"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                  No Image
+                </div>
+              )}
             </div>
 
             {/* 오른쪽: 프로그레스 바 리스트 */}
@@ -277,6 +326,16 @@ export default function PalmistryResultPage() {
             />
           </div>
         </WhiteBox>
+
+        {/* 종합 분석 결과 */}
+        {result.total && (
+          <WhiteBox className="mb-4">
+            <h3 className="text-lg font-bold text-[#111111] mb-4">종합 분석</h3>
+            <p className="text-sm font-semibold text-[#696969] leading-[1.8] whitespace-pre-line">
+              {result.total}
+            </p>
+          </WhiteBox>
+        )}
 
         <OtherContents />
       </main>

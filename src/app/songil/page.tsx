@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { RefreshCcw, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import LoadingOverlay from '@/app/songil/components/LoadingOverlay';
+import guideImage from '@/assets/images/guide.svg';
 
 export default function PalmUploader() {
   const router = useRouter();
@@ -235,9 +236,7 @@ export default function PalmUploader() {
     // userId 가져오기 (인증 로직이 있다면 추가)
     // const userId = getUserId(); // 필요시 구현
 
-    const language = navigator.language.split('-')[0] || 'ko';
-
-    const apiUrl = `${backendBase}/openai/palmistry?imageUrl=${encodeURIComponent(imageUrl)}&category=${contentsType}&language=${language}`;
+    const apiUrl = `${backendBase}/openai/palmistry?imageUrl=${encodeURIComponent(imageUrl)}&category=${contentsType}&language="ko"`;
 
     const response = await fetch(apiUrl, {
       headers: {
@@ -250,6 +249,8 @@ export default function PalmUploader() {
     }
 
     const resultText = await response.text();
+
+    console.log('Palmistry Result:', resultText);
 
     // 에러 응답 체크
     if (resultText.includes('"error": true')) {
@@ -413,7 +414,7 @@ export default function PalmUploader() {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative w-[calc(100%-80px)] h-full">
             <Image
-              src="/images/guide.svg"
+              src={guideImage}
               alt=""
               fill
               className="object-contain"
