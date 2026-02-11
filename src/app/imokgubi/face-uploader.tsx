@@ -18,7 +18,8 @@ import {
 export default function FaceUploader() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const contentsType = searchParams.get('contents') || 'myFace';
+  const rawContentsType = searchParams.get('contents') || 'myfuture';
+  const contentsType = normalizeContentsType(rawContentsType);
 
   // 상태 관리
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -85,8 +86,10 @@ export default function FaceUploader() {
       }
 
       // 2단계: Premium 콘텐츠 체크
-      if (contentsType.includes('premium')) {
-        const line = contentsType.replace(' premium', '');
+      if (rawContentsType.includes('premium')) {
+        const line = normalizeContentsType(
+          rawContentsType.replace(' premium', ''),
+        );
         localStorage.setItem('temp_upload_image', uploadedImageUrl);
         router.push(
           `/songil/input?line=${line}&resultImage=${encodeURIComponent(uploadedImageUrl)}`,
@@ -99,7 +102,7 @@ export default function FaceUploader() {
 
       // 4단계: 결과 페이지로 이동
       router.push(
-        `/imokgubi/result?resultText=${encodeURIComponent(resultText)}&resultImage=${encodeURIComponent(uploadedImageUrl)}`,
+        `/imokgubi/result?resultText=${encodeURIComponent(resultText)}&resultImage=${encodeURIComponent(uploadedImageUrl)}&contents=${encodeURIComponent(contentsType)}`,
       );
     } catch (error) {
       console.error('Error:', error);
@@ -256,3 +259,20 @@ export default function FaceUploader() {
     </div>
   );
 }
+
+const normalizeContentsType = (value: string) => {
+  const normalized = value.replace(/\s+/g, '').toLowerCase();
+
+  switch (normalized) {
+    case 'myfuture':
+      return 'myFuture';
+    case 'mypair':
+      return 'myPair';
+    case 'myanimal':
+      return 'myAnimal';
+    case 'mytype':
+      return 'myType';
+    default:
+      return value;
+  }
+};

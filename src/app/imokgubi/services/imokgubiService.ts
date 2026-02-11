@@ -39,6 +39,8 @@ export const analyzeImage = async (
     throw new Error('BACKEND_BASE environment variable is not set');
   }
 
+  console.log('contentsType in analyzeImage:', contentsType);
+
   const apiUrl = `${backendBase}/openai/physiognomy?imageUrl=${encodeURIComponent(imageUrl)}&category=${contentsType}&language=ko`;
 
   const response = await fetch(apiUrl, {
