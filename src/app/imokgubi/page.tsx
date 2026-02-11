@@ -352,11 +352,19 @@ export default function FaceUploader() {
           </div>
         </div>
 
+        {/* 에러 메시지 */}
+        {errorText && (
+          <div className="mx-5 mb-4 rounded-2xl bg-red-50 px-4 py-3">
+            <p className="text-sm font-medium text-red-600">{errorText}</p>
+          </div>
+        )}
+
         {/* 하단 버튼 영역 */}
         <div className="flex gap-3 px-5 pb-8">
           <button
             onClick={() => {
               setImageSrc(null);
+              setErrorText(null);
             }}
             disabled={isLoading}
             className="h-16 flex-1 rounded-2xl bg-gray-100 text-base font-bold text-gray-700 transition active:scale-95 disabled:opacity-50"
