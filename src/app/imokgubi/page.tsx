@@ -1,20 +1,14 @@
 'use client';
 
-import { ArrowLeft, Image as ImageIcon, RefreshCw } from 'lucide-react';
+import { AppBar } from '@/app/imokgubi/components/AppBar';
+import { Image as ImageIcon, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
 
 export default function FaceReaderPage() {
   return (
     <div className="flex size-full min-h-screen flex-col overflow-hidden bg-gray-800">
       {/* Top Navigation */}
-      <div className="flex h-12 items-center gap-2.5 px-5 py-1.5">
-        <button className="flex h-6 w-6 items-center justify-center">
-          <ArrowLeft className="h-4 w-4 text-[#E3E3E6]" />
-        </button>
-        <p className="text-[14px] font-semibold tracking-[-0.336px] text-[#E3E3E6]">
-          10년 뒤, 나의 미래는
-        </p>
-      </div>
+      <AppBar text="10년 뒤, 나의 미래는" transparent />
 
       {/* Guide Section */}
       <div className="flex flex-1 flex-col items-center justify-center gap-8">
