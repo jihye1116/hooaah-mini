@@ -12,6 +12,7 @@ import eyeIcon from '@/assets/images/imokgubi/icons/eye.png';
 import eyebrowIcon from '@/assets/images/imokgubi/icons/eyebrow.png';
 import faceIcon from '@/assets/images/imokgubi/icons/face.png';
 import dotIcon from '@/assets/images/imokgubi/icons/dot.png';
+import { ArrowLeft } from 'lucide-react';
 
 interface ResultData {
   overall: string;
@@ -153,21 +154,9 @@ export default function ResultContent() {
         <div className="mx-auto flex max-w-2xl items-center gap-4 px-5 py-4">
           <button
             onClick={() => router.back()}
-            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border bg-white hover:bg-gray-50"
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white hover:bg-gray-50"
           >
-            <svg
-              className="h-5 w-5 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ArrowLeft className="h-6 w-6 text-gray-600" />
           </button>
         </div>
       </div>
