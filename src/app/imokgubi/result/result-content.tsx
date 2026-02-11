@@ -1,0 +1,343 @@
+'use client';
+
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+// 아이콘 이미지 동적 import
+import noseIcon from '@/assets/images/imokgubi/icons/nose.png';
+import earIcon from '@/assets/images/imokgubi/icons/ear.png';
+import mouthIcon from '@/assets/images/imokgubi/icons/mouth.png';
+import eyeIcon from '@/assets/images/imokgubi/icons/eye.png';
+import eyebrowIcon from '@/assets/images/imokgubi/icons/eyebrow.png';
+import faceIcon from '@/assets/images/imokgubi/icons/face.png';
+import dotIcon from '@/assets/images/imokgubi/icons/dot.png';
+
+interface ResultData {
+  overall: string;
+  nose: string;
+  ear: string;
+  mouth: string;
+  eye: string;
+  eyebrow: string;
+  face: string;
+  dot: string;
+  analysis: string;
+  personality: {
+    leadership: {
+      brief: string;
+      score: number;
+    };
+    creativity: {
+      brief: string;
+      score: number;
+    };
+    credibility: {
+      brief: string;
+      score: number;
+    };
+    analysis: string;
+  };
+  social: Array<{
+    title: string;
+    description: string;
+  }>;
+}
+
+export default function ResultContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [result, setResult] = useState<ResultData | null>(null);
+  const [resultImage, setResultImage] = useState<string>('');
+  const [errorText, setErrorText] = useState<string>('');
+
+  useEffect(() => {
+    const resultText = searchParams.get('resultText');
+    const resultImageParam = searchParams.get('resultImage');
+
+    if (resultText) {
+      try {
+        const parsedResult = JSON.parse(resultText);
+        setResult(parsedResult);
+      } catch (e) {
+        setErrorText(resultText);
+      }
+    }
+
+    if (resultImageParam) {
+      setResultImage(resultImageParam);
+    }
+  }, [searchParams]);
+
+  const saveResult = async () => {
+    try {
+      const timestamp = Date.now().toString();
+      const savedData = {
+        resultText: searchParams.get('resultText'),
+        resultImage: resultImage,
+        timestamp: timestamp,
+      };
+
+      // localStorage에 저장 (브라우저 환경)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          `palmistry_result_${timestamp}`,
+          JSON.stringify(savedData),
+        );
+
+        // 저장 완료 알림
+        alert('결과가 저장되었습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('저장에 실패했습니다.');
+    }
+  };
+
+  const ScoreBar = ({ score }: { score: number }) => (
+    <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-400">
+      <div
+        className="h-full rounded-full bg-blue-500 transition-all"
+        style={{ width: `${score}%` }}
+      />
+    </div>
+  );
+
+  // 아이콘 매핑 객체
+  const iconMap: { [key: string]: any } = {
+    nose: noseIcon,
+    ear: earIcon,
+    mouth: mouthIcon,
+    eye: eyeIcon,
+    eyebrow: eyebrowIcon,
+    face: faceIcon,
+    dot: dotIcon,
+  };
+
+  const AnalysisSection = ({
+    icon,
+    title,
+    content,
+  }: {
+    icon: string;
+    title: string;
+    content: string;
+  }) => (
+    <div className="mb-8 flex items-start gap-2.5">
+      <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 p-2">
+        <Image src={iconMap[icon]} alt={title} width={28} height={28} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <h3 className="mb-1.5 text-base font-semibold text-gray-900">
+          {title}
+        </h3>
+        <p className="text-sm leading-normal text-gray-500">{content}</p>
+      </div>
+    </div>
+  );
+
+  if (!result) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <p className="text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-gray-50 pb-32">
+      {/* Header */}
+      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+        <div className="mx-auto flex max-w-2xl items-center gap-4 px-5 py-4">
+          <button
+            onClick={() => router.back()}
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50"
+          >
+            <svg
+              className="h-5 w-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="mx-auto max-w-2xl px-5">
+        {/* Title Section */}
+        <div className="pt-6 pb-8 text-center">
+          <p className="mb-2 text-sm font-semibold text-blue-500">
+            이목구비 분석 결과
+          </p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            당신의 얼굴 이야기
+          </h1>
+        </div>
+
+        {/* Result Image */}
+        <div className="mb-8">
+          <div className="relative aspect-[9/10] w-full overflow-hidden rounded-3xl bg-white">
+            {resultImage && (
+              <Image
+                src={resultImage}
+                alt="분석 결과"
+                fill
+                className="object-cover"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Overall Assessment */}
+        <div className="mb-8 rounded-2xl border-2 border-blue-500 bg-white p-4">
+          <p className="text-center text-sm font-semibold text-blue-600">
+            {result.overall}
+          </p>
+        </div>
+
+        {/* Detailed Analysis */}
+        <div className="mb-8 rounded-2xl bg-white p-6">
+          <h2 className="mb-8 text-lg font-bold text-gray-900">
+            상세 분석 결과
+          </h2>
+
+          <AnalysisSection icon="nose" title="코 분석" content={result.nose} />
+          <AnalysisSection icon="ear" title="귀 분석" content={result.ear} />
+          <AnalysisSection
+            icon="mouth"
+            title="입 분석"
+            content={result.mouth}
+          />
+          <AnalysisSection icon="eye" title="눈 분석" content={result.eye} />
+          <AnalysisSection
+            icon="eyebrow"
+            title="눈썹 분석"
+            content={result.eyebrow}
+          />
+          <AnalysisSection
+            icon="face"
+            title="얼굴형 분석"
+            content={result.face}
+          />
+          <AnalysisSection icon="dot" title="점 분석" content={result.dot} />
+        </div>
+
+        {/* Face Type Analysis */}
+        <div className="mb-8 rounded-2xl bg-white p-6">
+          <h2 className="mb-6 text-lg font-bold text-gray-900">
+            얼굴형 특성 분석
+          </h2>
+          <p className="text-sm leading-relaxed text-gray-700">
+            {result.analysis}
+          </p>
+        </div>
+
+        {/* Personality Analysis */}
+        <div className="mb-8 rounded-2xl bg-white p-6">
+          <h2 className="mb-8 text-lg font-bold text-gray-900">성격 분석</h2>
+
+          {/* Leadership */}
+          <div className="mb-8">
+            <div className="mb-4 flex items-start gap-8">
+              <span className="w-20 flex-shrink-0 text-sm font-semibold text-gray-700">
+                리더십
+              </span>
+              <div className="flex-1">
+                <ScoreBar score={result.personality.leadership.score} />
+                <p className="mt-1.5 text-xs leading-relaxed text-gray-700">
+                  {result.personality.leadership.brief}
+                </p>
+              </div>
+              <span className="flex-shrink-0 text-xs font-bold text-gray-700">
+                {result.personality.leadership.score}%
+              </span>
+            </div>
+          </div>
+
+          {/* Creativity */}
+          <div className="mb-8">
+            <div className="mb-4 flex items-start gap-8">
+              <span className="w-20 flex-shrink-0 text-sm font-semibold text-gray-700">
+                창의성
+              </span>
+              <div className="flex-1">
+                <ScoreBar score={result.personality.creativity.score} />
+                <p className="mt-1.5 text-xs leading-relaxed text-gray-700">
+                  {result.personality.creativity.brief}
+                </p>
+              </div>
+              <span className="flex-shrink-0 text-xs font-bold text-gray-700">
+                {result.personality.creativity.score}%
+              </span>
+            </div>
+          </div>
+
+          {/* Credibility */}
+          <div className="mb-8">
+            <div className="mb-4 flex items-start gap-8">
+              <span className="w-20 flex-shrink-0 text-sm font-semibold text-gray-700">
+                신뢰도
+              </span>
+              <div className="flex-1">
+                <ScoreBar score={result.personality.credibility.score} />
+                <p className="mt-1.5 text-xs leading-relaxed text-gray-700">
+                  {result.personality.credibility.brief}
+                </p>
+              </div>
+              <span className="flex-shrink-0 text-xs font-bold text-gray-700">
+                {result.personality.credibility.score}%
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t-2 border-blue-100 pt-6">
+            <h3 className="mb-3 text-lg font-bold text-gray-900">
+              AI 종합 분석
+            </h3>
+            <p className="text-sm leading-relaxed text-gray-700">
+              {result.personality.analysis}
+            </p>
+          </div>
+        </div>
+
+        {/* Relationship Analysis */}
+        <div className="mb-8 rounded-2xl bg-white p-6">
+          <h2 className="mb-6 text-lg font-bold text-gray-900">관계 분석</h2>
+
+          {result.social.map((item, index) => (
+            <div key={index} className={index > 0 ? 'mt-6' : ''}>
+              <h3 className="mb-2.5 text-base font-semibold text-gray-900">
+                {item.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-gray-700">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Action Buttons */}
+      <div className="fixed bottom-0 w-full max-w-[480px] bg-white p-4 pb-8">
+        <div className="flex gap-3">
+          <button
+            onClick={() => router.back()}
+            className="flex-1 rounded-xl border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 font-bold text-white"
+          >
+            다시하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
