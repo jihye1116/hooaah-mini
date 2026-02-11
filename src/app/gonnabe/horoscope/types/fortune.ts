@@ -10,7 +10,6 @@ export const FortuneSubject = {
   EMOTION: '마음상태 · 감정',
   RELATIONSHIP: '대인관계',
   STUDY: '학업 · 시험',
-  ETC: '기타',
 } as const;
 
 export const FortuneTheme = {
@@ -26,6 +25,16 @@ export const FortuneTheme = {
   GROW_CHARM: 'grow_charm',
   BEST_STUDY_METHOD: 'best_study_method',
 } as const;
+
+export type ThemeKey = Exclude<
+  (typeof FortuneTheme)[keyof typeof FortuneTheme],
+  typeof FortuneTheme.TODAY
+>;
+
+export interface FortuneSubjectInfo {
+  subject: (typeof FortuneSubject)[keyof typeof FortuneSubject];
+  theme: ThemeKey;
+}
 
 export interface FortuneData {
   [key: string]: unknown;
