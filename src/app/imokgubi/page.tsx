@@ -319,18 +319,16 @@ export default function FaceUploader() {
     return (
       <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-white">
         {/* 상단바 */}
-        <div className="z-10 flex items-center gap-3 bg-white px-5 pt-4 pb-2">
+        <div className="flex items-center p-4 pt-8 pb-4">
           <button
             onClick={() => {
-              setImageSrc(null);
+              setImageSrc(null); /* state바뀌면 useEffect가 알아서 카메라 켬 */
             }}
             disabled={isLoading}
-            className="p-2 disabled:opacity-50"
           >
-            <ArrowLeft className="h-6 w-6 text-gray-700" />
+            <ArrowLeft className="h-6 w-6 text-gray-600" />
           </button>
         </div>
-
         {/* 텍스트 섹션 */}
         <div className="px-5 py-4">
           <h1 className="text-2xl font-bold text-gray-900">사진 촬영 완료</h1>
@@ -338,7 +336,6 @@ export default function FaceUploader() {
             이 사진으로 분석을 진행할까요?
           </p>
         </div>
-
         {/* 이미지 영역 */}
         <div className="flex flex-1 items-center justify-center px-8 py-4">
           <div className="relative aspect-[10/11] w-full max-w-xs overflow-hidden rounded-3xl border border-gray-200 bg-gray-100">
@@ -351,14 +348,12 @@ export default function FaceUploader() {
             />
           </div>
         </div>
-
         {/* 에러 메시지 */}
         {errorText && (
           <div className="mx-5 mb-4 rounded-2xl bg-red-50 px-4 py-3">
             <p className="text-sm font-medium text-red-600">{errorText}</p>
           </div>
         )}
-
         {/* 하단 버튼 영역 */}
         <div className="flex gap-3 px-5 pb-8">
           <button
@@ -367,19 +362,18 @@ export default function FaceUploader() {
               setErrorText(null);
             }}
             disabled={isLoading}
-            className="h-16 flex-1 rounded-2xl bg-gray-100 text-base font-bold text-gray-700 transition active:scale-95 disabled:opacity-50"
+            className="h-16 flex-1 rounded-2xl bg-gray-100 text-base font-bold text-gray-700"
           >
             재촬영
           </button>
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="h-16 flex-1 rounded-2xl bg-gradient-to-r from-blue-400 to-blue-300 text-base font-bold text-gray-900 transition active:scale-95 disabled:opacity-50"
+            className="h-16 flex-1 rounded-[15px] border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] text-base font-bold text-gray-900"
           >
             {isLoading ? '분석중...' : '확인'}
           </button>
         </div>
-
         {/* 로딩 오버레이 */}
         <LoadingOverlay isLoading={isLoading} />
       </div>
@@ -415,10 +409,11 @@ export default function FaceUploader() {
       <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-40 bg-black/50" />
 
       {/* 뒤로가기 & 타이틀 */}
-      <div className="absolute top-0 right-0 left-0 z-20 flex h-24 items-center px-4 pt-2">
-        <button onClick={() => router.back()} className="p-2">
+      <div className="absolute top-0 right-0 left-0 z-20 flex h-24 items-center p-4 pt-4 pb-4">
+        <button onClick={() => router.back()} className="">
           <ArrowLeft className="h-6 w-6 text-white" />
         </button>
+
         <span className="ml-2 text-lg font-bold text-white/80">
           이목구비 분석
         </span>
