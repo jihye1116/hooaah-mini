@@ -269,12 +269,12 @@ export default function PalmistryResultPage() {
         <div className="mx-4 mb-8 relative">
           <div className="bg-white border-[3px] border-[#FCC1B9] rounded-[50px] p-8 flex flex-col items-center">
             {/* 손 타입 이미지 Placeholder */}
-            <div className="w-full aspect-square rounded-[50px] overflow-hidden mb-6 relative">
+            <div className="w-full aspect-square rounded-[50px] mb-6 relative">
               <Image
                 src={HAND_IMAGES[result["hand"] ?? "dragon"]}
                 alt={result.hand}
                 fill
-                className="object-cover"
+                className="object-contain"
               />
             </div>
 
