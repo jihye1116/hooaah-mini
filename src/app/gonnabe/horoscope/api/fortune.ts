@@ -2,7 +2,7 @@ import type {
   FortuneData,
   FortuneResult,
   FortuneTheme,
-} from '@/app/gonnabe/horoscope/fortune-cookie/types/fortune';
+} from '@/app/gonnabe/horoscope/types/fortune';
 
 /**
  * 오늘의 운세 데이터 로드
@@ -11,7 +11,7 @@ import type {
  */
 export async function loadFortune(
   userId: string,
-  theme: FortuneTheme,
+  theme: (typeof FortuneTheme)[keyof typeof FortuneTheme],
 ): Promise<FortuneResult> {
   if (!userId) {
     throw new Error('사용자 정보를 찾을 수 없습니다.');

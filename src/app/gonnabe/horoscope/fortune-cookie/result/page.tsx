@@ -1,5 +1,5 @@
-import { loadFortune } from '@/app/gonnabe/horoscope/fortune-cookie/api/fortune';
-import { FortuneTheme } from '@/app/gonnabe/horoscope/fortune-cookie/types/fortune';
+import { loadFortune } from '@/app/gonnabe/horoscope/api/fortune';
+import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieResultImage from '@/assets/images/gonnabe/fortune_cookie_after.png';
 import Image from 'next/image';
 
