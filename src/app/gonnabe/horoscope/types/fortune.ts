@@ -15,16 +15,27 @@ export const FortuneSubject = {
 export const FortuneTheme = {
   TODAY: 'today',
   ZODIAC_DATING_STYLE: 'zodiac_dating_style',
-  LOVE_PERSONALITY_TYPE: 'love_personality_type',
-  IDEAL_CAREER_FIELD: 'ideal_career_field',
   GOOD_OPPORTUNITY: 'good_opportunity',
+  GROW_CHARM: 'grow_charm',
   CHANGE_YOU_NEED: 'change_you_need',
+  IDEAL_CAREER_FIELD: 'ideal_career_field',
+  EASE_MY_ANXIETY: 'ease_my_anxiety',
+  LOVE_PERSONALITY_TYPE: 'love_personality_type',
   HIDDEN_POTENTIAL: 'hidden_potential',
   KEEP_MAKING_MISTAKES: 'keep_making_mistakes',
-  EASE_MY_ANXIETY: 'ease_my_anxiety',
-  GROW_CHARM: 'grow_charm',
   BEST_STUDY_METHOD: 'best_study_method',
 } as const;
+
+// 유료 테마 목록
+export const PREMIUM_THEMES = [
+  FortuneTheme.ZODIAC_DATING_STYLE,
+  FortuneTheme.GOOD_OPPORTUNITY,
+  FortuneTheme.GROW_CHARM,
+  FortuneTheme.LOVE_PERSONALITY_TYPE,
+  FortuneTheme.EASE_MY_ANXIETY,
+  FortuneTheme.HIDDEN_POTENTIAL,
+  FortuneTheme.KEEP_MAKING_MISTAKES,
+] as const;
 
 export type ThemeKey = Exclude<
   (typeof FortuneTheme)[keyof typeof FortuneTheme],

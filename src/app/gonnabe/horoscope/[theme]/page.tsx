@@ -3,33 +3,46 @@ import {
   themeSubjects,
   themeTitles,
 } from '@/app/gonnabe/horoscope/constants';
-import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
+import {
+  FortuneTheme,
+  PREMIUM_THEMES,
+} from '@/app/gonnabe/horoscope/types/fortune';
+import PremiumContentGate from '@/components/PremiumContentGate';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-export default async function HoroscopeThemePage({
-  params,
-}: {
+interface HoroscopeThemePageProps {
   params: Promise<{
     theme: Exclude<
       (typeof FortuneTheme)[keyof typeof FortuneTheme],
       typeof FortuneTheme.TODAY
     >;
   }>;
-}) {
-  const { theme } = await params;
+}
 
+export default async function HoroscopeThemePage({
+  params,
+}: HoroscopeThemePageProps) {
+  const resolvedParams = await params;
+  const currentTheme = resolvedParams.theme;
+
+  // 테마 유효성 검사
   const validThemes = Object.values(FortuneTheme);
-
-  if (!validThemes.includes(theme)) {
+  if (!validThemes.includes(currentTheme)) {
     notFound();
   }
 
-  const themeImage = themeImages[theme];
-  const themeTitle = themeTitles[theme];
-  const themeSubject = themeSubjects[theme];
+  const themeImage = themeImages[currentTheme];
+  const themeTitle = themeTitles[currentTheme];
+  const themeSubject = themeSubjects[currentTheme];
 
-  return (
+  // 유료 테마인지 확인
+  const isPremium = PREMIUM_THEMES.includes(
+    currentTheme as (typeof PREMIUM_THEMES)[number],
+  );
+
+  // 콘텐츠 렌더링 함수
+  const renderContent = () => (
     <div>
       <div className="relative aspect-square w-full">
         <Image src={themeImage} alt="Horoscope Theme" fill />
@@ -63,4 +76,20 @@ export default async function HoroscopeThemePage({
       </main>
     </div>
   );
+
+  // 유료 테마인 경우 PremiumContentGate로 감싸기
+  if (isPremium) {
+    return (
+      <PremiumContentGate
+        themeId={currentTheme}
+        themeTitle={themeTitle}
+        backgroundImage={<Image src={themeImage} alt="Horoscope Theme" fill />}
+      >
+        {renderContent()}
+      </PremiumContentGate>
+    );
+  }
+
+  // 무료 테마는 바로 표시
+  return renderContent();
 }
