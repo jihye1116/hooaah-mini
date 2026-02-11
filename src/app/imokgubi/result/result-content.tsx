@@ -149,11 +149,11 @@ export default function ResultContent() {
   return (
     <div className="min-h-screen w-full bg-gray-50 pb-32">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
+      <div className="sticky top-0 z-10">
         <div className="mx-auto flex max-w-2xl items-center gap-4 px-5 py-4">
           <button
             onClick={() => router.back()}
-            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-gray-50"
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border bg-white hover:bg-gray-50"
           >
             <svg
               className="h-5 w-5 text-gray-600"
