@@ -249,7 +249,7 @@ export default function FaceUploader() {
         const userMessage =
           resultJson.errorText ||
           '분석이 어려운 이미지입니다. 다시 촬영해주세요.';
-        throw new Error(userMessage);
+        // throw new Error(userMessage);
       }
     } catch (e) {
       // JSON 파싱 실패 시에는 원래 텍스트 반환

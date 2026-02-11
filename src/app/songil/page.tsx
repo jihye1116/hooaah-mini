@@ -7,7 +7,6 @@ import { RefreshCcw, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import LoadingOverlay from '@/app/songil/components/LoadingOverlay';
 import guideImage from '@/assets/images/songil/guide.svg';
 
-
 export default function PalmUploader() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -254,9 +253,22 @@ export default function PalmUploader() {
     console.log('Palmistry Result:', resultText);
 
     // 에러 응답 체크
-    if (resultText.includes('"error": true')) {
-      console.error('Error in palmistry result:', resultText);
-      throw new Error('Analysis failed');
+    try {
+      const resultJson = JSON.parse(resultText);
+      if (resultJson.error === true) {
+        const userMessage =
+          resultJson.errorText ||
+          '분석이 어려운 이미지입니다. 다시 촬영해주세요.';
+        // throw new Error(userMessage);
+      }
+    } catch (e) {
+      // JSON 파싱 실패 시에는 원래 텍스트 반환
+      if (e instanceof SyntaxError) {
+        // JSON이 아닌 경우 그냥 진행
+      } else {
+        // 우리가 던진 에러는 다시 throw
+        throw e;
+      }
     }
 
     return resultText;
@@ -316,7 +328,7 @@ export default function PalmUploader() {
   // [Case 1] 촬영/선택된 이미지 확인 (Preview)
   if (imageSrc) {
     return (
-      <div className="relative flex flex-col w-full h-full min-h-screen bg-white">
+      <div className="relative flex h-full min-h-screen w-full flex-col bg-white">
         {/* 상단바 */}
         <div className="flex items-center p-4 pt-8 pb-4">
           <button
@@ -325,23 +337,23 @@ export default function PalmUploader() {
             }}
             disabled={isLoading}
           >
-            <ArrowLeft className="w-6 h-6 text-gray-600" />
+            <ArrowLeft className="h-6 w-6 text-gray-600" />
           </button>
         </div>
 
         {/* 텍스트 */}
-        <div className="px-5 mb-6">
-          <h1 className="text-2xl font-extrabold text-gray-900 mb-2">
+        <div className="mb-6 px-5">
+          <h1 className="mb-2 text-2xl font-extrabold text-gray-900">
             사진 확인
           </h1>
-          <p className="text-gray-500 font-medium text-sm">
+          <p className="text-sm font-medium text-gray-500">
             이 사진으로 분석을 진행할까요?
           </p>
         </div>
 
         {/* 이미지 */}
-        <div className="px-8 mb-8 flex-1 flex items-center justify-center">
-          <div className="relative w-full aspect-3/4 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
+        <div className="mb-8 flex flex-1 items-center justify-center px-8">
+          <div className="relative aspect-3/4 w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100">
             <Image
               src={imageSrc}
               alt="Captured"
@@ -351,21 +363,29 @@ export default function PalmUploader() {
           </div>
         </div>
 
+        {/* 에러 메시지 */}
+        {errorText && (
+          <div className="mx-5 mb-4 rounded-2xl bg-red-50 px-4 py-3">
+            <p className="text-sm font-medium text-red-600">{errorText}</p>
+          </div>
+        )}
+
         {/* 하단 버튼 */}
-        <div className="mt-auto px-5 pb-8 flex gap-3">
+        <div className="mt-auto flex gap-3 px-5 pb-8">
           <button
             onClick={() => {
               setImageSrc(null);
+              setErrorText(null);
             }}
             disabled={isLoading}
-            className="flex-1 h-14 rounded-xl bg-gray-100 text-gray-600 font-bold text-lg disabled:opacity-50"
+            className="h-14 flex-1 rounded-xl bg-gray-100 text-lg font-bold text-gray-600 disabled:opacity-50"
           >
             재촬영
           </button>
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="flex-1 h-14 rounded-xl bg-[#F97B68] text-white font-bold text-lg disabled:opacity-50"
+            className="h-14 flex-1 rounded-xl bg-[#F97B68] text-lg font-bold text-white disabled:opacity-50"
           >
             {isLoading ? '처리중...' : '확인'}
           </button>
@@ -378,7 +398,7 @@ export default function PalmUploader() {
 
   // [Case 2] 카메라 화면
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden">
+    <div className="relative h-screen w-full overflow-hidden bg-black">
       <canvas ref={canvasRef} className="hidden" />
       <input
         type="file"
@@ -394,26 +414,26 @@ export default function PalmUploader() {
         autoPlay
         playsInline
         muted
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover"
         style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none' }}
       />
 
       {/* 오버레이 디자인 */}
-      <div className="absolute top-0 w-full h-32 bg-black/50  pointer-events-none" />
-      <div className="absolute bottom-0 w-full h-36 bg-black/50  pointer-events-none" />
+      <div className="pointer-events-none absolute top-0 h-32 w-full bg-black/50" />
+      <div className="pointer-events-none absolute bottom-0 h-36 w-full bg-black/50" />
 
       {/* 뒤로가기 & 타이틀 */}
-      <div className="absolute top-0 left-0 right-0 pt-6 px-4 flex items-center z-10 h-16">
+      <div className="absolute top-0 right-0 left-0 z-10 flex h-16 items-center px-4 pt-6">
         <button onClick={() => router.back()} className="p-2">
-          <ArrowLeft className="text-white w-6 h-6" />
+          <ArrowLeft className="h-6 w-6 text-white" />
         </button>
-        <span className="ml-2 text-white font-bold text-lg">손금 촬영</span>
+        <span className="ml-2 text-lg font-bold text-white">손금 촬영</span>
       </div>
 
       {/* 가이드라인 박스 */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="relative w-[calc(100%-80px)] h-full">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="relative h-full w-[calc(100%-80px)]">
             <Image
               src={guideImage}
               alt=""
@@ -426,31 +446,31 @@ export default function PalmUploader() {
       </div>
 
       {/* 하단 컨트롤러 */}
-      <div className="absolute bottom-10 left-0 right-0 px-10 flex justify-between items-center z-20">
+      <div className="absolute right-0 bottom-10 left-0 z-20 flex items-center justify-between px-10">
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md"
         >
-          <ImageIcon className="text-white w-6 h-6" />
+          <ImageIcon className="h-6 w-6 text-white" />
         </button>
 
         <button
           onClick={capturePhoto}
-          className="w-20 h-20 rounded-full border-[5px] border-white flex items-center justify-center bg-transparent active:scale-95 transition-all"
+          className="flex h-20 w-20 items-center justify-center rounded-full border-[5px] border-white bg-transparent transition-all active:scale-95"
         >
-          <div className="w-16 h-16 bg-white rounded-full" />
+          <div className="h-16 w-16 rounded-full bg-white" />
         </button>
 
         <button
           onClick={toggleCamera}
-          className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-md"
         >
-          <RefreshCcw className="text-white w-6 h-6" />
+          <RefreshCcw className="h-6 w-6 text-white" />
         </button>
       </div>
 
       {errorText && (
-        <div className="absolute center top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/80 text-white px-4 py-3 rounded-xl text-sm">
+        <div className="center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/80 px-4 py-3 text-sm text-white">
           {errorText}
         </div>
       )}
