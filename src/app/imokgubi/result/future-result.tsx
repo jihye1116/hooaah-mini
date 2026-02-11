@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
+import BottomButton from '@/components/BottomButton';
 
 export interface FutureResultData {
   overall: string;
@@ -121,14 +122,7 @@ export default function FutureResult({
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 w-full max-w-[480px] -translate-x-1/2 bg-white px-5 pt-4 pb-8">
-        <button
-          onClick={onBack}
-          className="w-full rounded-[15px] border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 text-base font-bold text-white"
-        >
-          다시하기
-        </button>
-      </div>
+      <BottomButton onClick={onBack} variant="full-width" />
     </div>
   );
 }

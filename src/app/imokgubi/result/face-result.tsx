@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
+import BottomButton from '@/components/BottomButton';
 
 import noseIcon from '@/assets/images/imokgubi/icons/nose.png';
 import earIcon from '@/assets/images/imokgubi/icons/ear.png';
@@ -247,16 +248,7 @@ export default function FaceResult({
         </div>
       </div>
 
-      <div className="fixed bottom-0 w-full max-w-[480px] bg-white p-4 pb-8">
-        <div className="flex gap-3">
-          <button
-            onClick={onBack}
-            className="flex-1 rounded-xl border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 font-bold text-white"
-          >
-            다시하기
-          </button>
-        </div>
-      </div>
+      <BottomButton onClick={onBack} />
     </div>
   );
 }
