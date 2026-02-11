@@ -1,4 +1,8 @@
-import type { FortuneData, FortuneResult, FortuneTheme } from '@/types/fortune';
+import type {
+  FortuneData,
+  FortuneResult,
+  FortuneTheme,
+} from '@/app/gonnabe/horoscope/fortune-cookie/types/fortune';
 
 /**
  * 오늘의 운세 데이터 로드

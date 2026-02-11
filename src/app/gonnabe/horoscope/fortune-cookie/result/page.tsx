@@ -1,6 +1,6 @@
-import { loadFortune } from '@/app/gonnabe/horoscope/fortune-cookie/lib/fortune';
+import { loadFortune } from '@/app/gonnabe/horoscope/fortune-cookie/api/fortune';
+import { FortuneTheme } from '@/app/gonnabe/horoscope/fortune-cookie/types/fortune';
 import fortuneCookieResultImage from '@/assets/images/gonnabe/fortune_cookie_after.png';
-import { FortuneTheme } from '@/types/fortune';
 import Image from 'next/image';
 
 export default async function FortuneCookieResultPage() {
