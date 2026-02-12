@@ -65,16 +65,29 @@ export default function ResultContent() {
   }
 
   if (contentsType === 'myAnimal') {
+    // For animal results, we expect the result to contain the animal key
+    const animalKey = (result as { animal?: string }).animal;
+
+    if (!animalKey) {
+      return (
+        <div className="flex min-h-screen w-full items-center justify-center bg-gray-100">
+          <div className="text-center">
+            <p className="text-gray-600">동물 정보를 찾을 수 없습니다.</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <AnimalResult
-        result={result as AnimalResultData}
+        animal={animalKey as any}
         resultImage={resultImage}
         onBack={() => router.back()}
       />
     );
   }
 
-  if (contentsType === 'myPair' || contentsType === 'myType') {
+  if (contentsType === 'myPair') {
     return (
       <PairResultScreen
         result={result as PairResultData}

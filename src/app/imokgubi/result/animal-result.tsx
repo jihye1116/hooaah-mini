@@ -1,101 +1,121 @@
 import Image from 'next/image';
 import BottomButton from '@/components/BottomButton';
+import animals from '../constant/animals.json';
+import { animalImages, type AnimalKey } from '../constant/animalImages';
+import { ArrowLeft } from 'lucide-react';
+
+type ResultSection = {
+  title: string;
+  description: string;
+};
 
 export interface AnimalResultData {
   overall: string;
   analysis: string;
-  personality: {
-    leadership: {
-      brief: string;
-      score: number;
-    };
-    creativity: {
-      brief: string;
-      score: number;
-    };
-    credibility: {
-      brief: string;
-      score: number;
-    };
-    analysis: string;
-  };
-  social: Array<{
-    title: string;
-    description: string;
-  }>;
+  character: ResultSection;
+  personality: ResultSection;
+  reason: ResultSection;
+  details: ResultSection;
+  fortune: ResultSection;
+  career: ResultSection;
+  relationship: ResultSection;
+  matching: ResultSection;
 }
 
 interface AnimalResultProps {
-  result: AnimalResultData;
+  animal: AnimalKey;
   resultImage: string;
   onBack: () => void;
 }
 
-const ScoreBar = ({ score }: { score: number }) => (
-  <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-400">
-    <div
-      className="h-full rounded-full bg-blue-500 transition-all"
-      style={{ width: `${score}%` }}
-    />
-  </div>
-);
-
 export default function AnimalResult({
-  result,
-  resultImage,
+  animal,
+  resultImage: _resultImage,
   onBack,
 }: AnimalResultProps) {
-  if (!result?.personality?.analysis) {
+  // Map animal data from JSON to the expected result structure
+  const animalData = animals[animal];
+
+  const result: AnimalResultData = {
+    overall: animalData.main.title,
+    analysis: animalData.main.description,
+    character: animalData.character,
+    personality: animalData.personality,
+    reason: animalData.reason,
+    details: animalData.details,
+    fortune: animalData.fortune,
+    career: animalData.career,
+    relationship: animalData.relationship,
+    matching: animalData.matching,
+  };
+
+  const animalImage = animalImages[animal];
+
+  if (!result?.personality?.description) {
     return <div>Loading...</div>;
   }
   return (
     <div className="min-h-screen w-full bg-gray-50 pb-32">
+      <div className="sticky top-0 z-10">
+        <div className="mx-auto flex max-w-2xl items-center gap-4 px-5 py-4">
+          <button
+            onClick={onBack}
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-white hover:bg-gray-50"
+          >
+            <ArrowLeft className="h-6 w-6 text-gray-600" />
+          </button>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-2xl px-5">
         <div className="pt-6 pb-8 text-center">
-          <p className="mb-2 text-sm font-semibold text-blue-500">
-            동물 분석 결과
+          <p className="mb-2 text-sm font-semibold text-[#7A8CFF]">
+            관상 분석 결과
           </p>
           <h1 className="text-2xl font-bold text-gray-900">
-            당신의 동물 이야기
+            나와 비슷한 동물은?
           </h1>
         </div>
 
-        <div className="mb-8 rounded-2xl border-2 border-blue-500 bg-white p-4">
-          <p className="text-center text-sm font-semibold text-blue-600">
-            {result.overall}
-          </p>
+        <div className="mb-8 flex justify-center">
+          <div className="w-full max-w-[360px] overflow-hidden rounded-2xl bg-white">
+            <Image
+              src={animalImage}
+              alt={animalData.name}
+              className="h-full w-full object-cover"
+              priority
+            />
+          </div>
         </div>
 
-        <div className="mb-8 rounded-2xl bg-white p-6">
-          <h2 className="mb-8 text-lg font-bold text-gray-900">
-            상세 분석 결과
-          </h2>
-          <p className="text-sm leading-relaxed text-gray-700">
+        <div className="mb-8 rounded-2xl bg-white p-6 text-center">
+          <p className="text-lg font-bold text-[#313866]">
+            당신은 {animalData.name}!
+          </p>
+          <p className="leading-relaxedtext-gray-700 mt-5 text-sm">
             {result.analysis}
           </p>
         </div>
 
-        <div className="mt-8 border-t-2 border-blue-100 pt-6">
-          <h3 className="mb-3 text-lg font-bold text-gray-900">AI 종합 분석</h3>
-          <p className="text-sm leading-relaxed text-gray-700">
-            {result.personality.analysis}
-          </p>
-        </div>
-
-        <div className="mb-8 rounded-2xl bg-white p-6">
-          <h2 className="mb-6 text-lg font-bold text-gray-900">관계 분석</h2>
-
-          {result.social.map((item, index) => (
-            <div key={index} className={index > 0 ? 'mt-6' : ''}>
-              <h3 className="mb-2.5 text-base font-semibold text-gray-900">
-                {item.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-gray-700">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
+        {[
+          result.character,
+          result.personality,
+          result.reason,
+          result.details,
+          result.fortune,
+          result.career,
+          result.relationship,
+          result.matching,
+        ].map((section) => (
+          <div key={section.title} className="mb-8 rounded-2xl bg-white p-6">
+            <h2 className="mb-6 text-center text-lg font-bold text-[#313866]">
+              {section.title}
+            </h2>
+            <p className="text-sm leading-relaxed whitespace-pre-line text-gray-700">
+              {section.description}
+            </p>
+          </div>
+        ))}
       </div>
 
       <BottomButton onClick={onBack} />
