@@ -297,7 +297,7 @@ function ProgressBar({ label, percent }: { label: string; percent: number }) {
     <div className="mb-4 flex items-center last:mb-0">
       <span className="w-16 text-[13px] font-bold text-[#54575D]">{label}</span>
       <div className="mx-4 flex-1">
-        <div className="h-2 w-full rounded-full bg-[#54575D]/20">
+        <div className="h-2 w-full rounded-full bg-[#54575D]">
           <div
             className="h-2 rounded-full bg-[#7A8CFF] transition-all duration-1000"
             style={{ width: `${percent}%` }}

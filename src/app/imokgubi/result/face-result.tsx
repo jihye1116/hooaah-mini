@@ -48,7 +48,7 @@ interface FaceResultProps {
 }
 
 const ScoreBar = ({ score }: { score: number }) => (
-  <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-400">
+  <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#54575D]">
     <div
       className="h-full rounded-full bg-blue-500 transition-all"
       style={{ width: `${score}%` }}
