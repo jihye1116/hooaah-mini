@@ -11,15 +11,59 @@ interface TarotThemeResultPageProps {
 }
 
 interface TarotAnalysisPayload {
-  cardData?: {
-    cardThumbnail?: string;
+  cardData: {
+    cardThumbnail: string;
   };
-  analysis?: {
-    hookingMessage?: string;
-    cardInterpretation?: string;
-    currentSituation?: string;
-    lesson?: string;
-    todaysMessage?: string;
+  analysis: {
+    overallInsight: {
+      cardName: string;
+      keywords: string[];
+    };
+    hookingMessage: string;
+    cardInterpretation: string;
+    currentSituation: string;
+    lesson: string;
+    todaysMessage: string;
+  };
+}
+
+function parseTarotAnalysisPayload(input: unknown): TarotAnalysisPayload {
+  if (typeof input !== 'object' || input === null) {
+    throw new Error('분석 결과 형식이 올바르지 않습니다.');
+  }
+
+  const root = input as Record<string, unknown>;
+  const cardData = root.cardData as Record<string, unknown>;
+  const analysis = root.analysis as Record<string, unknown>;
+  const overallInsight = analysis?.overallInsight as Record<string, unknown>;
+
+  const cardThumbnail = String(cardData?.cardThumbnail ?? '').trim();
+  const cardName = String(overallInsight?.cardName ?? '').trim();
+  const keywordsRaw = overallInsight?.keywords;
+  const keywords = Array.isArray(keywordsRaw)
+    ? keywordsRaw.map((item) => String(item))
+    : [];
+  const hookingMessage = String(analysis?.hookingMessage ?? '').trim();
+  const cardInterpretation = String(analysis?.cardInterpretation ?? '').trim();
+  const currentSituation = String(analysis?.currentSituation ?? '').trim();
+  const lesson = String(analysis?.lesson ?? '').trim();
+  const todaysMessage = String(analysis?.todaysMessage ?? '').trim();
+
+  return {
+    cardData: {
+      cardThumbnail,
+    },
+    analysis: {
+      overallInsight: {
+        cardName,
+        keywords,
+      },
+      hookingMessage,
+      cardInterpretation,
+      currentSituation,
+      lesson,
+      todaysMessage,
+    },
   };
 }
 
@@ -69,30 +113,42 @@ export default async function TarotThemeResultPage({
     {},
   );
 
-  let result: TarotAnalysisPayload | null = null;
-  let errorMessage = '';
+  let result: TarotAnalysisPayload;
 
   try {
-    result = await generateThemeTarotAnalysisOnServer<TarotAnalysisPayload>({
+    const response = await generateThemeTarotAnalysisOnServer<unknown>({
       theme,
       cardId,
       cardReversedInfo,
     });
+
+    result = parseTarotAnalysisPayload(response);
   } catch (error) {
-    errorMessage =
+    const message =
       error instanceof Error ? error.message : '타로 분석에 실패했습니다.';
+
+    return (
+      <div className="flex min-h-screen flex-col bg-black px-5 pt-10 pb-8 text-white">
+        <h1 className="font-playfair-display text-center text-xl font-semibold">
+          {title}
+        </h1>
+        <div className="mt-8 rounded-xl bg-white/10 p-4">
+          <p className="font-plus-jakarta-sans text-sm leading-6 text-red-200">
+            {message}
+          </p>
+        </div>
+      </div>
+    );
   }
 
-  const thumbnailName = result?.cardData?.cardThumbnail?.trim();
-  const thumbnailSrc = thumbnailName
-    ? `${TAROT_S3_BASE_URL}/${thumbnailName}.png`
-    : null;
-
-  const hookingMessage = result?.analysis?.hookingMessage?.trim() || '';
-  const cardInterpretation = result?.analysis?.cardInterpretation?.trim() || '';
-  const currentSituation = result?.analysis?.currentSituation?.trim() || '';
-  const lesson = result?.analysis?.lesson?.trim() || '';
-  const todaysMessage = result?.analysis?.todaysMessage?.trim() || '';
+  const thumbnailSrc = `${TAROT_S3_BASE_URL}/${result.cardData.cardThumbnail}.png`;
+  const cardName = result.analysis.overallInsight.cardName;
+  const keywords = result.analysis.overallInsight.keywords;
+  const hookingMessage = result.analysis.hookingMessage;
+  const cardInterpretation = result.analysis.cardInterpretation;
+  const currentSituation = result.analysis.currentSituation;
+  const lesson = result.analysis.lesson;
+  const todaysMessage = result.analysis.todaysMessage;
 
   const mergedBody = [cardInterpretation, currentSituation, lesson]
     .filter(Boolean)
@@ -104,44 +160,40 @@ export default async function TarotThemeResultPage({
         {title}
       </h1>
 
-      {!errorMessage && thumbnailSrc && (
-        <div className="mt-8 flex justify-center">
-          <Image
-            src={thumbnailSrc}
-            alt="선택한 타로 카드"
-            width={160}
-            height={240}
-            className="h-auto w-40 rounded-xl object-cover"
-          />
-        </div>
-      )}
+      <p className="mt-4 text-center text-base font-semibold text-white">
+        {cardName}
+      </p>
 
-      {!errorMessage && hookingMessage && (
-        <p className="mt-3 text-center text-sm leading-6 text-white/80">
-          {hookingMessage}
-        </p>
-      )}
-
-      <div className="mt-8 rounded-xl bg-white/10 p-4">
-        {errorMessage ? (
-          <p className="font-plus-jakarta-sans text-sm leading-6 text-red-200">
-            {errorMessage}
-          </p>
-        ) : (
-          <p className="font-plus-jakarta-sans text-sm leading-7 whitespace-pre-line text-white">
-            {mergedBody || '분석 본문이 없습니다.'}
-          </p>
-        )}
+      <div className="mt-8 flex justify-center">
+        <Image
+          src={thumbnailSrc}
+          alt="선택한 타로 카드"
+          width={160}
+          height={240}
+          className="h-auto w-40 rounded-xl object-cover"
+        />
       </div>
 
-      {!errorMessage && todaysMessage && (
-        <div className="mt-6 rounded-xl bg-white/10 p-4">
-          <p className="text-xs text-white/60">오늘의 메시지</p>
-          <p className="font-plus-jakarta-sans mt-2 text-sm leading-6 text-white">
-            {todaysMessage}
-          </p>
-        </div>
-      )}
+      <p className="mt-3 text-center text-sm text-white/70">
+        {keywords.join(' · ')}
+      </p>
+
+      <p className="mt-3 text-center text-sm leading-6 text-white/80">
+        {hookingMessage}
+      </p>
+
+      <div className="mt-8 rounded-xl bg-white/10 p-4">
+        <p className="font-plus-jakarta-sans text-sm leading-7 whitespace-pre-line text-white">
+          {mergedBody}
+        </p>
+      </div>
+
+      <div className="mt-6 rounded-xl bg-white/10 p-4">
+        <p className="text-xs text-white/60">오늘의 메시지</p>
+        <p className="font-plus-jakarta-sans mt-2 text-sm leading-6 text-white">
+          {todaysMessage}
+        </p>
+      </div>
     </div>
   );
 }
