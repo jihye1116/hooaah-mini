@@ -8,15 +8,13 @@ import {
   PREMIUM_THEMES,
 } from '@/app/gonnabe/horoscope/types/fortune';
 import PremiumContentGate from '@/components/PremiumContentGate';
+import type { ValueOf } from 'next/dist/shared/lib/constants';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 interface HoroscopeThemePageProps {
   params: Promise<{
-    theme: Exclude<
-      (typeof FortuneTheme)[keyof typeof FortuneTheme],
-      typeof FortuneTheme.TODAY
-    >;
+    theme: Exclude<ValueOf<typeof FortuneTheme>, typeof FortuneTheme.TODAY>;
   }>;
 }
 
@@ -42,7 +40,7 @@ export default async function HoroscopeThemePage({
   );
 
   // 콘텐츠 렌더링 함수
-  const renderContent = () => (
+  const Contents = () => (
     <div>
       <div className="relative aspect-square w-full">
         <Image src={themeImage} alt="Horoscope Theme" fill />
@@ -85,11 +83,11 @@ export default async function HoroscopeThemePage({
         themeTitle={themeTitle}
         backgroundImage={<Image src={themeImage} alt="Horoscope Theme" fill />}
       >
-        {renderContent()}
+        <Contents />
       </PremiumContentGate>
     );
   }
 
   // 무료 테마는 바로 표시
-  return renderContent();
+  return <Contents />;
 }
