@@ -32,8 +32,8 @@ export const compressImage = async (blob: Blob): Promise<Blob> => {
 };
 
 export const capturePhotoFromCanvas = (
-  videoRef: React.RefObject<HTMLVideoElement>,
-  canvasRef: React.RefObject<HTMLCanvasElement>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
   facingMode: 'user' | 'environment',
 ): string | null => {
   if (!videoRef.current || !canvasRef.current) return null;
