@@ -22,29 +22,28 @@ interface HoroscopeThemePageProps {
 export default async function HoroscopeThemePage({
   params,
 }: HoroscopeThemePageProps) {
-  const resolvedParams = await params;
-  const currentTheme = resolvedParams.theme;
+  const { theme } = await params;
 
   // 테마 유효성 검사
   const validThemes = Object.values(FortuneTheme);
-  if (!validThemes.includes(currentTheme)) {
+  if (!validThemes.includes(theme)) {
     notFound();
   }
 
-  const themeImage = themeImages[currentTheme];
-  const themeTitle = themeTitles[currentTheme];
-  const themeSubject = themeSubjects[currentTheme];
+  const themeImage = themeImages[theme];
+  const themeTitle = themeTitles[theme];
+  const themeSubject = themeSubjects[theme];
 
   // 유료 테마인지 확인
   const isPremium = PREMIUM_THEMES.includes(
-    currentTheme as (typeof PREMIUM_THEMES)[number],
+    theme as (typeof PREMIUM_THEMES)[number],
   );
 
   // 유료 테마인 경우 PremiumContentGate로 감싸기
   if (isPremium) {
     return (
       <PremiumContentGate
-        themeId={currentTheme}
+        themeId={theme}
         themeTitle={themeTitle}
         backgroundImage={<Image src={themeImage} alt="Horoscope Theme" fill />}
       >
