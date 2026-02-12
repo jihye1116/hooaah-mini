@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import FaceResult, { type FaceResultData } from './face-result';
 import FutureResult, { type FutureResultData } from './future-result';
+import AnimalResult, { AnimalResultData } from './animal-result';
 
 export default function ResultContent() {
   const router = useRouter();
@@ -51,6 +52,16 @@ export default function ResultContent() {
     return (
       <FutureResult
         result={result as FutureResultData}
+        resultImage={resultImage}
+        onBack={() => router.back()}
+      />
+    );
+  }
+
+  if (contentsType === 'myAnimal') {
+    return (
+      <AnimalResult
+        result={result as AnimalResultData}
         resultImage={resultImage}
         onBack={() => router.back()}
       />
