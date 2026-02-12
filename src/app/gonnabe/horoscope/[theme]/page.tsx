@@ -17,12 +17,18 @@ interface HoroscopeThemePageProps {
   params: Promise<{
     theme: Exclude<ValueOf<typeof FortuneTheme>, typeof FortuneTheme.TODAY>;
   }>;
+  searchParams?: Promise<{
+    name?: string;
+    birthDate?: string;
+  }>;
 }
 
 export default async function HoroscopeThemePage({
   params,
+  searchParams,
 }: HoroscopeThemePageProps) {
   const { theme } = await params;
+  const { name, birthDate } = (await searchParams) ?? {};
 
   // 테마 유효성 검사
   const validThemes = Object.values(FortuneTheme);
@@ -50,9 +56,12 @@ export default async function HoroscopeThemePage({
         }
       >
         <HoroscopeContent
+          theme={theme}
           themeImage={themeImage}
           themeTitle={themeTitle}
           themeSubject={themeSubject}
+          name={name}
+          birthDate={birthDate}
         />
       </PremiumContentGate>
     );
@@ -61,9 +70,12 @@ export default async function HoroscopeThemePage({
   // 무료 테마는 바로 표시
   return (
     <HoroscopeContent
+      theme={theme}
       themeImage={themeImage}
       themeTitle={themeTitle}
       themeSubject={themeSubject}
+      name={name}
+      birthDate={birthDate}
     />
   );
 }
