@@ -1,4 +1,4 @@
-import { submitHoroscopeUserInfo } from '@/app/gonnabe/horoscope/[theme]/actions';
+import { submitHoroscopeUserInfo } from '@/app/gonnabe/horoscope/(route)/theme/[theme]/actions';
 
 interface HoroscopeUserInfoFormProps {
   theme: string;

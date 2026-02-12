@@ -1,5 +1,5 @@
-import HoroscopeFortuneResult from '@/app/gonnabe/horoscope/[theme]/components/HoroscopeFortuneResult';
-import HoroscopeUserInfoForm from '@/app/gonnabe/horoscope/[theme]/components/HoroscopeUserInfoForm';
+import HoroscopeFortuneResult from '@/app/gonnabe/horoscope/(route)/theme/[theme]/components/HoroscopeFortuneResult';
+import HoroscopeUserInfoForm from '@/app/gonnabe/horoscope/(route)/theme/[theme]/components/HoroscopeUserInfoForm';
 import type { ThemeKey } from '@/app/gonnabe/horoscope/types/fortune';
 import Image, { StaticImageData } from 'next/image';
 import { Suspense } from 'react';

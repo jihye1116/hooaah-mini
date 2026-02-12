@@ -61,3 +61,8 @@ export interface FortuneData {
     conclusion: string;
   };
 }
+
+export const FortunePeriod = {
+  WEEKLY: 'weekly',
+  MONTHLY: 'monthly',
+} as const;

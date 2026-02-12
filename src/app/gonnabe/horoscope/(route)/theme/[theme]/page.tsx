@@ -1,4 +1,4 @@
-import HoroscopeContent from '@/app/gonnabe/horoscope/[theme]/components/HoroscopeContent';
+import HoroscopeContent from '@/app/gonnabe/horoscope/(route)/theme/[theme]/components/HoroscopeContent';
 import {
   themeImages,
   themeSubjects,
