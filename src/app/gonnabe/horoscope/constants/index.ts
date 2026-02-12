@@ -1,4 +1,8 @@
-import { FortuneSubject, FortuneTheme, type ThemeKey } from '../types/fortune';
+import {
+  FortuneSubject,
+  FortuneTheme,
+  type ThemeKey,
+} from '@/app/gonnabe/horoscope/types/fortune';
 
 import bestStudyMethod from '@/assets/images/gonnabe/best_study_method.png';
 import changeYouNeed from '@/assets/images/gonnabe/change_you_need.png';

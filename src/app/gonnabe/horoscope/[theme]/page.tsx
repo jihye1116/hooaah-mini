@@ -1,3 +1,4 @@
+import HoroscopeContent from '@/app/gonnabe/horoscope/[theme]/components/HoroscopeContent';
 import {
   themeImages,
   themeSubjects,
@@ -11,7 +12,6 @@ import PremiumContentGate from '@/components/PremiumContentGate';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import HoroscopeContent from './components/HoroscopeContent';
 
 interface HoroscopeThemePageProps {
   params: Promise<{
@@ -45,7 +45,9 @@ export default async function HoroscopeThemePage({
       <PremiumContentGate
         themeId={theme}
         themeTitle={themeTitle}
-        backgroundImage={<Image src={themeImage} alt="Horoscope Theme" fill />}
+        backgroundImage={
+          <Image src={themeImage} alt="Horoscope Theme" fill sizes="auto" />
+        }
       >
         <HoroscopeContent
           themeImage={themeImage}

@@ -1,5 +1,5 @@
+import PalmUploader from '@/app/songil/palm-uploader';
 import { Suspense } from 'react';
-import PalmUploader from './palm-uploader';
 
 export default function Page() {
   return (

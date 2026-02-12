@@ -1,6 +1,6 @@
 'use client';
 
-import { PREMIUM_THEMES } from '../types/fortune';
+import { PREMIUM_THEMES } from '@/app/gonnabe/horoscope/types/fortune';
 
 const STORAGE_KEY = 'horoscope_premium_access';
 

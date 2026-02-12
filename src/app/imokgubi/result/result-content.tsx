@@ -1,12 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import FaceResult, { type FaceResultData } from './face-result';
-import FutureResult, { type FutureResultData } from './future-result';
-import AnimalResult, { type AnimalResultData } from './animal-result';
-import PairResultScreen, { type PairResultData } from './pair-result';
+import AnimalResult, {
+  type AnimalResultData,
+} from '@/app/imokgubi/result/animal-result';
+import FaceResult, {
+  type FaceResultData,
+} from '@/app/imokgubi/result/face-result';
+import FutureResult, {
+  type FutureResultData,
+} from '@/app/imokgubi/result/future-result';
+import PairResultScreen, {
+  type PairResultData,
+} from '@/app/imokgubi/result/pair-result';
 
 export default function ResultContent() {
   const router = useRouter();

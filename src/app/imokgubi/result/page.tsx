@@ -1,5 +1,5 @@
+import ResultContent from '@/app/imokgubi/result/result-content';
 import { Suspense } from 'react';
-import ResultContent from './result-content';
 
 export default function ImokgubiResultPage() {
   return (

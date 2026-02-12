@@ -1,5 +1,5 @@
+import FaceUploader from '@/app/imokgubi/face-uploader';
 import { Suspense } from 'react';
-import FaceUploader from './face-uploader';
 
 export default function Page() {
   return (

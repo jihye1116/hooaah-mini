@@ -1,8 +1,8 @@
 'use client';
 
+import UserInfoForm from '@/app/gonnabe/horoscope/[theme]/components/UserInfoForm';
 import Image, { StaticImageData } from 'next/image';
 import { useState } from 'react';
-import UserInfoForm from '../components/UserInfoForm';
 
 interface HoroscopeContentProps {
   themeImage: StaticImageData;
@@ -33,7 +33,7 @@ export default function HoroscopeContent({
   return (
     <div>
       <div className="relative aspect-square w-full">
-        <Image src={themeImage} alt="Horoscope Theme" fill />
+        <Image src={themeImage} alt="Horoscope Theme" fill sizes="auto" />
       </div>
 
       <main className="mb-12 flex flex-col p-6">
