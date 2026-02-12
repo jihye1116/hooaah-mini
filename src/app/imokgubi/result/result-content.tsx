@@ -5,13 +5,19 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import FaceResult, { type FaceResultData } from './face-result';
 import FutureResult, { type FutureResultData } from './future-result';
-import AnimalResult, { AnimalResultData } from './animal-result';
+import AnimalResult, { type AnimalResultData } from './animal-result';
+import PairResultScreen, { type PairResultData } from './pair-result';
 
 export default function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [result, setResult] = useState<
-    FutureResultData | FaceResultData | Record<string, unknown> | null
+    | FutureResultData
+    | FaceResultData
+    | AnimalResultData
+    | PairResultData
+    | Record<string, unknown>
+    | null
   >(null);
   const [resultImage, setResultImage] = useState<string>('');
   const [errorText, setErrorText] = useState<string>('');
@@ -62,6 +68,16 @@ export default function ResultContent() {
     return (
       <AnimalResult
         result={result as AnimalResultData}
+        resultImage={resultImage}
+        onBack={() => router.back()}
+      />
+    );
+  }
+
+  if (contentsType === 'myPair' || contentsType === 'myType') {
+    return (
+      <PairResultScreen
+        result={result as PairResultData}
         resultImage={resultImage}
         onBack={() => router.back()}
       />

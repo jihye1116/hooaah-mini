@@ -16,8 +16,8 @@ export default function BottomButton({
 
   const buttonClasses =
     variant === 'full-width'
-      ? 'w-full rounded-[15px] border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 text-base font-bold text-white'
-      : 'flex-1 rounded-xl border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 font-bold text-white';
+      ? 'w-full rounded-[15px] border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 text-base font-bold '
+      : 'flex-1 rounded-xl border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] py-4 font-bold ';
 
   return (
     <div className={containerClasses}>

@@ -69,3 +69,46 @@ export const analyzeImage = async (
 
   return resultText;
 };
+
+export const analyzePairImage = async (
+  imageUrl1: string,
+  imageUrl2: string,
+  contentsType: string,
+): Promise<string> => {
+  const backendBase = process.env.NEXT_PUBLIC_BACKEND_BASE;
+  if (!backendBase) {
+    throw new Error('BACKEND_BASE environment variable is not set');
+  }
+
+  console.log('contentsType in analyzePairImage:', contentsType);
+
+  const apiUrl = `${backendBase}/openai/physiognomy?imageUrl=${encodeURIComponent(imageUrl1)}&secondImageUrl=${encodeURIComponent(imageUrl2)}&category=${contentsType}&language=ko`;
+
+  const response = await fetch(apiUrl, {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (response.status !== 200 && response.status !== 201) {
+    throw new Error(
+      `Failed to get pair physiognomy result: ${response.status}`,
+    );
+  }
+
+  const resultText = await response.text();
+  console.log('Pair Physiognomy Result:', resultText);
+
+  try {
+    const resultJson = JSON.parse(resultText);
+    if (resultJson.error === true) {
+      console.warn('분석 오류:', resultJson.errorText);
+    }
+  } catch (e) {
+    if (!(e instanceof SyntaxError)) {
+      throw e;
+    }
+  }
+
+  return resultText;
+};
