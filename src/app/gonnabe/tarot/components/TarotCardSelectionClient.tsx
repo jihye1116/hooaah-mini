@@ -97,7 +97,9 @@ export default function TarotCardSelectionClient({
   };
 
   return (
-    <div className="flex size-full flex-col items-center bg-black">
+    <div className="relative flex size-full flex-col items-center bg-black">
+      <div className="absolute -top-16 h-55 w-55 rounded-full bg-[#6D0099] blur-[100px]" />
+
       <div className="z-10 h-9 px-5 pt-7.5">
         <h1 className="font-playfair-display text-center text-[15px] font-semibold tracking-[-0.15px] text-white">
           타로 선택하기
