@@ -10,7 +10,6 @@ import {
 } from '@/app/gonnabe/horoscope/types/fortune';
 import PremiumContentGate from '@/components/PremiumContentGate';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 interface HoroscopeThemePageProps {
@@ -48,13 +47,7 @@ export default async function HoroscopeThemePage({
   // 유료 테마인 경우 PremiumContentGate로 감싸기
   if (isPremium) {
     return (
-      <PremiumContentGate
-        themeId={theme}
-        themeTitle={themeTitle}
-        backgroundImage={
-          <Image src={themeImage} alt="Horoscope Theme" fill sizes="auto" />
-        }
-      >
+      <PremiumContentGate themeId={theme} themeTitle={themeTitle}>
         <HoroscopeContent
           theme={theme}
           themeImage={themeImage}

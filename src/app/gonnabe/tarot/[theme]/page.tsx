@@ -33,13 +33,7 @@ export default async function TarotThemePage({ params }: TarotThemePageProps) {
   // 유료 테마인 경우 PremiumContentGate로 감싸기
   if (isPremium) {
     return (
-      <PremiumContentGate
-        themeId={theme}
-        themeTitle={themeTitle}
-        backgroundImage={
-          <div className="absolute inset-0 bg-linear-to-b from-purple-900 via-black to-black" />
-        }
-      >
+      <PremiumContentGate themeId={theme} themeTitle={themeTitle}>
         <TarotCardSelection theme={theme} />
       </PremiumContentGate>
     );
