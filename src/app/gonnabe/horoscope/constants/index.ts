@@ -10,6 +10,7 @@ import idealCareerField from '@/assets/images/gonnabe/ideal_career_field.png';
 import keepMakingMistakes from '@/assets/images/gonnabe/keep_making_mistakes.png';
 import lovePersonalityType from '@/assets/images/gonnabe/love_personality_type.png';
 import zodiacDatingStyle from '@/assets/images/gonnabe/zodiac_dating_style.png';
+import type { ValueOf } from 'next/dist/shared/lib/constants';
 import type { StaticImageData } from 'next/image';
 
 export const themeImages: Record<ThemeKey, StaticImageData> = {
@@ -38,10 +39,7 @@ export const themeTitles: Record<ThemeKey, string> = {
   [FortuneTheme.BEST_STUDY_METHOD]: '나에게 맞는 공부법',
 };
 
-export const themeSubjects: Record<
-  ThemeKey,
-  (typeof FortuneSubject)[keyof typeof FortuneSubject]
-> = {
+export const themeSubjects: Record<ThemeKey, ValueOf<typeof FortuneSubject>> = {
   [FortuneTheme.ZODIAC_DATING_STYLE]: FortuneSubject.LOVE,
   [FortuneTheme.LOVE_PERSONALITY_TYPE]: FortuneSubject.LOVE,
   [FortuneTheme.IDEAL_CAREER_FIELD]: FortuneSubject.CAREER,

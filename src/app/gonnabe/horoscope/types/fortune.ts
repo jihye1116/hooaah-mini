@@ -1,3 +1,5 @@
+import type { ValueOf } from 'next/dist/shared/lib/constants';
+
 export interface FortuneResult {
   fortuneData: FortuneData;
   luckyNumber: number;
@@ -38,12 +40,12 @@ export const PREMIUM_THEMES = [
 ] as const;
 
 export type ThemeKey = Exclude<
-  (typeof FortuneTheme)[keyof typeof FortuneTheme],
+  ValueOf<typeof FortuneTheme>,
   typeof FortuneTheme.TODAY
 >;
 
 export interface FortuneSubjectInfo {
-  subject: (typeof FortuneSubject)[keyof typeof FortuneSubject];
+  subject: ValueOf<typeof FortuneSubject>;
   theme: ThemeKey;
 }
 
