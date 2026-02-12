@@ -59,7 +59,7 @@ export default function FutureResult({
           </div>
         </div>
 
-        <div className="mb-8 rounded-2xl border-2 border-[#7A8CFF] bg-white px-4 py-3">
+        <div className="mb-8 rounded-2xl border-2 border-gray-200 bg-white px-4 py-3">
           <p className="text-center text-sm font-semibold text-[#6270CC]">
             {result.overall}
           </p>
