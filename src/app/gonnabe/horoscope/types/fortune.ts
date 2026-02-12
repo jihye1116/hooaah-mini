@@ -50,5 +50,19 @@ export interface FortuneSubjectInfo {
 }
 
 export interface FortuneData {
-  [key: string]: unknown;
+  theme: ThemeKey;
+  zodiacSign: string;
+  data: {
+    main: {
+      analysis: string;
+      current_situation: string;
+    };
+    introduction: string;
+    conclusion: string;
+  };
 }
+
+export const FortunePeriod = {
+  WEEKLY: 'weekly',
+  MONTHLY: 'monthly',
+} as const;

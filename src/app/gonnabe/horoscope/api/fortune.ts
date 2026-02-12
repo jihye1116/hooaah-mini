@@ -11,10 +11,10 @@ import type { ValueOf } from 'next/dist/shared/lib/constants';
  * @returns 운세 데이터와 행운의 숫자
  */
 export async function loadFortune(
-  userId: string,
+  birthday: string,
   theme: ValueOf<typeof FortuneTheme>,
 ): Promise<FortuneResult> {
-  if (!userId) {
+  if (!birthday) {
     throw new Error('사용자 정보를 찾을 수 없습니다.');
   }
 
@@ -31,19 +31,18 @@ export async function loadFortune(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId,
+        birthday,
         theme,
       }),
     });
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error(
         `운세 생성에 실패했습니다. 상태 코드: ${response.status}`,
       );
     }
 
     const fortuneData: FortuneData = await response.json();
-    console.log('fortuneData:', fortuneData);
 
     // 행운의 숫자 생성 (1~20)
     const luckyNumber = Math.floor(Math.random() * 20) + 1;

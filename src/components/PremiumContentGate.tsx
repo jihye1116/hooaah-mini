@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   hasAccessPermission,
   saveAccessPermission,
   validateAccessCode,
-} from '../app/gonnabe/horoscope/utils/accessCode';
-import AccessCodeModal from './AccessCodeModal';
+} from '@/app/gonnabe/horoscope/utils/accessCode';
+import AccessCodeModal from '@/components/AccessCodeModal';
+import { useEffect, useState } from 'react';
 
 interface PremiumContentGateProps {
   themeId: string;
