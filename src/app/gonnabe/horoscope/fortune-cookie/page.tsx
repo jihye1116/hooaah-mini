@@ -1,4 +1,4 @@
-import FortuneCookie from '@/app/gonnabe/horoscope/components/FortuneCookie';
+import FortuneCookie from '@/app/gonnabe/horoscope/fortune-cookie/components/FortuneCookie';
 
 export default function HoroscopeFortuneCookiePage() {
   return (
