@@ -3,6 +3,7 @@ import type {
   FortuneResult,
   FortuneTheme,
 } from '@/app/gonnabe/horoscope/types/fortune';
+import type { ValueOf } from 'next/dist/shared/lib/constants';
 
 /**
  * 오늘의 운세 데이터 로드
@@ -11,7 +12,7 @@ import type {
  */
 export async function loadFortune(
   userId: string,
-  theme: (typeof FortuneTheme)[keyof typeof FortuneTheme],
+  theme: ValueOf<typeof FortuneTheme>,
 ): Promise<FortuneResult> {
   if (!userId) {
     throw new Error('사용자 정보를 찾을 수 없습니다.');
