@@ -6,7 +6,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  ...eslintConfigPrettier,
+  eslintConfigPrettier,
   {
     files: ['src/**/*.{js,jsx,ts,tsx}'],
     rules: {
