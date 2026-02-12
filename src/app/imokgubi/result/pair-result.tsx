@@ -57,6 +57,7 @@ export default function PairResultScreen({
   onBack,
 }: PairResultProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const yourImage = searchParams.get('resultImage2');
 
   if (!yourImage) {
@@ -66,8 +67,6 @@ export default function PairResultScreen({
       </div>
     );
   }
-
-  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-[#F5F6F8] pb-32">
