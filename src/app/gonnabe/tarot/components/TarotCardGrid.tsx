@@ -11,8 +11,9 @@ interface TarotCardGridProps {
   cards: TarotCardType[];
   cardOffsets: Record<number, { x: number; y: number }>;
   isShuffling: boolean;
+  disable?: boolean;
   backImage: string;
-  onSelect: (cardId: number) => void;
+  onSelect: (cardId: string) => void;
 }
 
 export default function TarotCardGrid({
@@ -21,6 +22,7 @@ export default function TarotCardGrid({
   cards,
   cardOffsets,
   isShuffling,
+  disable = false,
   backImage,
   onSelect,
 }: TarotCardGridProps) {
@@ -51,7 +53,7 @@ export default function TarotCardGrid({
             frontImage={card.frontImage}
             reversed={card.reversed}
             onSelect={onSelect}
-            disabled={isShuffling}
+            disabled={isShuffling || disable}
           />
         </div>
       ))}
