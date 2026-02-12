@@ -42,6 +42,23 @@ export const useCamera = ({
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+
+        // 일부 모바일 기기에서 자동 줌이 적용되는 문제 방지
+        const [videoTrack] = stream.getVideoTracks();
+        if (videoTrack) {
+          try {
+            const capabilities = videoTrack.getCapabilities?.();
+            if (capabilities && 'zoom' in capabilities) {
+              type ZoomConstraint = MediaTrackConstraintSet & { zoom?: number };
+              const zoomConstraints: MediaTrackConstraints = {
+                advanced: [{ zoom: 1 } as ZoomConstraint],
+              };
+              await videoTrack.applyConstraints(zoomConstraints);
+            }
+          } catch (constraintError) {
+            // 줌 제어 미지원 기기에서는 무시
+          }
+        }
       } catch (err) {
         console.error('Camera Error:', err);
         onError('카메라 권한을 확인해주세요.');

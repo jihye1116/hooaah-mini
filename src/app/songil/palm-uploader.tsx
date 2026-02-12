@@ -41,11 +41,7 @@ export default function PalmUploader() {
 
   // 사진 촬영
   const capturePhoto = () => {
-    const dataUrl = capturePhotoFromCanvas(
-      videoRef as any,
-      canvasRef as any,
-      facingMode,
-    );
+    const dataUrl = capturePhotoFromCanvas(videoRef, canvasRef, facingMode);
 
     if (dataUrl) {
       setImageSrc(dataUrl);
