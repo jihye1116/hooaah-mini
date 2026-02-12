@@ -40,7 +40,7 @@ export interface TarotResult {
 }
 
 export interface TarotCard {
-  id: number;
+  id: string;
   frontImage: string;
   reversed: boolean;
 }

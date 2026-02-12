@@ -4,20 +4,25 @@ import TarotCardGrid from '@/app/gonnabe/tarot/components/TarotCardGrid';
 import TarotShuffleControls from '@/app/gonnabe/tarot/components/TarotShuffleControls';
 import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import type { TarotCard as TarotCardType } from '@/app/gonnabe/tarot/types/theme';
-import { useRef, useState } from 'react';
+import { cn } from '@sglara/cn';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 interface TarotCardSelectionClientProps {
   theme: string;
   initialCards: TarotCardType[];
+  maxSelectableCards: number;
 }
 
 export default function TarotCardSelectionClient({
   theme,
   initialCards,
+  maxSelectableCards,
 }: TarotCardSelectionClientProps) {
-  const [selectedCard, setSelectedCard] = useState<number | null>(null);
-  const [hasSelectedCardOnce, setHasSelectedCardOnce] = useState(false);
+  const router = useRouter();
+  const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
   const [isShuffling, setIsShuffling] = useState(false);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
   const [cardOffsets, setCardOffsets] = useState<
     Record<number, { x: number; y: number }>
   >({});
@@ -41,6 +46,8 @@ export default function TarotCardSelectionClient({
 
     return shuffled;
   };
+
+  const isSelectionComplete = selectedCardIds.length >= maxSelectableCards;
 
   const getOffsetsToCenter = () => {
     const gridElement = gridRef.current;
@@ -70,17 +77,29 @@ export default function TarotCardSelectionClient({
     );
   };
 
-  const handleCardSelect = (cardId: number) => {
-    if (isShuffling) return;
-    setSelectedCard(cardId);
-    setHasSelectedCardOnce(true);
+  const handleCardSelect = (cardId: string) => {
+    if (isShuffling || isSelectionComplete) return;
+
+    setSelectedCardIds((prev) => {
+      if (prev.includes(cardId)) return prev;
+      if (prev.length >= maxSelectableCards) return prev;
+      return [...prev, cardId];
+    });
+
+    // 선택된 카드는 "뒤집힘(역방향)"으로 간주
+    setCards((prev) =>
+      prev.map((card) =>
+        card.id === cardId ? { ...card, reversed: true } : card,
+      ),
+    );
   };
 
   const handleShuffle = async () => {
-    if (isShuffling) return;
+    if (isShuffling || selectedCardIds.length > 0) return;
 
     setIsShuffling(true);
-    setSelectedCard(null);
+    hasRequestedAnalysisRef.current = false;
+    setSelectedCardIds([]);
 
     await nextFrame();
 
@@ -95,6 +114,43 @@ export default function TarotCardSelectionClient({
 
     setIsShuffling(false);
   };
+
+  const hasRequestedAnalysisRef = useRef(false);
+
+  useEffect(() => {
+    if (!isSelectionComplete) return;
+    if (hasRequestedAnalysisRef.current) return;
+    hasRequestedAnalysisRef.current = true;
+
+    const cardReversedInfo = selectedCardIds.reduce<Record<string, boolean>>(
+      (acc, id) => {
+        acc[id] = true;
+        return acc;
+      },
+      {},
+    );
+
+    const cardId = selectedCardIds[selectedCardIds.length - 1] ?? '';
+
+    if (!cardId) {
+      console.error('[tarot] cardId is missing.');
+      return;
+    }
+
+    const run = async () => {
+      await wait(2000);
+      setIsLoadingAnalysis(true);
+
+      const selected = selectedCardIds.join(',');
+      const params = new URLSearchParams({ cardId, selected });
+
+      router.push(
+        `/gonnabe/tarot/theme/${encodeURIComponent(theme)}/result?${params.toString()}`,
+      );
+    };
+
+    void run();
+  }, [isSelectionComplete, selectedCardIds, theme]);
 
   return (
     <div className="relative flex size-full flex-col items-center bg-black">
@@ -120,6 +176,7 @@ export default function TarotCardSelectionClient({
         cards={cards}
         cardOffsets={cardOffsets}
         isShuffling={isShuffling}
+        disable={isSelectionComplete}
         backImage={`${TAROT_S3_BASE_URL}/bubble_deck_main.png`}
         onSelect={handleCardSelect}
       />
@@ -128,9 +185,20 @@ export default function TarotCardSelectionClient({
 
       <TarotShuffleControls
         isShuffling={isShuffling}
-        hideButton={hasSelectedCardOnce}
+        hideButton={selectedCardIds.length > 0}
         onShuffle={handleShuffle}
       />
+
+      <div
+        className={cn(
+          'fixed inset-0 z-20 flex size-full items-center justify-center bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
+          isLoadingAnalysis ? 'visible opacity-100' : 'invisible opacity-0',
+        )}
+      >
+        <p className="font-playfair-display text-lg font-semibold text-white">
+          타로 로딩중...
+        </p>
+      </div>
     </div>
   );
 }

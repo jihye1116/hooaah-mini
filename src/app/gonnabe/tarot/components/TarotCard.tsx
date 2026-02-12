@@ -5,11 +5,11 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 interface TarotCardProps {
-  id: number;
+  id: string;
   backImage: string;
   frontImage: string;
   reversed: boolean;
-  onSelect?: (id: number) => void;
+  onSelect?: (id: string) => void;
   disabled?: boolean;
 }
 
