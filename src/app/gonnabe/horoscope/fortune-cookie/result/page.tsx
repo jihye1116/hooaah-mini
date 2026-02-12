@@ -3,6 +3,8 @@ import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieResultImage from '@/assets/images/gonnabe/fortune_cookie_after.png';
 import Image from 'next/image';
 
+export const dynamic = 'force-dynamic';
+
 export default async function FortuneCookieResultPage() {
   const { fortuneData } = await loadFortune('test-user-id', FortuneTheme.TODAY);
 
