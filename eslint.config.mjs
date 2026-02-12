@@ -7,6 +7,19 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   ...eslintConfigPrettier,
+  {
+    files: ['src/**/*.{js,jsx,ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error'],
+    },
+  },
+  {
+    files: ['src/app/layout.tsx'],
+    rules: {
+      // next/app global css import는 상대경로가 필수
+      'no-restricted-imports': 'off',
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
