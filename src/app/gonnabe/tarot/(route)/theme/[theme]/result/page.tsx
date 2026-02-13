@@ -74,6 +74,26 @@ const getThemeTag = (theme: string) => {
   }
 };
 
+const THEME_TO_KOREAN_TITLE: Record<string, string> = {
+  [TarotTheme.MISSING_IN_RELATIONSHIP]:
+    '지금 연애 관계에서 내가 놓치고 있는 것은?',
+  [TarotTheme.RELATIONSHIP_LESSON]: '현재 연애가 나에게 주는 교훈은?',
+  [TarotTheme.NEXT_CAREER_CHAPTER]: '내 커리어의 다음 챕터는 무엇일까?',
+  [TarotTheme.WORK_VALUE_ALIGNMENT]: '지금 하는 일이 내 가치와 맞을까?',
+  [TarotTheme.HABIT_TO_CHANGE]: '성장을 위해 어떤 습관을 바꿔야 할까?',
+  [TarotTheme.FIND_TRUE_PATH]: '진정으로 원하는 삶의 길은 어떻게 찾을까?',
+  [TarotTheme.IGNORED_EMOTION]: '나는 어떤 감정을 외면하고 있을까?',
+  [TarotTheme.CHANGE_EMOTION_TONE]: '내 감정의 톤을 바꾸려면?',
+  [TarotTheme.RELATIONSHIP_ROLE]: '나는 관계에서 어떤 역할을 맡고 있을까?',
+  [TarotTheme.RESOLVE_CONFLICT]: '지금 겪고 있는 갈등, 어떻게 풀어야 할까?',
+  [TarotTheme.STUDY_LIFE_PURPOSE]: '학업과 내 인생의 목적, 어떻게 연결할까?',
+  [TarotTheme.OVERCOME_EXAM_ANXIETY]: '시험 전 불안 어떻게 이겨낼까?',
+};
+
+const getThemeTitle = (theme: string): string => {
+  return THEME_TO_KOREAN_TITLE[theme] || '당신의 운세 흐름을 읽어드립니다.';
+};
+
 // --- Helper Functions ---
 function parseTarotAnalysisPayload(input: unknown): TarotAnalysisPayload {
   if (typeof input !== 'object' || input === null) {
@@ -217,7 +237,7 @@ export default async function TarotThemeResultPage({
           </p>
           <h1 className="font-playfair-display mt-2 line-clamp-3 text-2xl leading-[1.3] font-bold text-white">
             {/* API에서 themeTopic이 온다고 가정, 없으면 기본 텍스트 */}
-            {analysis.themeTopic || '당신의 운세 흐름을\n읽어드립니다.'}
+            {getThemeTitle(analysis.themeTopic || theme)}
           </h1>
         </div>
       </div>
