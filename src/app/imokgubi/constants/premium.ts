@@ -4,5 +4,5 @@
 export const IMOKGUBI_PREMIUM_CONTENTS = [
   'myfuture',
   'myanimal',
-  'mypair',
+  'mytype',
 ] as const;
