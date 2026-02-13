@@ -11,13 +11,9 @@ import type { ValueOf } from 'next/dist/shared/lib/constants';
  * @returns 운세 데이터와 행운의 숫자
  */
 export async function loadFortune(
-  birthday: string,
   theme: ValueOf<typeof FortuneTheme>,
+  birthday?: string,
 ): Promise<FortuneResult> {
-  if (!birthday) {
-    throw new Error('사용자 정보를 찾을 수 없습니다.');
-  }
-
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE;
 
@@ -31,10 +27,15 @@ export async function loadFortune(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        birthday,
+        birthday: birthday ? birthday : undefined,
         theme,
       }),
     });
+
+    console.log(
+      '서버에서 운세 요청 시작:',
+      `${baseUrl}/openai/themeFreeFortune`,
+    ); // 여기에 로그 추가
 
     if (response.status !== 201) {
       throw new Error(

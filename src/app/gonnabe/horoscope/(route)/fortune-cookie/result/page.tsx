@@ -1,12 +1,26 @@
-import { loadFortune } from '@/app/gonnabe/horoscope/api/fortune';
-import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
+import type { FortuneResult } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieResultImage from '@/assets/images/gonnabe/fortune_cookie_after.png';
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
+interface FortuneCookieResultPageProps {
+  searchParams?: Promise<{
+    data?: string;
+  }>;
+}
 
-export default async function FortuneCookieResultPage() {
-  const { fortuneData } = await loadFortune('test-user-id', FortuneTheme.TODAY);
+export default async function FortuneCookieResultPage({
+  searchParams,
+}: FortuneCookieResultPageProps) {
+  const { data } = (await searchParams) ?? {};
+
+  // 데이터가 없으면 메인 페이지로 리다이렉트
+  if (!data) {
+    redirect('/gonnabe/horoscope/fortune-cookie');
+  }
+
+  const fortuneResult: FortuneResult = JSON.parse(data);
+  const { fortuneData, luckyNumber } = fortuneResult;
 
   return (
     <div className="flex size-full flex-col items-center bg-white p-8">
@@ -24,7 +38,7 @@ export default async function FortuneCookieResultPage() {
       <div className="mt-12 flex w-[clamp(15rem,80vw,25rem)] flex-col items-center gap-4 rounded-xl bg-[#FFF7F7] p-5">
         <span className="text-[14px] text-[#6B6B6B]">오늘의 메시지</span>
         <p className="text-xl font-semibold text-[#282424]">
-          {JSON.stringify(fortuneData)}
+          {fortuneData.data.introduction}
         </p>
       </div>
 

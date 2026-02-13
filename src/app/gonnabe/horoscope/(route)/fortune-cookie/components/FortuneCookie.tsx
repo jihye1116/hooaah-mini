@@ -1,11 +1,16 @@
 'use client';
 
+import type { FortuneResult } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieAnimation from '@/lotties/fortune_cookie.json';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
-export default function FortuneCookie() {
+interface FortuneCookieProps {
+  fortuneResult: FortuneResult;
+}
+
+export default function FortuneCookie({ fortuneResult }: FortuneCookieProps) {
   const router = useRouter();
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,8 +24,13 @@ export default function FortuneCookie() {
 
   const handleComplete = () => {
     setTimeout(() => {
-      // TODO: 결과 페이지 경로 설정 필요
-      router.push('/gonnabe/horoscope/fortune-cookie/result');
+      // 운세 데이터를 URL 인코딩해서 전달
+      const params = new URLSearchParams({
+        data: JSON.stringify(fortuneResult),
+      });
+      router.push(
+        `/gonnabe/horoscope/fortune-cookie/result?${params.toString()}`,
+      );
     }, 1000);
   };
 
