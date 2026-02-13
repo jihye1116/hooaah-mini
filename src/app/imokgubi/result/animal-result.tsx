@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import BottomButton from '@/components/BottomButton';
 import animals from '../constant/animals.json';
-import { animalImages, type AnimalKey } from '../constant/animalImages';
+import { animalImages, type AnimalKey } from '../constants/animalImages';
 import { ArrowLeft } from 'lucide-react';
 
 type ResultSection = {

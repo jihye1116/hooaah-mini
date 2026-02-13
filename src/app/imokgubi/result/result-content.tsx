@@ -6,7 +6,7 @@ import { useMemo } from 'react'; // useEffect, useState 제거, useMemo 추가
 import AnimalResult, {
   type AnimalResultData,
 } from '@/app/imokgubi/result/animal-result';
-import { type AnimalKey } from '@/app/imokgubi/constant/animalImages';
+import { type AnimalKey } from '@/app/imokgubi/constants/animalImages';
 import FaceResult, {
   type FaceResultData,
 } from '@/app/imokgubi/result/face-result';
