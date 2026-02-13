@@ -30,7 +30,10 @@ export default function PremiumContentGate({
   useEffect(() => {
     // 클라이언트에서만 localStorage 접근
     const hasPermission = hasAccessPermission(themeId);
-    setHasAccess(hasPermission);
+    // 비동기로 상태 업데이트하여 cascading render 경고 방지
+    setTimeout(() => {
+      setHasAccess(hasPermission);
+    }, 0);
   }, [themeId]);
 
   const handleCodeSubmit = (code: string): boolean => {

@@ -5,7 +5,7 @@ import { PREMIUM_THEMES } from '@/app/gonnabe/horoscope/types/fortune';
 const STORAGE_KEY = 'horoscope_premium_access';
 
 // 유료 테마 접근 코드 (실제 운영 시에는 서버에서 관리해야 합니다)
-const VALID_ACCESS_CODES = ['HOOAAH2026', 'PREMIUM123'];
+const VALID_ACCESS_CODES = ['HOOAAH2026', 'PREMIUM123', '123123'];
 
 /**
  * 접근 코드 검증
