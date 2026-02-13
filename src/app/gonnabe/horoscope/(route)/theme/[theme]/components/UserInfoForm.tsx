@@ -20,7 +20,7 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <h1 className="font-playfair-display mb-2 text-center text-3xl font-bold text-[#333333]">
+        <h1 className="mb-2 text-center text-3xl font-bold text-[#333333]">
           운세 보기
         </h1>
         <p className="mb-8 text-center text-[#666666]">
@@ -41,7 +41,7 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="이름을 입력하세요"
-              className="rounded-xl border border-[#E0E0E0] px-4 py-3 outline-none transition-colors focus:border-[#333333]"
+              className="rounded-xl border border-[#E0E0E0] px-4 py-3 transition-colors outline-none focus:border-[#333333]"
               required
             />
           </div>
@@ -58,7 +58,7 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
-              className="rounded-xl border border-[#E0E0E0] px-4 py-3 outline-none transition-colors focus:border-[#333333]"
+              className="rounded-xl border border-[#E0E0E0] px-4 py-3 transition-colors outline-none focus:border-[#333333]"
               required
             />
           </div>

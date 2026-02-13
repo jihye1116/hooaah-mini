@@ -181,13 +181,9 @@ export default async function TarotThemeResultPage({
   if (errorMessage || !result) {
     return (
       <div className="flex min-h-screen flex-col bg-[#1E1E1E] px-5 pt-20 pb-8 text-white">
-        <h1 className="font-playfair-display text-center text-xl font-semibold">
-          Error
-        </h1>
+        <h1 className="text-center text-xl font-semibold">Error</h1>
         <div className="mt-8 rounded-xl bg-white/10 p-4">
-          <p className="font-plus-jakarta-sans text-sm leading-6 text-red-200">
-            {errorMessage}
-          </p>
+          <p className="text-sm leading-6 text-red-200">{errorMessage}</p>
         </div>
       </div>
     );
@@ -200,9 +196,7 @@ export default async function TarotThemeResultPage({
   // Dart의 buildActionButton 구현 (태그)
   const TagButton = ({ text }: { text: string }) => (
     <div className="rounded-full bg-white/25 px-4 py-2.5 backdrop-blur-sm">
-      <p className="font-plus-jakarta-sans text-center text-xs font-medium text-white">
-        {text}
-      </p>
+      <p className="text-center text-xs font-medium text-white">{text}</p>
     </div>
   );
 
@@ -232,10 +226,10 @@ export default async function TarotThemeResultPage({
 
         {/* Text Overlay */}
         <div className="absolute right-0 bottom-0 left-0 p-6">
-          <p className="font-playfair-display text-[15px] leading-[2.2] font-semibold tracking-[1.2px] text-white uppercase">
+          <p className="text-[15px] leading-[2.2] font-semibold tracking-[1.2px] text-white uppercase">
             {getThemeTag(theme)}
           </p>
-          <h1 className="font-playfair-display mt-2 line-clamp-3 text-2xl leading-[1.3] font-bold text-white">
+          <h1 className="mt-2 line-clamp-3 text-2xl leading-[1.3] font-bold text-white">
             {/* API에서 themeTopic이 온다고 가정, 없으면 기본 텍스트 */}
             {getThemeTitle(analysis.themeTopic || theme)}
           </h1>
@@ -246,7 +240,7 @@ export default async function TarotThemeResultPage({
         {/* 2. Main Analysis Card */}
         {/* Flutter: margin symmetric 20, vertical 40, color white.withAlpha(38) */}
         <div className="relative z-10 mx-5 -mt-0 mt-[30px] w-[calc(100%-40px)] rounded-[20px] bg-white/15 px-5 py-10 backdrop-blur-sm">
-          <h2 className="font-plus-jakarta-sans mb-3 text-center text-[19px] font-semibold text-white">
+          <h2 className="mb-3 text-center text-[19px] font-semibold text-white">
             전체적인 통찰
           </h2>
 
@@ -254,7 +248,7 @@ export default async function TarotThemeResultPage({
           <div className="mt-3 mb-9 flex justify-center">
             {/* TarotCard 위젯 대응 */}
             <div className="flex flex-col items-center rounded-lg bg-gray-400 px-2 py-3">
-              <span className="font-playfair-display mb-2 text-xs text-white">
+              <span className="mb-2 text-xs text-white">
                 {analysis.overallInsight.cardName}
               </span>
               <Image
@@ -275,19 +269,19 @@ export default async function TarotThemeResultPage({
           </div>
 
           {/* Hooking Message */}
-          <p className="font-plus-jakarta-sans mb-5 text-center text-[17px] leading-[1.65] font-bold text-white">
+          <p className="mb-5 text-center text-[17px] leading-[1.65] font-bold text-white">
             {analysis.hookingMessage}
           </p>
 
           {/* Detailed Analysis */}
           <div className="space-y-3 text-center">
-            <p className="font-plus-jakarta-sans text-sm leading-[1.7] text-white">
+            <p className="text-sm leading-[1.7] text-white">
               {analysis.cardInterpretation}
             </p>
-            <p className="font-plus-jakarta-sans mt-3 text-sm leading-[1.7] text-white">
+            <p className="mt-3 text-sm leading-[1.7] text-white">
               {analysis.currentSituation}
             </p>
-            <p className="font-plus-jakarta-sans mt-3 text-sm leading-[1.7] text-white">
+            <p className="mt-3 text-sm leading-[1.7] text-white">
               {analysis.lesson}
             </p>
           </div>
@@ -295,10 +289,10 @@ export default async function TarotThemeResultPage({
 
         {/* 3. Today's Message Card */}
         <div className="mx-5 my-[30px] w-[calc(100%-40px)] rounded-[20px] bg-white/15 px-5 py-10 backdrop-blur-sm">
-          <h3 className="font-playfair-display mb-6 text-center text-[19px] font-semibold text-white">
+          <h3 className="mb-6 text-center text-[19px] font-semibold text-white">
             오늘의 메시지
           </h3>
-          <p className="font-playfair-display text-center text-sm leading-[1.5] font-medium text-white/70">
+          <p className="text-center text-sm leading-[1.5] font-medium text-white/70">
             {analysis.todaysMessage}
           </p>
         </div>

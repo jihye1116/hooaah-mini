@@ -10,7 +10,7 @@ export default function HoroscopeUserInfoForm({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <h1 className="font-playfair-display mb-2 text-center text-3xl font-bold text-[#333333]">
+        <h1 className="mb-2 text-center text-3xl font-bold text-[#333333]">
           운세 보기
         </h1>
         <p className="mb-8 text-center text-[#666666]">

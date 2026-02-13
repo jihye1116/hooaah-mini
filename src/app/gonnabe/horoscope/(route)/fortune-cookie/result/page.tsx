@@ -57,9 +57,7 @@ export default async function FortuneCookieResultPage({
 
   return (
     <div className="flex size-full flex-col items-center bg-white p-8">
-      <h1 className="font-playfair-display my-16 text-2xl font-semibold">
-        오늘의 운세
-      </h1>
+      <h1 className="my-16 text-2xl font-semibold">오늘의 운세</h1>
 
       <Image
         src={fortuneCookieResultImage}
@@ -85,9 +83,7 @@ export default async function FortuneCookieResultPage({
             key={keyword}
             className="rounded-3xl border border-[#6E572A] px-5 py-1"
           >
-            <span className="font-playfair-display font-medium text-black">
-              {keyword}
-            </span>
+            <span className="font-medium text-black">{keyword}</span>
           </div>
         ))}
         {keywordList.length === 0 && (

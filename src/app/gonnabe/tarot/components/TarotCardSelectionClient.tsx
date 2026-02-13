@@ -157,13 +157,13 @@ export default function TarotCardSelectionClient({
       <div className="absolute -top-16 h-55 w-55 rounded-full bg-[#6D0099] blur-[100px]" />
 
       <div className="z-10 h-9 px-5 pt-7.5">
-        <h1 className="font-playfair-display text-center text-[15px] font-semibold tracking-[-0.15px] text-white">
+        <h1 className="text-center text-[15px] font-semibold tracking-[-0.15px] text-white">
           타로 선택하기
         </h1>
       </div>
 
       <div className="z-10 mt-[clamp(2rem,5vh,4rem)] px-5">
-        <p className="font-plus-jakarta-sans text-center text-sm leading-normal text-white">
+        <p className="text-center text-sm leading-normal text-white">
           마음을 편히 하여, 선택한 질문을 떠올린 뒤
           <br />
           눈길이 가는 카드 한 장을 선택하세요.
@@ -195,9 +195,7 @@ export default function TarotCardSelectionClient({
           isLoadingAnalysis ? 'visible opacity-100' : 'invisible opacity-0',
         )}
       >
-        <p className="font-playfair-display text-lg font-semibold text-white">
-          타로 로딩중...
-        </p>
+        <p className="text-lg font-semibold text-white">타로 로딩중...</p>
       </div>
     </div>
   );

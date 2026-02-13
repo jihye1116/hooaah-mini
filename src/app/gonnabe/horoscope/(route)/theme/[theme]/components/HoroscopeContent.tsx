@@ -33,15 +33,15 @@ export default function HoroscopeContent({
       </div>
 
       <main className="mb-12 flex flex-col p-6">
-        <h2 className="font-playfair-display mb-4 leading-8 font-semibold text-[#111111]/50">
+        <h2 className="mb-4 leading-8 font-semibold text-[#111111]/50">
           {themeSubject}
         </h2>
 
-        <h1 className="font-playfair-display mb-4 text-[27px] font-bold text-[#333333]">
+        <h1 className="mb-4 text-[27px] font-bold text-[#333333]">
           {themeTitle}
         </h1>
 
-        <article className="font-plus-jakarta-sans flex flex-col gap-4 rounded-2xl bg-[#F9F9F9] px-5 py-6">
+        <article className="flex flex-col gap-4 rounded-2xl bg-[#F9F9F9] px-5 py-6">
           <Suspense
             fallback={
               <span className="text-lg leading-relaxed font-bold">
