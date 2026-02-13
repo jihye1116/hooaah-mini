@@ -1,13 +1,6 @@
 import FortuneCookie from '@/app/gonnabe/horoscope/(route)/fortune-cookie/components/FortuneCookie';
-import { loadFortune } from '@/app/gonnabe/horoscope/api/fortune';
-import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
 
-export const dynamic = 'force-dynamic';
-
-export default async function HoroscopeFortuneCookiePage() {
-  // 미리 운세 데이터 로드
-  const fortuneResult = await loadFortune(FortuneTheme.TODAY);
-
+export default function HoroscopeFortuneCookiePage() {
   return (
     <div className="flex size-full flex-col items-center justify-center bg-white">
       {/* Main Content */}
@@ -21,7 +14,7 @@ export default async function HoroscopeFortuneCookiePage() {
       </div>
 
       {/* Fortune Cookie Illustration */}
-      <FortuneCookie fortuneResult={fortuneResult} />
+      <FortuneCookie />
 
       {/* Instruction Text */}
       <p className="font-plus-jakarta-sans w-full text-center text-base leading-5 font-normal tracking-[-0.408px] whitespace-pre-wrap text-[#8a8a8a] [text-shadow:0px_1px_3.5px_rgba(0,0,0,0.15)]">

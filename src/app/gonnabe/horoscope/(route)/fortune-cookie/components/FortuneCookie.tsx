@@ -1,36 +1,48 @@
 'use client';
 
+import { loadFortune } from '@/app/gonnabe/horoscope/api/fortune';
 import type { FortuneResult } from '@/app/gonnabe/horoscope/types/fortune';
+import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieAnimation from '@/lotties/fortune_cookie.json';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
-interface FortuneCookieProps {
-  fortuneResult: FortuneResult;
-}
-
-export default function FortuneCookie({ fortuneResult }: FortuneCookieProps) {
+export default function FortuneCookie() {
   const router = useRouter();
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [fortuneResult, setFortuneResult] = useState<FortuneResult | null>(
+    null,
+  );
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!isPlaying && lottieRef.current) {
       setIsPlaying(true);
       lottieRef.current.play();
+
+      // API 호출
+      try {
+        const result = await loadFortune(FortuneTheme.TODAY);
+        setFortuneResult(result);
+      } catch (error) {
+        console.error('운세 로드 실패:', error);
+        setIsPlaying(false);
+      }
     }
   };
 
   const handleComplete = () => {
     setTimeout(() => {
-      // 운세 데이터를 URL 인코딩해서 전달
-      const params = new URLSearchParams({
-        data: JSON.stringify(fortuneResult),
-      });
-      router.push(
-        `/gonnabe/horoscope/fortune-cookie/result?${params.toString()}`,
-      );
+      if (fortuneResult) {
+        // 운세 데이터를 URL 인코딩해서 전달
+        const params = new URLSearchParams({
+          data: JSON.stringify(fortuneResult),
+        });
+        router.push(
+          `/gonnabe/horoscope/fortune-cookie/result?${params.toString()}`,
+        );
+      }
     }, 1000);
   };
 
