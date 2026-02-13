@@ -226,7 +226,7 @@ export default async function TarotThemeResultPage({
 
         {/* Text Overlay */}
         <div className="absolute right-0 bottom-0 left-0 p-6">
-          <p className="text-[15px] leading-[2.2] font-semibold tracking-[1.2px] text-white uppercase">
+          <p className="font-playfair-display text-[15px] leading-[2.2] font-semibold tracking-[1.2px] text-white uppercase">
             {getThemeTag(theme)}
           </p>
           <h1 className="mt-2 line-clamp-3 text-2xl leading-[1.3] font-bold text-white">
@@ -262,7 +262,7 @@ export default async function TarotThemeResultPage({
           </div>
 
           {/* Keywords (Tags) */}
-          <div className="mb-6 flex flex-wrap justify-center gap-x-1.5 gap-y-2.5">
+          <div className="flex-횬재wrap mb-6 flex justify-center gap-x-1.5 gap-y-2.5">
             {analysis.overallInsight.keywords.map((tag, idx) => (
               <TagButton key={idx} text={tag} />
             ))}
