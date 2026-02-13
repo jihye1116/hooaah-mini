@@ -1,5 +1,5 @@
 import type { StaticImageData } from 'next/image';
-import animals from '../constant/animals.json';
+import animals from '../constants/animals.json';
 import bearImg from '@/assets/images/imokgubi/animals/bear.png';
 import belugaImg from '@/assets/images/imokgubi/animals/beluga.png';
 import camelImg from '@/assets/images/imokgubi/animals/camel.png';

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import BottomButton from '@/components/BottomButton';
-import animals from '../constant/animals.json';
+import animals from '../constants/animals.json';
 import { animalImages, type AnimalKey } from '../constants/animalImages';
 import { ArrowLeft } from 'lucide-react';
 
