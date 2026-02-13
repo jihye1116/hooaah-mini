@@ -5,6 +5,7 @@ import {
   TarotTheme,
 } from '@/app/gonnabe/tarot/types/theme';
 import PremiumContentGate from '@/components/PremiumContentGate';
+import { isPremiumContent } from '@/utils/premium';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import { notFound } from 'next/navigation';
 
@@ -26,14 +27,12 @@ export default async function TarotThemePage({ params }: TarotThemePageProps) {
   const themeTitle = tarotThemeTitles[theme];
 
   // 유료 테마인지 확인
-  const isPremium = PREMIUM_TAROT_THEMES.includes(
-    theme as (typeof PREMIUM_TAROT_THEMES)[number],
-  );
+  const isPremium = isPremiumContent(`tarot:${theme}`);
 
   // 유료 테마인 경우 PremiumContentGate로 감싸기
   if (isPremium) {
     return (
-      <PremiumContentGate themeId={theme} themeTitle={themeTitle}>
+      <PremiumContentGate contentId={`tarot:${theme}`} title={themeTitle}>
         <TarotCardSelection theme={theme} />
       </PremiumContentGate>
     );

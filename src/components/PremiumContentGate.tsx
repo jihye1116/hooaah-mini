@@ -4,13 +4,13 @@ import {
   hasAccessPermission,
   saveAccessPermission,
   validateAccessCode,
-} from '@/app/gonnabe/horoscope/utils/accessCode';
+} from '@/utils/premiumAccess';
 import AccessCodeModal from '@/components/AccessCodeModal';
 import { useEffect, useState } from 'react';
 
 interface PremiumContentGateProps {
-  themeId: string;
-  themeTitle: string;
+  contentId: string;
+  title: string;
   backgroundImage?: React.ReactNode;
   children: React.ReactNode;
 }
@@ -20,8 +20,8 @@ interface PremiumContentGateProps {
  * 클라이언트 컴포넌트로 localStorage 접근 및 코드 입력 처리
  */
 export default function PremiumContentGate({
-  themeId,
-  themeTitle,
+  contentId,
+  title,
   backgroundImage,
   children,
 }: PremiumContentGateProps) {
@@ -29,18 +29,18 @@ export default function PremiumContentGate({
 
   useEffect(() => {
     // 클라이언트에서만 localStorage 접근
-    const hasPermission = hasAccessPermission(themeId);
+    const hasPermission = hasAccessPermission(contentId);
     // 비동기로 상태 업데이트하여 cascading render 경고 방지
     setTimeout(() => {
       setHasAccess(hasPermission);
     }, 0);
-  }, [themeId]);
+  }, [contentId]);
 
   const handleCodeSubmit = (code: string): boolean => {
     // 코드 검증
     if (validateAccessCode(code)) {
       // 접근 권한 저장
-      saveAccessPermission(themeId);
+      saveAccessPermission(contentId);
       setHasAccess(true);
       return true;
     }
@@ -60,7 +60,7 @@ export default function PremiumContentGate({
   if (!hasAccess) {
     return (
       <AccessCodeModal
-        title={themeTitle}
+        title={title}
         onCodeSubmit={handleCodeSubmit}
         backgroundImage={backgroundImage}
       />

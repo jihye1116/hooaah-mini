@@ -3,12 +3,13 @@ import {
   themeImages,
   themeSubjects,
   themeTitles,
-} from '@/app/gonnabe/horoscope/constants';
+} from '@/app/gonnabe/constants';
 import {
   FortuneTheme,
   PREMIUM_THEMES,
 } from '@/app/gonnabe/horoscope/types/fortune';
 import PremiumContentGate from '@/components/PremiumContentGate';
+import { isPremiumContent } from '@/utils/premium';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import { notFound } from 'next/navigation';
 
@@ -40,14 +41,12 @@ export default async function HoroscopeThemePage({
   const themeSubject = themeSubjects[theme];
 
   // 유료 테마인지 확인
-  const isPremium = PREMIUM_THEMES.includes(
-    theme as (typeof PREMIUM_THEMES)[number],
-  );
+  const isPremium = isPremiumContent(`horoscope:${theme}`);
 
   // 유료 테마인 경우 PremiumContentGate로 감싸기
   if (isPremium) {
     return (
-      <PremiumContentGate themeId={theme} themeTitle={themeTitle}>
+      <PremiumContentGate contentId={`horoscope:${theme}`} title={themeTitle}>
         <HoroscopeContent
           theme={theme}
           themeImage={themeImage}
