@@ -1,6 +1,24 @@
 import FortuneCookie from '@/app/gonnabe/horoscope/(route)/fortune-cookie/components/FortuneCookie';
+import FortuneCookieUserInfo from '@/app/gonnabe/horoscope/(route)/fortune-cookie/components/FortuneCookieUserInfo';
 
-export default function HoroscopeFortuneCookiePage() {
+interface HoroscopeFortuneCookiePageProps {
+  searchParams?: Promise<{
+    name?: string;
+    birthDate?: string;
+  }>;
+}
+
+export default async function HoroscopeFortuneCookiePage({
+  searchParams,
+}: HoroscopeFortuneCookiePageProps) {
+  const { name, birthDate } = (await searchParams) ?? {};
+  const safeName = name ?? '';
+  const safeBirthDate = birthDate ?? '';
+
+  if (!safeName || !safeBirthDate) {
+    return <FortuneCookieUserInfo />;
+  }
+
   return (
     <div className="flex size-full flex-col items-center justify-center bg-white">
       {/* Main Content */}
@@ -14,7 +32,7 @@ export default function HoroscopeFortuneCookiePage() {
       </div>
 
       {/* Fortune Cookie Illustration */}
-      <FortuneCookie />
+      <FortuneCookie birthDate={safeBirthDate} />
 
       {/* Instruction Text */}
       <p className="font-plus-jakarta-sans w-full text-center text-base leading-5 font-normal tracking-[-0.408px] whitespace-pre-wrap text-[#8a8a8a] [text-shadow:0px_1px_3.5px_rgba(0,0,0,0.15)]">

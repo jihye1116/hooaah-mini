@@ -1,7 +1,18 @@
-import type { FortuneResult } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieResultImage from '@/assets/images/gonnabe/fortune_cookie_after.png';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
+
+interface FortuneCookieResult {
+  fortuneData: {
+    zodiacSign: string;
+    theme: string;
+    data: {
+      keyword: string;
+      description: string;
+    };
+  };
+  luckyNumber: number;
+}
 
 interface FortuneCookieResultPageProps {
   searchParams?: Promise<{
@@ -19,8 +30,30 @@ export default async function FortuneCookieResultPage({
     redirect('/gonnabe/horoscope/fortune-cookie');
   }
 
-  const fortuneResult: FortuneResult = JSON.parse(data);
-  const { fortuneData, luckyNumber } = fortuneResult;
+  let fortuneResult: FortuneCookieResult | null = null;
+
+  try {
+    const decodedData = decodeURIComponent(data);
+    fortuneResult = JSON.parse(decodedData) as FortuneCookieResult;
+  } catch {
+    try {
+      fortuneResult = JSON.parse(data) as FortuneCookieResult;
+    } catch {
+      redirect('/gonnabe/horoscope/fortune-cookie');
+    }
+  }
+
+  if (!fortuneResult) {
+    redirect('/gonnabe/horoscope/fortune-cookie');
+  }
+
+  const { fortuneData } = fortuneResult;
+  const keywordList = fortuneData.data.keyword
+    ? fortuneData.data.keyword
+        .split(',')
+        .map((keyword) => keyword.trim())
+        .filter(Boolean)
+    : [];
 
   return (
     <div className="flex size-full flex-col items-center bg-white p-8">
@@ -37,8 +70,8 @@ export default async function FortuneCookieResultPage({
 
       <div className="mt-12 flex w-[clamp(15rem,80vw,25rem)] flex-col items-center gap-4 rounded-xl bg-[#FFF7F7] p-5">
         <span className="text-[14px] text-[#6B6B6B]">오늘의 메시지</span>
-        <p className="text-xl font-semibold text-[#282424]">
-          {fortuneData.data.introduction}
+        <p className="text-center text-xl font-semibold text-[#282424]">
+          {fortuneData.data.description}
         </p>
       </div>
 
@@ -47,36 +80,19 @@ export default async function FortuneCookieResultPage({
       </span>
 
       <div className="flex w-[clamp(15rem,70vw,20rem)] flex-wrap justify-center gap-x-2 gap-y-4">
-        <div className="rounded-3xl border border-[#6E572A] px-5 py-1">
-          <span className="font-playfair-display font-medium text-black">
-            노란색
-          </span>
-        </div>
-        <div className="rounded-3xl border border-[#6E572A] px-5 py-1">
-          <span className="font-playfair-display font-medium text-black">
-            노란색
-          </span>
-        </div>
-        <div className="rounded-3xl border border-[#6E572A] px-5 py-1">
-          <span className="font-playfair-display font-medium text-black">
-            노란색
-          </span>
-        </div>
-        <div className="rounded-3xl border border-[#6E572A] px-5 py-1">
-          <span className="font-playfair-display font-medium text-black">
-            노란색
-          </span>
-        </div>
-        <div className="rounded-3xl border border-[#6E572A] px-5 py-1">
-          <span className="font-playfair-display font-medium text-black">
-            노란색
-          </span>
-        </div>
-        <div className="rounded-3xl border border-[#6E572A] px-5 py-1">
-          <span className="font-playfair-display font-medium text-black">
-            노란색
-          </span>
-        </div>
+        {keywordList.map((keyword) => (
+          <div
+            key={keyword}
+            className="rounded-3xl border border-[#6E572A] px-5 py-1"
+          >
+            <span className="font-playfair-display font-medium text-black">
+              {keyword}
+            </span>
+          </div>
+        ))}
+        {keywordList.length === 0 && (
+          <span className="text-[14px] text-[#6B6B6B]">정보 없음</span>
+        )}
       </div>
     </div>
   );
