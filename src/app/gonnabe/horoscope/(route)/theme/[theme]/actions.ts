@@ -33,11 +33,11 @@ export async function submitHoroscopeUserInfo(
   const birthDate = normalizeBirthday(birthDateRaw);
 
   if (!name || !birthDate) {
-    redirect(`/gonnabe/horoscope/${encodeURIComponent(theme)}`);
+    redirect(`/gonnabe/horoscope/theme/${encodeURIComponent(theme)}`);
   }
 
   const params = new URLSearchParams({ name, birthDate });
   redirect(
-    `/gonnabe/horoscope/${encodeURIComponent(theme)}?${params.toString()}`,
+    `/gonnabe/horoscope/theme/${encodeURIComponent(theme)}?${params.toString()}`,
   );
 }
