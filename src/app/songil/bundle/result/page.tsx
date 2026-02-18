@@ -27,13 +27,12 @@ type LineData = {
   description: string[];
 };
 
-type PalmistryResult = {
+type BundleResult = {
   hand: string;
   life: LineData;
-  intelligence: LineData;
   emotion: LineData;
   destiny: LineData;
-  total?: string;
+  bundleAnalysis?: string;
   error: boolean;
   errorText: string;
 };
@@ -128,11 +127,7 @@ const LINE_IMAGES: Record<string, StaticImageData> = {
   intelligence: intelligenceLineImage,
 };
 
-// ----------------------------------------------------------------------
-// 3. 재사용 컴포넌트 (Components)
-// ----------------------------------------------------------------------
-
-// 흰색 박스 컨테이너 (WhiteBoxBorder 대응)
+// 재사용 컴포넌트
 const WhiteBox = ({
   children,
   className = '',
@@ -147,7 +142,6 @@ const WhiteBox = ({
   </div>
 );
 
-// 점수 프로그레스 바 (Result Image 옆 그래프)
 const ScoreRow = ({ label, score }: { label: string; score: string }) => {
   const scoreNum = parseInt(score, 10) || 0;
 
@@ -169,9 +163,8 @@ const ScoreRow = ({ label, score }: { label: string; score: string }) => {
   );
 };
 
-// 상세 설명 섹션 (아이콘 + 제목 + 요약 + 리스트)
 const LineDetailSection = ({
-  iconPath, // 실제로는 이미지 경로
+  iconPath,
   title,
   data,
 }: {
@@ -184,11 +177,9 @@ const LineDetailSection = ({
 
   return (
     <div className="mb-8 last:mb-0">
-      {/* 구분선 */}
-      <div className="mx-auto my-6 h-[2px] w-[90%] w-full bg-[#F5F6F8]" />
+      <div className="mx-auto my-6 h-[2px] w-full bg-[#F5F6F8]" />
 
       <div className="mb-4 flex flex-col items-center text-center">
-        {/* 손금 라인 이미지 */}
         <div className="mb-4 flex h-[115px] w-[115px] items-center justify-center overflow-hidden">
           {lineImage ? (
             <Image
@@ -221,36 +212,30 @@ const LineDetailSection = ({
   );
 };
 
-// ----------------------------------------------------------------------
-// 4. 메인 페이지 (Page)
-// ----------------------------------------------------------------------
-
-export default function PalmistryResultPage() {
-  // localStorage에서 초기 데이터 로드 (lazy initialization)
-  const [result] = useState<PalmistryResult | null>(() => {
+export default function BundleResultPage() {
+  const [result] = useState<BundleResult | null>(() => {
     if (typeof window === 'undefined') return null;
 
-    const savedResult = localStorage.getItem('palmistry_result');
+    const savedResult = localStorage.getItem('bundle_result');
     if (!savedResult) return null;
 
     try {
-      const parsedResult = JSON.parse(savedResult) as PalmistryResult;
+      const parsedResult = JSON.parse(savedResult) as BundleResult;
 
-      // 에러 체크
       if (parsedResult.error) {
-        console.error('Palmistry result has error:', parsedResult.errorText);
+        console.error('Bundle result has error:', parsedResult.errorText);
       }
 
       return parsedResult;
     } catch (error) {
-      console.error('Failed to parse palmistry result:', error);
+      console.error('Failed to parse bundle result:', error);
       return null;
     }
   });
 
   const [resultImageUrl] = useState<string>(() => {
     if (typeof window === 'undefined') return '';
-    return localStorage.getItem('palmistry_image') || '';
+    return localStorage.getItem('bundle_image') || '';
   });
 
   // 결과가 없는 경우
@@ -262,7 +247,7 @@ export default function PalmistryResultPage() {
             분석 결과를 찾을 수 없습니다.
           </div>
           <Link
-            href="/songil"
+            href="/songil/bundle"
             className="inline-block rounded-xl bg-[#F97B68] px-6 py-3 font-bold text-white"
           >
             다시 촬영하기
@@ -278,7 +263,7 @@ export default function PalmistryResultPage() {
     <div className="relative min-h-screen bg-[#F5F3F1] pb-[120px]">
       {/* 헤더 (뒤로가기) */}
       <header className="sticky top-0 z-10 px-4 pt-4 pb-2">
-        <Link href="/songil" className="-ml-2 inline-block p-2">
+        <Link href="/songil/bundle" className="-ml-2 inline-block p-2">
           <ChevronLeft className="h-6 w-6 text-[#696969]" />
         </Link>
       </header>
@@ -286,16 +271,15 @@ export default function PalmistryResultPage() {
       <main className="px-5">
         {/* 타이틀 영역 */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-[#F97B68]">손금 결과</h2>
+          <h2 className="text-lg font-bold text-[#F97B68]">손금 번들 결과</h2>
           <h1 className="text-2xl font-bold text-[#883A2E]">
-            당신의 손금 분석
+            당신의 운명, 감정, 생명
           </h1>
         </div>
 
-        {/* 손 타입 카드 (Main Card) */}
+        {/* 손 타입 카드 */}
         <div className="relative mx-4 mb-8">
           <div className="flex flex-col items-center rounded-[50px] border-[3px] border-[#FCC1B9] bg-white p-8">
-            {/* 손 타입 이미지 Placeholder */}
             <div className="relative mb-6 aspect-square w-full rounded-[50px]">
               <Image
                 src={HAND_IMAGES[result['hand'] ?? 'dragon']}
@@ -332,10 +316,10 @@ export default function PalmistryResultPage() {
           </div>
         </WhiteBox>
 
-        {/* 라인 분석 점수 박스 */}
+        {/* 번들 분석 점수 박스 */}
         <WhiteBox className="mb-4">
           <h3 className="mb-6 text-lg font-bold text-[#111111]">
-            주요 손금 분석
+            번들 분석 - 3가지 선
           </h3>
 
           <div className="flex gap-5">
@@ -358,7 +342,6 @@ export default function PalmistryResultPage() {
             {/* 오른쪽: 프로그레스 바 리스트 */}
             <div className="flex flex-1 flex-col justify-center">
               <ScoreRow label="생명선" score={result.life.score} />
-              <ScoreRow label="지능선" score={result.intelligence.score} />
               <ScoreRow label="감정선" score={result.emotion.score} />
               <ScoreRow label="운명선" score={result.destiny.score} />
             </div>
@@ -366,7 +349,8 @@ export default function PalmistryResultPage() {
 
           <div className="mt-6 rounded-[10px] bg-[#F5F6F8] p-3 text-center">
             <span className="text-xs font-semibold text-[#696969]">
-              💡 손금 데이터는 AI 분석을 기반으로 합니다.
+              💡 번들 분석은 생명선, 감정선, 운명선의 3가지 선을 종합적으로
+              분석합니다.
             </span>
           </div>
 
@@ -383,11 +367,6 @@ export default function PalmistryResultPage() {
               data={result.emotion}
             />
             <LineDetailSection
-              iconPath="Intelligence"
-              title="지능선"
-              data={result.intelligence}
-            />
-            <LineDetailSection
               iconPath="Destiny"
               title="운명선"
               data={result.destiny}
@@ -395,12 +374,14 @@ export default function PalmistryResultPage() {
           </div>
         </WhiteBox>
 
-        {/* 종합 분석 결과 */}
-        {result.total && (
+        {/* 번들 종합 분석 */}
+        {result.bundleAnalysis && (
           <WhiteBox className="mb-4">
-            <h3 className="mb-4 text-lg font-bold text-[#111111]">종합 분석</h3>
+            <h3 className="mb-4 text-lg font-bold text-[#111111]">
+              3가지 선의 조화로운 해석
+            </h3>
             <p className="text-sm leading-[1.8] font-semibold whitespace-pre-line text-[#696969]">
-              {result.total}
+              {result.bundleAnalysis}
             </p>
           </WhiteBox>
         )}

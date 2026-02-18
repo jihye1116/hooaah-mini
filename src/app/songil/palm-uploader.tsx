@@ -13,10 +13,19 @@ import {
 } from '@/app/songil/utils/imageProcessor';
 import { uploadImage, analyzeImage } from '@/app/songil/services/songIlService';
 
-export default function PalmUploader() {
+interface PalmUploaderProps {
+  contentsType?: string;
+  resultPath?: string;
+}
+
+export default function PalmUploader({
+  contentsType: propContentsType,
+  resultPath = 'result',
+}: PalmUploaderProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const contentsType = searchParams.get('contents') || 'palmistry';
+  const contentsType =
+    propContentsType || searchParams.get('contents') || 'palmistry';
 
   // 상태 관리
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -97,10 +106,21 @@ export default function PalmUploader() {
       const resultText = await analyzeImage(uploadedImageUrl, contentsType);
 
       // 4단계: 결과 저장 및 페이지 이동
-      localStorage.setItem('palmistry_result', resultText);
-      localStorage.setItem('palmistry_image', uploadedImageUrl);
+      let resultKey: string;
+      let imageKey: string;
 
-      router.push(`/songil/result?contents=${contentsType}`);
+      if (resultPath === 'bundle') {
+        resultKey = `bundle_result_${contentsType}`;
+        imageKey = `bundle_image_${contentsType}`;
+      } else {
+        resultKey = 'palmistry_result';
+        imageKey = 'palmistry_image';
+      }
+
+      localStorage.setItem(resultKey, resultText);
+      localStorage.setItem(imageKey, uploadedImageUrl);
+
+      router.push(`/songil/${resultPath}?contents=${contentsType}`);
     } catch (error) {
       console.error('Error:', error);
       setErrorText(
