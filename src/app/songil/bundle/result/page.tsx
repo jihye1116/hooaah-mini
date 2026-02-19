@@ -259,6 +259,16 @@ export default function BundleResultPage() {
   const currentLineKey = currentStep.id.split('-')[0];
   const currentLineName = LINE_NAMES[currentLineKey] || currentLineKey;
   const currentPremiumData = palmistryPremiumKorean[currentLineKey];
+  const lineKeys = Object.keys(result.lines);
+  const currentLineIndex = lineKeys.indexOf(currentLineKey);
+  const nextLineKey =
+    currentLineIndex >= 0 ? lineKeys[currentLineIndex + 1] : undefined;
+  const nextLineName = nextLineKey
+    ? LINE_NAMES[nextLineKey] || nextLineKey
+    : '';
+  const nextLineStepIndex = nextLineKey
+    ? steps.findIndex((s) => s.id === `${nextLineKey}-page1`)
+    : -1;
 
   // Determine Button Labels
   let nextLabel = '';
@@ -270,8 +280,8 @@ export default function BundleResultPage() {
     nextLabel = `Step 4: ${nextStepTitle}`;
   } else if (isPage2) {
     // Page 2: Left button and right button
-    prevLabel = `${currentLineName} 보기`;
-    nextLabel = '처음으로';
+    prevLabel = nextLineName ? `${nextLineName} 보기` : '처음으로';
+    nextLabel = '이전 페이지';
   }
 
   return (
@@ -280,8 +290,20 @@ export default function BundleResultPage() {
 
       {/* Bottom Navigation */}
       <BottomNavigation
-        onPrev={isPage2 ? handlePrev : undefined}
-        onNext={isPage1 ? handleNext : handleGoToToc}
+        onPrev={
+          isPage1
+            ? undefined
+            : nextLineName
+              ? () => {
+                  if (nextLineStepIndex !== -1) {
+                    setCurrentStepIndex(nextLineStepIndex);
+                  }
+                }
+              : handleGoToToc
+        }
+        onNext={
+          isPage2 && nextLineName ? handlePrev : isPage1 ? handleNext : () => {}
+        }
         prevLabel={prevLabel}
         nextLabel={nextLabel}
         isPage1={isPage1}
