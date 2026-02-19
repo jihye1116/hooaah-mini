@@ -80,6 +80,14 @@ export default function PalmUploader({
   const handleConfirm = async () => {
     if (!imageSrc) return;
 
+    // 번들의 경우 이미지 업로드 없이 바로 생년월일 입력으로 이동
+    if (resultPath === 'bundle' || contentsType.includes('bundle')) {
+      localStorage.setItem('temp_bundle_image', imageSrc);
+      localStorage.setItem('temp_bundle_type', contentsType);
+      router.push(`/songil/bundle/input`);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setErrorText(null);
