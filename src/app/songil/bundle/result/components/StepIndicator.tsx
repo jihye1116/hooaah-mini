@@ -4,12 +4,14 @@ interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
   title: string;
+  subtitle?: string;
 }
 
 export default function StepIndicator({
   currentStep,
   totalSteps,
   title,
+  subtitle,
 }: StepIndicatorProps) {
   const progress = Math.min(Math.max((currentStep / totalSteps) * 100, 0), 100);
 
@@ -27,10 +29,17 @@ export default function StepIndicator({
           />
         </div>
 
-        {/* Step Title */}
-        <h2 className="text-center text-lg font-bold text-[#111111]">
-          {title}
-        </h2>
+        {/* Step Title & Subtitle */}
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-xs font-bold text-[#9E9E9E] tracking-widest uppercase">
+            {title}
+          </span>
+          {subtitle && (
+            <h2 className="text-center text-lg font-bold text-[#111111]">
+              {subtitle}
+            </h2>
+          )}
+        </div>
       </div>
     </div>
   );

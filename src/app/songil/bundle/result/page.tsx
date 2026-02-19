@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import OtherContents from '@/app/songil/components/OtherContents';
@@ -103,16 +103,23 @@ const LINE_NAMES: Record<string, string> = {
   wealth: '재물선',
 };
 
+// --- Step Configuration System ---
+
+interface Step {
+  id: string;
+  stepTitle: string; // e.g., "Step 01"
+  mainTitle: string; // e.g., "손 모양 분석", "생명선: 위험 요소 점검"
+  buttonLabel: string; // Label for the button pointing TO this step
+  render: (data: null) => React.ReactNode;
+}
+
 // --- Main Page Component ---
 
 export default function BundleResultPage() {
   // Navigation State
-  // pageStep: 0 = TOC, 1 = Detail
-  const [pageStep, setPageStep] = useState(0);
-  // tabIndex: 0 = Hand Info, 1+ = Lines
-  const [tabIndex, setTabIndex] = useState(0);
-  // subPageIndex: 0 or 1 (for Lines)
-  const [subPageIndex, setSubPageIndex] = useState(0);
+  // mode: 'toc' = Table of Contents, 'detail' = Step View
+  const [mode, setMode] = useState<'toc' | 'detail'>('toc');
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // Data State
   const [result, setResult] = useState<BundleResult | null>(null);
@@ -136,6 +143,140 @@ export default function BundleResultPage() {
     }
   }, []);
 
+  // --- Step Generation Logic ---
+  const steps = useMemo<Step[]>(() => {
+    if (!result) return [];
+
+    const generatedSteps: Step[] = [];
+    let stepCounter = 1;
+
+    // Helper to format step number (e.g., 1 -> "Step 01")
+    const formatStep = (num: number) => `Step ${num.toString().padStart(2, '0')}`;
+
+    // 1. Hand Analysis Step
+    const handStepStr = formatStep(stepCounter++);
+    generatedSteps.push({
+      id: 'hand-info',
+      stepTitle: handStepStr,
+      mainTitle: '손 모양 분석',
+      buttonLabel: `${handStepStr}: 손 모양 분석`,
+      render: () => {
+        const handInfo = HAND_INFO[result.hand] || HAND_INFO['dragon'];
+        return (
+          <div className="space-y-6 pb-24">
+            <div className="flex flex-col items-center rounded-[30px] border-[3px] border-[#FCC1B9] bg-white p-8">
+              <div className="relative mb-6 aspect-square w-full max-w-[200px]">
+                <Image
+                  src={HAND_IMAGES[result.hand] || HAND_IMAGES['dragon']}
+                  alt={result.hand}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div className="mb-3 rounded-full bg-[#EA6653] px-6 py-2 text-lg font-bold text-white shadow-md">
+                {handInfo.title}
+              </div>
+              <p className="text-center text-lg font-bold text-[#F97B68]">
+                {handInfo.subtitle}
+              </p>
+            </div>
+
+            <WhiteBox>
+              <SectionTitle>{handInfo.title} 특징</SectionTitle>
+              <PointList points={handInfo.description} />
+            </WhiteBox>
+
+            {result.bundleAnalysis && (
+              <WhiteBox>
+                <SectionTitle>종합 분석</SectionTitle>
+                <p className="text-sm leading-relaxed font-medium whitespace-pre-line text-[#696969]">
+                  {result.bundleAnalysis}
+                </p>
+              </WhiteBox>
+            )}
+            <OtherContents />
+          </div>
+        );
+      },
+    });
+
+    // 2. Line Analysis Steps
+    const lineKeys = Object.keys(result.lines);
+    
+    lineKeys.forEach((key) => {
+      const lineName = LINE_NAMES[key] || key;
+      const lineData = result.lines[key];
+
+      // Phase 1: Fundamental & Flow
+      const fundStepStr = formatStep(stepCounter++);
+      generatedSteps.push({
+        id: `${key}-fundamental`,
+        stepTitle: fundStepStr,
+        mainTitle: `${lineName}: 기본 성향 및 흐름`,
+        buttonLabel: `${fundStepStr}: ${lineName} 분석`,
+        render: () => (
+          <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+            <FundamentalSection
+              data={lineData.primitive}
+              lineName={lineName}
+              lineKey={key}
+              resultImageUrl={resultImageUrl}
+            />
+            <PersonalitySection
+              data={lineData.personality}
+              lineName={lineName}
+            />
+            <ChronologySection
+              data={lineData.flow}
+              age={result.age || 25}
+            />
+          </div>
+        ),
+      });
+
+      // Phase 2: Risk
+      const riskStepStr = formatStep(stepCounter++);
+      generatedSteps.push({
+        id: `${key}-risk`,
+        stepTitle: riskStepStr,
+        mainTitle: `${lineName}: 위험 요소 점검`,
+        buttonLabel: `${riskStepStr}: 위험 요소 점검`,
+        render: () => (
+          <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+             <RiskSection
+                data={lineData.risk}
+                age={result.age || 25}
+              />
+          </div>
+        ),
+      });
+
+      // Phase 3: Chance & Present
+      const chanceStepStr = formatStep(stepCounter++);
+      generatedSteps.push({
+        id: `${key}-chance`,
+        stepTitle: chanceStepStr,
+        mainTitle: `${lineName}: 성장 기회 타이밍`,
+        buttonLabel: `${chanceStepStr}: 성장 기회 타이밍`,
+        render: () => (
+           <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+              <ChanceSection
+                data={lineData.chance}
+                age={result.age || 25}
+              />
+              <PresentSection
+                data={lineData.present}
+                age={result.age || 25}
+                total={lineData.total}
+              />
+           </div>
+        ),
+      });
+    });
+
+    return generatedSteps;
+  }, [result, resultImageUrl]);
+
   if (!result) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F5F3F1]">
@@ -152,195 +293,87 @@ export default function BundleResultPage() {
     );
   }
 
-  const handInfo = HAND_INFO[result.hand] || HAND_INFO['dragon'];
-  const lineKeys = Object.keys(result.lines);
-  const currentLineKey = tabIndex > 0 ? lineKeys[tabIndex - 1] : null;
-  const currentLineData = currentLineKey ? result.lines[currentLineKey] : null;
-
-  // Calculate Steps
-  // Total Steps = 1 (Hand Info) + (Number of Lines * 2)
-  const totalSteps = 1 + lineKeys.length * 2;
-  
-  // Current Step Calculation
-  let currentStep = 1;
-  if (tabIndex > 0) {
-    currentStep = 1 + (tabIndex - 1) * 2 + subPageIndex + 1;
-  }
-
-  const pageTitle = tabIndex === 0 
-    ? '손 모양 분석' 
-    : `${LINE_NAMES[currentLineKey!] || currentLineKey} 정밀 분석`;
-
-  // Hand Info Tab Content
-  const renderHandInfo = () => (
-    <div className="space-y-6 pb-24">
-      <div className="flex flex-col items-center rounded-[30px] border-[3px] border-[#FCC1B9] bg-white p-8">
-        <div className="relative mb-6 aspect-square w-full max-w-[200px]">
-          <Image
-            src={HAND_IMAGES[result.hand] || HAND_IMAGES['dragon']}
-            alt={result.hand}
-            fill
-            className="object-contain"
-          />
-        </div>
-        <div className="mb-3 rounded-full bg-[#EA6653] px-6 py-2 text-lg font-bold text-white shadow-md">
-          {handInfo.title}
-        </div>
-        <p className="text-center text-lg font-bold text-[#F97B68]">
-          {handInfo.subtitle}
-        </p>
-      </div>
-
-      <WhiteBox>
-        <SectionTitle>{handInfo.title} 특징</SectionTitle>
-        <PointList points={handInfo.description} />
-      </WhiteBox>
-
-      {result.bundleAnalysis && (
-        <WhiteBox>
-          <SectionTitle>종합 분석</SectionTitle>
-          <p className="text-sm leading-relaxed font-medium whitespace-pre-line text-[#696969]">
-            {result.bundleAnalysis}
-          </p>
-        </WhiteBox>
-      )}
-      <OtherContents />
-    </div>
-  );
-
-  // Navigation Handlers
+  // Navigation Logic
   const handleNext = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    if (tabIndex === 0) {
-      // From Hand Info to First Line
-      setTabIndex(1);
-      setSubPageIndex(0);
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(currentStepIndex + 1);
     } else {
-      // In Line Detail
-      if (subPageIndex === 0) {
-        // Go to next part of same line
-        setSubPageIndex(1);
-      } else {
-        // End of current line
-        if (tabIndex < lineKeys.length) {
-          // Go to next line
-          setTabIndex(tabIndex + 1);
-          setSubPageIndex(0);
-        } else {
-          // End of all lines -> Go back to TOC or Finish
-          setPageStep(0); // For now, go back to TOC
-        }
-      }
+      setMode('toc'); // Or some finish screen
     }
   };
 
   const handlePrev = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    if (tabIndex === 0) {
-      // From Hand Info back to TOC
-      setPageStep(0);
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(currentStepIndex - 1);
     } else {
-      // In Line Detail
-      if (subPageIndex === 1) {
-        // Go back to first part of same line
-        setSubPageIndex(0);
-      } else {
-        // Start of current line -> Go back to previous line or Hand Info
-        if (tabIndex === 1) {
-          setTabIndex(0);
-        } else {
-          setTabIndex(tabIndex - 1);
-          setSubPageIndex(1); // Go to last part of previous line
-        }
-      }
+      setMode('toc');
+    }
+  };
+
+  const handleTOCSelect = (lineKey: string) => {
+    // Find the first step corresponding to this line
+    const stepIndex = steps.findIndex(s => s.id.startsWith(`${lineKey}-`));
+    if (stepIndex !== -1) {
+      setCurrentStepIndex(stepIndex);
+      setMode('detail');
     }
   };
 
   // --- Main Render ---
-  if (pageStep === 0) {
-    // 목차(TOC) 페이지
+
+  if (mode === 'toc') {
     return (
       <TableOfContents
-        lineKeys={lineKeys}
+        lineKeys={Object.keys(result.lines)}
         lineNames={LINE_NAMES}
         onSelect={(idx) => {
-          setTabIndex(idx);
-          setSubPageIndex(0);
-          setPageStep(1);
+           // idx is 1-based index from TOC (0 is skipped in TOC logic usually?)
+           // TOC passes idx+1 usually.
+           // Actually TOC maps idx+1 to onSelect.
+           // Let's check TableOfContents implementation again or just assume it passes the index or key.
+           // Reading TableOfContents: it maps lineKeys and passes idx+1.
+           // So key = lineKeys[idx - 1] (since idx passed is 1-based)
+           
+           // Correct logic:
+           // The TableOfContents component: lineKeys.map((key, idx) => onSelect(idx + 1))
+           // So if I select 1st item, I get 1.
+           const key = Object.keys(result.lines)[idx - 1];
+           handleTOCSelect(key);
         }}
       />
     );
   }
 
-  // 디테일 페이지
+  const currentStep = steps[currentStepIndex];
+  const nextStep = steps[currentStepIndex + 1];
+  const prevStep = steps[currentStepIndex - 1];
+
+  // Determine Button Labels
+  const nextLabel = nextStep ? nextStep.buttonLabel : '분석 완료';
+  const prevLabel = prevStep ? prevStep.buttonLabel : '목차로';
+
   return (
     <div className="min-h-screen bg-[#F5F3F1]">
       {/* Step Indicator Header */}
       <StepIndicator 
-        currentStep={currentStep} 
-        totalSteps={totalSteps} 
-        title={pageTitle} 
+        currentStep={currentStepIndex + 1} 
+        totalSteps={steps.length} 
+        title={currentStep.stepTitle}
+        subtitle={currentStep.mainTitle}
       />
 
       <main className="px-5 pt-[120px] pb-[160px]">
-        {tabIndex === 0
-          ? renderHandInfo()
-          : currentLineData && (
-              <>
-                {/* Content Pages */}
-                {subPageIndex === 0 ? (
-                  <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
-                    <FundamentalSection
-                      data={currentLineData.primitive}
-                      lineName={LINE_NAMES[currentLineKey!] || currentLineKey!}
-                      lineKey={currentLineKey!}
-                      resultImageUrl={resultImageUrl}
-                    />
-                    <PersonalitySection
-                      data={currentLineData.personality}
-                      lineName={LINE_NAMES[currentLineKey!] || currentLineKey!}
-                    />
-                    <ChronologySection
-                      data={currentLineData.flow}
-                      age={result.age || 25}
-                    />
-                  </div>
-                ) : (
-                  <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
-                    <RiskSection
-                      data={currentLineData.risk}
-                      age={result.age || 25}
-                    />
-                    <ChanceSection
-                      data={currentLineData.chance}
-                      age={result.age || 25}
-                    />
-                    <PresentSection
-                      data={currentLineData.present}
-                      age={result.age || 25}
-                      total={currentLineData.total}
-                    />
-                  </div>
-                )}
-              </>
-            )}
+        {currentStep.render(null)}
       </main>
 
       {/* Bottom Navigation */}
       <BottomNavigation
         onPrev={handlePrev}
         onNext={handleNext}
-        nextLabel={
-          tabIndex === 0 
-            ? '다음' 
-            : subPageIndex === 0 
-              ? '다음' 
-              : tabIndex < lineKeys.length 
-                ? '다음 손금' 
-                : '분석 완료'
-        }
+        prevLabel={prevLabel}
+        nextLabel={nextLabel}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import React from 'react';
 interface BottomNavigationProps {
   onPrev?: () => void;
   onNext: () => void;
+  prevLabel?: string;
   nextLabel?: string;
   isNextDisabled?: boolean;
 }
@@ -10,6 +11,7 @@ interface BottomNavigationProps {
 export default function BottomNavigation({
   onPrev,
   onNext,
+  prevLabel = '이전',
   nextLabel = '다음',
   isNextDisabled = false,
 }: BottomNavigationProps) {
@@ -19,15 +21,15 @@ export default function BottomNavigation({
         {onPrev && (
           <button
             onClick={onPrev}
-            className="flex-1 rounded-xl border border-[#E3E2E6] bg-white py-4 text-lg font-bold text-[#696969] shadow-sm transition-transform active:scale-[0.98]"
+            className="flex-1 rounded-xl border border-[#E3E2E6] bg-white py-4 text-base font-bold text-[#696969] shadow-sm transition-transform active:scale-[0.98] leading-tight"
           >
-            이전
+            {prevLabel}
           </button>
         )}
         <button
           onClick={onNext}
           disabled={isNextDisabled}
-          className="flex-1 rounded-xl bg-[#111111] py-4 text-lg font-bold text-white shadow-lg transition-transform active:scale-[0.98] disabled:bg-[#E3E2E6] disabled:text-[#A6A6A6]"
+          className="flex-1 rounded-xl bg-[#111111] py-4 text-base font-bold text-white shadow-lg transition-transform active:scale-[0.98] disabled:bg-[#E3E2E6] disabled:text-[#A6A6A6] leading-tight"
         >
           {nextLabel}
         </button>
