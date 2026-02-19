@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft } from 'lucide-react';
 import OtherContents from '@/app/songil/components/OtherContents';
+import TableOfContents from './TableOfContents';
 
 // Components
 import FundamentalSection from './components/FundamentalSection';
@@ -105,6 +106,8 @@ const LINE_NAMES: Record<string, string> = {
 
 export default function BundleResultPage() {
   // Navigation State
+  // pageStep: 0 = TOC, 1 = Detail
+  const [pageStep, setPageStep] = useState(0);
   // tabIndex: 0 = Hand Info, 1+ = Lines
   const [tabIndex, setTabIndex] = useState(0);
   // subPageIndex: 0 or 1 (for Lines)
@@ -181,7 +184,7 @@ export default function BundleResultPage() {
       {result.bundleAnalysis && (
         <WhiteBox>
           <SectionTitle>종합 분석</SectionTitle>
-          <p className="whitespace-pre-line text-sm font-medium leading-relaxed text-[#696969]">
+          <p className="text-sm leading-relaxed font-medium whitespace-pre-line text-[#696969]">
             {result.bundleAnalysis}
           </p>
         </WhiteBox>
@@ -190,154 +193,143 @@ export default function BundleResultPage() {
     </div>
   );
 
+  // --- Main Render ---
+  if (pageStep === 0) {
+    // 목차(TOC) 페이지
+    return (
+      <TableOfContents
+        lineKeys={lineKeys}
+        lineNames={LINE_NAMES}
+        onSelect={(idx) => {
+          setTabIndex(idx);
+          setSubPageIndex(0);
+          setPageStep(1);
+        }}
+      />
+    );
+  }
+
+  // 디테일 페이지
   return (
     <div className="min-h-screen bg-[#F5F3F1] pb-[120px]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#F5F3F1]/90 px-4 py-4 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <Link href="/songil/bundle" className="rounded-full p-1 hover:bg-black/5">
+          <button
+            onClick={() => setPageStep(0)}
+            className="rounded-full p-1 hover:bg-black/5"
+          >
             <ChevronLeft className="h-6 w-6 text-[#424242]" />
-          </Link>
+          </button>
           <h1 className="text-lg font-bold text-[#111111]">
             {tabIndex === 0
               ? '손 모양 분석'
               : `${LINE_NAMES[currentLineKey!] || currentLineKey} 정밀 분석`}
           </h1>
         </div>
-
-        {/* Custom Tab Navigation */}
-        <div className="scrollbar-hide -mx-4 mt-4 flex overflow-x-auto px-4 pb-2">
-          <button
-            onClick={() => {
-              setTabIndex(0);
-              setSubPageIndex(0);
-            }}
-            className={`mr-3 shrink-0 rounded-full px-4 py-2 text-sm font-bold transition-colors ${
-              tabIndex === 0
-                ? 'bg-[#111111] text-white'
-                : 'bg-white text-[#696969]'
-            }`}
-          >
-            손 모양
-          </button>
-          {lineKeys.map((key, idx) => (
-            <button
-              key={key}
-              onClick={() => {
-                setTabIndex(idx + 1);
-                setSubPageIndex(0);
-              }}
-              className={`mr-3 shrink-0 rounded-full px-4 py-2 text-sm font-bold transition-colors ${
-                tabIndex === idx + 1
-                  ? 'bg-[#111111] text-white'
-                  : 'bg-white text-[#696969]'
-              }`}
-            >
-              {LINE_NAMES[key] || key}
-            </button>
-          ))}
-        </div>
       </header>
 
       <main className="px-5 pt-2">
-        {tabIndex === 0 ? (
-          renderHandInfo()
-        ) : (
-          currentLineData && (
-            <>
-              {/* Pagination Dots for Line Detail */}
-              <div className="mb-6 flex justify-center gap-2">
-                <div
-                  className={`h-2 w-2 rounded-full transition-colors ${subPageIndex === 0 ? 'bg-[#111111]' : 'bg-[#E3E2E6]'}`}
-                />
-                <div
-                  className={`h-2 w-2 rounded-full transition-colors ${subPageIndex === 1 ? 'bg-[#111111]' : 'bg-[#E3E2E6]'}`}
-                />
-              </div>
+        {tabIndex === 0
+          ? renderHandInfo()
+          : currentLineData && (
+              <>
+                {/* Pagination Dots for Line Detail */}
+                <div className="mb-6 flex justify-center gap-2">
+                  <div
+                    className={`h-2 w-2 rounded-full transition-colors ${subPageIndex === 0 ? 'bg-[#111111]' : 'bg-[#E3E2E6]'}`}
+                  />
+                  <div
+                    className={`h-2 w-2 rounded-full transition-colors ${subPageIndex === 1 ? 'bg-[#111111]' : 'bg-[#E3E2E6]'}`}
+                  />
+                </div>
 
-              {/* Content Pages */}
-              {subPageIndex === 0 ? (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <FundamentalSection
-                    data={currentLineData.primitive}
-                    lineName={LINE_NAMES[currentLineKey!] || currentLineKey!}
-                    lineKey={currentLineKey!}
-                    resultImageUrl={resultImageUrl}
-                  />
-                  <PersonalitySection
-                    data={currentLineData.personality}
-                    lineName={LINE_NAMES[currentLineKey!] || currentLineKey!}
-                  />
-                  <ChronologySection
-                    data={currentLineData.flow}
-                    age={result.age || 25}
-                  />
-                </div>
-              ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <RiskSection
-                    data={currentLineData.risk}
-                    age={result.age || 25}
-                  />
-                  <ChanceSection
-                    data={currentLineData.chance}
-                    age={result.age || 25}
-                  />
-                  <PresentSection
-                    data={currentLineData.present}
-                    age={result.age || 25}
-                    total={currentLineData.total}
-                  />
-                </div>
-              )}
-            </>
-          )
-        )}
+                {/* Content Pages */}
+                {subPageIndex === 0 ? (
+                  <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+                    <FundamentalSection
+                      data={currentLineData.primitive}
+                      lineName={LINE_NAMES[currentLineKey!] || currentLineKey!}
+                      lineKey={currentLineKey!}
+                      resultImageUrl={resultImageUrl}
+                    />
+                    <PersonalitySection
+                      data={currentLineData.personality}
+                      lineName={LINE_NAMES[currentLineKey!] || currentLineKey!}
+                    />
+                    <ChronologySection
+                      data={currentLineData.flow}
+                      age={result.age || 25}
+                    />
+                  </div>
+                ) : (
+                  <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+                    <RiskSection
+                      data={currentLineData.risk}
+                      age={result.age || 25}
+                    />
+                    <ChanceSection
+                      data={currentLineData.chance}
+                      age={result.age || 25}
+                    />
+                    <PresentSection
+                      data={currentLineData.present}
+                      age={result.age || 25}
+                      total={currentLineData.total}
+                    />
+                  </div>
+                )}
+              </>
+            )}
       </main>
 
       {/* Floating Action Button logic for navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-5 bg-gradient-to-t from-[#F5F3F1] via-[#F5F3F1] to-transparent pb-8">
+      <div className="fixed right-0 bottom-0 left-0 z-50 bg-gradient-to-t from-[#F5F3F1] via-[#F5F3F1] to-transparent p-5 pb-8">
         {tabIndex === 0 ? (
-           <button
-             onClick={() => setTabIndex(1)}
-             className="w-full rounded-xl bg-[#111111] py-4 text-lg font-bold text-white shadow-lg active:scale-[0.98] transition-transform"
-           >
-             손금 분석 결과 보기
-           </button>
+          <button
+            onClick={() => setTabIndex(1)}
+            className="w-full rounded-xl bg-[#111111] py-4 text-lg font-bold text-white shadow-lg transition-transform active:scale-[0.98]"
+          >
+            손금 분석 결과 보기
+          </button>
         ) : (
           <div className="flex gap-3">
-             {subPageIndex === 1 && (
-               <button
-               onClick={() => {
-                 setSubPageIndex(0);
-                 window.scrollTo({ top: 0, behavior: 'smooth' });
-               }}
-               className="flex-1 rounded-xl bg-white border border-[#E3E3E6] py-4 text-lg font-bold text-[#111111] shadow-sm active:scale-[0.98] transition-transform"
-             >
-               이전
-             </button>
-             )}
-             <button
-               onClick={() => {
-                 if (subPageIndex === 0) {
-                   setSubPageIndex(1);
-                   window.scrollTo({ top: 0, behavior: 'smooth' });
-                 } else {
-                   // Next Line or Finish
-                   if (tabIndex < lineKeys.length) {
-                     setTabIndex(tabIndex + 1);
-                     setSubPageIndex(0);
-                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                   } else {
-                     // End of all lines
-                     // Logic to end or maybe show bottom floating
-                   }
-                 }
-               }}
-               className="flex-1 rounded-xl bg-[#111111] py-4 text-lg font-bold text-white shadow-lg active:scale-[0.98] transition-transform"
-             >
-               {subPageIndex === 0 ? '다음 페이지' : (tabIndex < lineKeys.length ? '다음 손금 보기' : '분석 완료')}
-             </button>
+            {subPageIndex === 1 && (
+              <button
+                onClick={() => {
+                  setSubPageIndex(0);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="flex-1 rounded-xl border border-[#E3E3E6] bg-white py-4 text-lg font-bold text-[#111111] shadow-sm transition-transform active:scale-[0.98]"
+              >
+                이전
+              </button>
+            )}
+            <button
+              onClick={() => {
+                if (subPageIndex === 0) {
+                  setSubPageIndex(1);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                  // Next Line or Finish
+                  if (tabIndex < lineKeys.length) {
+                    setTabIndex(tabIndex + 1);
+                    setSubPageIndex(0);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    // End of all lines
+                    // Logic to end or maybe show bottom floating
+                  }
+                }
+              }}
+              className="flex-1 rounded-xl bg-[#111111] py-4 text-lg font-bold text-white shadow-lg transition-transform active:scale-[0.98]"
+            >
+              {subPageIndex === 0
+                ? '다음 페이지'
+                : tabIndex < lineKeys.length
+                  ? '다음 손금 보기'
+                  : '분석 완료'}
+            </button>
           </div>
         )}
       </div>
