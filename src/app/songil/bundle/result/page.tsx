@@ -281,7 +281,7 @@ export default function BundleResultPage() {
   } else if (isPage2) {
     // Page 2: Left button and right button
     prevLabel = nextLineName ? `${nextLineName} 보기` : '처음으로';
-    nextLabel = '이전 페이지';
+    nextLabel = '처음으로';
   }
 
   return (
@@ -301,9 +301,7 @@ export default function BundleResultPage() {
                 }
               : handleGoToToc
         }
-        onNext={
-          isPage2 && nextLineName ? handlePrev : isPage1 ? handleNext : () => {}
-        }
+        onNext={isPage2 ? handleGoToToc : isPage1 ? handleNext : () => {}}
         prevLabel={prevLabel}
         nextLabel={nextLabel}
         isPage1={isPage1}
