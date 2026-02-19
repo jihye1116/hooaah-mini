@@ -13,7 +13,8 @@ export default async function Page({ searchParams }: BundlePageProps) {
   const { bundle } = (await searchParams) ?? {};
 
   // 유료 콘텐츠인지 확인
-  const isPremium = bundle ? isPremiumContent(`songil:${bundle}`) : false;
+  const contentId = bundle ? `songil:${bundle}` : 'songil:bundle';
+  const isPremium = isPremiumContent(contentId);
 
   const content = (
     <Suspense
@@ -33,9 +34,9 @@ export default async function Page({ searchParams }: BundlePageProps) {
   );
 
   // 유료 콘텐츠인 경우 PremiumContentGate로 감싸기
-  if (isPremium && bundle) {
+  if (isPremium) {
     return (
-      <PremiumContentGate contentId={`songil:${bundle}`} title="손금 번들">
+      <PremiumContentGate contentId={contentId} title="손금 번들">
         {content}
       </PremiumContentGate>
     );
