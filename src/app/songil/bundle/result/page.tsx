@@ -14,7 +14,7 @@ import RiskSection from './components/RiskSection';
 import ChanceSection from './components/ChanceSection';
 import PresentSection from './components/PresentSection';
 import WhiteBox, { PointList, SectionTitle } from './components/WhiteBox';
-import StepIndicator from './components/StepIndicator';
+import StepHeader from './components/StepHeader';
 import BottomNavigation from './components/BottomNavigation';
 import { BundleResult } from './types';
 import { HAND_IMAGES } from './assets';
@@ -151,7 +151,7 @@ export default function BundleResultPage() {
     let stepCounter = 1;
 
     // Helper to format step number (e.g., 1 -> "Step 01")
-    const formatStep = (num: number) => `Step ${num.toString().padStart(2, '0')}`;
+    const formatStep = (num: number) => `STEP ${num.toString().padStart(2, '0')}`;
 
     // 1. Hand Analysis Step
     const handStepStr = formatStep(stepCounter++);
@@ -163,7 +163,9 @@ export default function BundleResultPage() {
       render: () => {
         const handInfo = HAND_INFO[result.hand] || HAND_INFO['dragon'];
         return (
-          <div className="space-y-6 pb-24">
+          <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+            <StepHeader step={handStepStr} title="손 모양 분석" />
+            
             <div className="flex flex-col items-center rounded-[30px] border-[3px] border-[#FCC1B9] bg-white p-8">
               <div className="relative mb-6 aspect-square w-full max-w-[200px]">
                 <Image
@@ -216,6 +218,8 @@ export default function BundleResultPage() {
         buttonLabel: `${fundStepStr}: ${lineName} 분석`,
         render: () => (
           <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+            <StepHeader step={fundStepStr} title={`${lineName}: 기본 성향 및 흐름`} />
+            
             <FundamentalSection
               data={lineData.primitive}
               lineName={lineName}
@@ -243,6 +247,8 @@ export default function BundleResultPage() {
         buttonLabel: `${riskStepStr}: 위험 요소 점검`,
         render: () => (
           <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+             <StepHeader step={riskStepStr} title={`${lineName}: 위험 요소 점검`} />
+             
              <RiskSection
                 data={lineData.risk}
                 age={result.age || 25}
@@ -260,6 +266,8 @@ export default function BundleResultPage() {
         buttonLabel: `${chanceStepStr}: 성장 기회 타이밍`,
         render: () => (
            <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+              <StepHeader step={chanceStepStr} title={`${lineName}: 성장 기회 타이밍`} />
+              
               <ChanceSection
                 data={lineData.chance}
                 age={result.age || 25}
@@ -329,16 +337,9 @@ export default function BundleResultPage() {
         lineKeys={Object.keys(result.lines)}
         lineNames={LINE_NAMES}
         onSelect={(idx) => {
-           // idx is 1-based index from TOC (0 is skipped in TOC logic usually?)
-           // TOC passes idx+1 usually.
-           // Actually TOC maps idx+1 to onSelect.
-           // Let's check TableOfContents implementation again or just assume it passes the index or key.
-           // Reading TableOfContents: it maps lineKeys and passes idx+1.
-           // So key = lineKeys[idx - 1] (since idx passed is 1-based)
-           
-           // Correct logic:
-           // The TableOfContents component: lineKeys.map((key, idx) => onSelect(idx + 1))
-           // So if I select 1st item, I get 1.
+           // idx is 1-based index from TOC
+           // The TOC component maps lineKeys and passes idx+1.
+           // So if I select 1st item (idx=1), the key is lineKeys[0].
            const key = Object.keys(result.lines)[idx - 1];
            handleTOCSelect(key);
         }}
@@ -356,15 +357,7 @@ export default function BundleResultPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F3F1]">
-      {/* Step Indicator Header */}
-      <StepIndicator 
-        currentStep={currentStepIndex + 1} 
-        totalSteps={steps.length} 
-        title={currentStep.stepTitle}
-        subtitle={currentStep.mainTitle}
-      />
-
-      <main className="px-5 pt-[120px] pb-[160px]">
+      <main className="px-5 pt-6 pb-[160px]">
         {currentStep.render(null)}
       </main>
 
