@@ -299,7 +299,7 @@ export default function BundleResultPage() {
                     setCurrentStepIndex(nextLineStepIndex);
                   }
                 }
-              : handleGoToToc
+              : undefined
         }
         onNext={isPage2 ? handleGoToToc : isPage1 ? handleNext : () => {}}
         prevLabel={prevLabel}

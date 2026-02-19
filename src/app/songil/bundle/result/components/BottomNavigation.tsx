@@ -48,27 +48,42 @@ export default function BottomNavigation({
           </button>
         ) : (
           <>
-            {onPrev && (
+            {onPrev ? (
+              <>
+                <button
+                  onClick={onPrev}
+                  className="flex-2 rounded-[14px] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-white transition-transform active:scale-[0.98] disabled:bg-[#E3E2E6] disabled:text-[#A6A6A6]"
+                  style={{
+                    height: '64px',
+                    backgroundImage:
+                      'linear-gradient(54deg, rgba(54, 128, 255, 1) 39%, rgba(186, 134, 244, 1) 73%, rgba(249, 149, 157, 1) 100%)',
+                  }}
+                >
+                  {prevLabel}
+                </button>
+                <button
+                  className="flex-1 rounded-[14px] bg-[#F5F6F8] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-[#696969] transition-transform active:scale-[0.98]"
+                  style={{ height: '64px' }}
+                  onClick={onNext}
+                  disabled={isNextDisabled}
+                >
+                  {nextLabel}
+                </button>
+              </>
+            ) : (
               <button
-                onClick={onPrev}
-                className="flex-2 rounded-[14px] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-white transition-transform active:scale-[0.98] disabled:bg-[#E3E2E6] disabled:text-[#A6A6A6]"
+                onClick={onNext}
+                disabled={isNextDisabled}
+                className="flex flex-1 items-center justify-center gap-[19px] rounded-[14px] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-white shadow-lg transition-transform active:scale-[0.98] disabled:opacity-50"
                 style={{
                   height: '64px',
                   backgroundImage:
                     'linear-gradient(54deg, rgba(54, 128, 255, 1) 39%, rgba(186, 134, 244, 1) 73%, rgba(249, 149, 157, 1) 100%)',
                 }}
               >
-                {prevLabel}
+                {nextLabel}
               </button>
             )}
-            <button
-              className="flex-1 rounded-[14px] bg-[#F5F6F8] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-[#696969] transition-transform active:scale-[0.98]"
-              style={{ height: '64px' }}
-              onClick={onNext}
-              disabled={isNextDisabled}
-            >
-              {nextLabel}
-            </button>
           </>
         )}
       </div>
