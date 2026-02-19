@@ -64,6 +64,7 @@ const ChanceSection = ({
           ))}
         </div>
       </WhiteBox>
+      <div className="h-10" />
     </div>
   );
 };
