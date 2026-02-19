@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import backgroundEffects from '@/assets/images/songil/background-effects.svg';
 import checkIcon from '@/assets/images/songil/check-icon.svg';
+import { getLineDescription } from './utils/lineDescriptions';
 
 interface TableOfContentsProps {
   lineKeys: string[];
@@ -126,14 +127,4 @@ export default function TableOfContents({
       </div>
     </div>
   );
-}
-
-function getLineDescription(key: string): string {
-  const descriptions: Record<string, string> = {
-    destiny:
-      '새끼손가락 아래에서 시작해\n손바닥 윗부분을 가로질러 검지 방향으로 뻗는 선',
-    emotion: '손바닥 아래 중앙에서 시작해\n중지 아래 방향으로 뻗는 선',
-    marriage: '새끼손가락 아래 측면에서 시작해\n손바닥 안쪽으로 짧게 뻗는 선',
-  };
-  return descriptions[key] || '손금 분석';
 }

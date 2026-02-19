@@ -8,7 +8,7 @@ const WhiteBox = ({
   className?: string;
 }) => (
   <div
-    className={`rounded-[20px] border border-white bg-white/80 p-6 shadow-sm backdrop-blur-sm ${className}`}
+    className={`rounded-[20px] border border-white bg-white/80 p-6 backdrop-blur-sm ${className}`}
   >
     {children}
   </div>
@@ -29,7 +29,7 @@ export const PointList = ({ points }: { points: string[] }) => (
     {points?.map((point, idx) => (
       <li
         key={idx}
-        className="text-sm font-medium leading-relaxed text-[#696969]"
+        className="text-sm leading-relaxed font-medium text-[#696969]"
       >
         • {point}
       </li>

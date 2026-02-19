@@ -14,12 +14,14 @@ const ChanceSection = ({
       <WhiteBox>
         <SectionTitle>기회의 시기</SectionTitle>
         <div className="relative space-y-8 pl-4">
-          <div className="absolute top-2 bottom-2 left-[19px] w-[2px] bg-[#E3E3E6]" />
+          <div className="absolute top-2 bottom-2 left-[23px] w-[2px] bg-[#E3E3E6]" />
           {data.years?.map((year, idx) => (
             <div key={idx} className="relative flex gap-4">
               <div className="relative z-10 flex h-[40px] flex-col items-center justify-center">
-                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FEF3F1]">
-                  <div className="h-2 w-2 rounded-full bg-[#FCC1B9]" />
+                <div className="flex h-6 w-6 items-center justify-start bg-white">
+                  <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FEF3F1]">
+                    <div className="h-2 w-2 rounded-full bg-[#FCC1B9]" />
+                  </div>
                 </div>
               </div>
               <div className="flex-1 pt-1">

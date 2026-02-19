@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import OtherContents from '@/app/songil/components/OtherContents';
 import TableOfContents from './TableOfContents';
+import { getLineDescription } from './utils/lineDescriptions';
 
 // Components
 import FundamentalSection from './components/FundamentalSection';
@@ -13,10 +12,9 @@ import ChronologySection from './components/ChronologySection';
 import RiskSection from './components/RiskSection';
 import ChanceSection from './components/ChanceSection';
 import PresentSection from './components/PresentSection';
-import WhiteBox, { PointList, SectionTitle } from './components/WhiteBox';
 import StepHeader from './components/StepHeader';
+import PageHeader from './components/PageHeader';
 import BottomNavigation from './components/BottomNavigation';
-import TopHeader from './components/TopHeader';
 import { BundleResult } from './types';
 
 // --- Constants & Mappings ---
@@ -81,9 +79,10 @@ export default function BundleResultPage() {
     // 2. Line Analysis Steps
     const lineKeys = Object.keys(result.lines);
 
-    lineKeys.forEach((key) => {
+    lineKeys.forEach((key, index) => {
       const lineName = LINE_NAMES[key] || key;
       const lineData = result.lines[key];
+      const stepNumber = index + 1;
 
       // Page 1: Steps 1-3 (Basic Info, Personality, Chronology)
       generatedSteps.push({
@@ -94,8 +93,16 @@ export default function BundleResultPage() {
         buttonLabel: `${lineName} 1`,
         render: () => (
           <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
-            {/* Step 1 */}
-            <StepHeader step="STEP 01" title="기본 정보 분석" />
+            <div>
+              <PageHeader
+                stepNumber={stepNumber}
+                title={lineName}
+                description={getLineDescription(key)}
+                onBack={() => setMode('toc')}
+              />
+              {/* Step 1 */}
+              <StepHeader step="STEP 01" title="기본 정보 분석" />
+            </div>
             <FundamentalSection
               data={lineData.primitive}
               lineName={lineName}
@@ -125,7 +132,13 @@ export default function BundleResultPage() {
         mainTitle: `${lineName} 분석 (2/2)`,
         buttonLabel: `${lineName} 2`,
         render: () => (
-          <div className="animate-in fade-in slide-in-from-right-4 space-y-6 duration-300">
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+            <PageHeader
+              stepNumber={stepNumber}
+              title={lineName}
+              description={getLineDescription(key)}
+              onBack={() => setMode('toc')}
+            />
             {/* Step 4 */}
             <StepHeader step="STEP 04" title="위험 요소 점검" />
             <RiskSection data={lineData.risk} age={result.age || 25} />
@@ -147,7 +160,7 @@ export default function BundleResultPage() {
     });
 
     return generatedSteps;
-  }, [result, resultImageUrl]);
+  }, [result, resultImageUrl, setMode]);
 
   if (!result) {
     return (
@@ -184,6 +197,11 @@ export default function BundleResultPage() {
     }
   };
 
+  const handleGoToToc = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setMode('toc');
+  };
+
   const handleTOCSelect = (lineKey: string) => {
     // Find the first step corresponding to this line
     const stepIndex = steps.findIndex((s) => s.id.startsWith(`${lineKey}-`));
@@ -215,23 +233,38 @@ export default function BundleResultPage() {
   const nextStep = steps[currentStepIndex + 1];
   const prevStep = steps[currentStepIndex - 1];
 
+  // Determine if current step is page1 or page2
+  const isPage1 = currentStep.id.endsWith('-page1');
+  const isPage2 = currentStep.id.endsWith('-page2');
+
+  // Get line name from current step ID
+  const currentLineKey = currentStep.id.split('-')[0];
+  const currentLineName = LINE_NAMES[currentLineKey] || currentLineKey;
+
   // Determine Button Labels
-  const nextLabel = nextStep ? nextStep.buttonLabel : '분석 완료';
-  const prevLabel = prevStep ? prevStep.buttonLabel : '목차로';
+  let nextLabel = '';
+  let prevLabel = '';
+
+  if (isPage1) {
+    // Page 1: Only show right button with "Step 4: 위험 요소 점검"
+    nextLabel = 'Step 4: 위험 요소 점검';
+  } else if (isPage2) {
+    // Page 2: Left button and right button
+    prevLabel = `${currentLineName} 보기`;
+    nextLabel = '처음으로';
+  }
 
   return (
-    <div className="min-h-screen bg-[#F5F3F1]">
-      <main className="px-5 pt-6 pb-[160px]">
-        <TopHeader title={currentStep.headerTitle} onBack={handlePrev} />
-        {currentStep.render(null)}
-      </main>
+    <div className="min-h-screen bg-[#F5F8FF]">
+      <main className="px-5 pb-40">{currentStep.render(null)}</main>
 
       {/* Bottom Navigation */}
       <BottomNavigation
-        onPrev={handlePrev}
-        onNext={handleNext}
+        onPrev={isPage2 ? handlePrev : undefined}
+        onNext={isPage1 ? handleNext : handleGoToToc}
         prevLabel={prevLabel}
         nextLabel={nextLabel}
+        isPage1={isPage1}
       />
     </div>
   );
