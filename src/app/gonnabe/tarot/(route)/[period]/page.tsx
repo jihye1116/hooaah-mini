@@ -1,5 +1,6 @@
-import TarotCardSelection from '@/app/gonnabe/tarot/components/TarotCardSelection';
 import { TarotPeriod } from '@/app/gonnabe/tarot/types/period';
+import YearlyTarotFlow from '@/app/gonnabe/tarot/components/yearly/YearlyTarotFlow';
+import TarotCardSelection from '@/app/gonnabe/tarot/components/TarotCardSelection';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import { notFound } from 'next/navigation';
 
@@ -18,6 +19,10 @@ export default async function TarotPeriodPage({
   const validPeriod = Object.values(TarotPeriod);
   if (!validPeriod.includes(period)) {
     notFound();
+  }
+
+  if (period === TarotPeriod.YEARLY) {
+    return <YearlyTarotFlow />;
   }
 
   return <TarotCardSelection theme={period} />;

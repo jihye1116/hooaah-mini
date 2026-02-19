@@ -3,14 +3,17 @@ import type { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
 const DEFAULT_ANALYSIS_TYPE = 'daily';
 const DEFAULT_CARD_DECK = 'bubble';
 
-export async function loadTarotCards() {
+export async function loadTarotCards(
+  cardDeck = DEFAULT_CARD_DECK,
+  analysisType = DEFAULT_ANALYSIS_TYPE,
+) {
   const backendBase = process.env.NEXT_PUBLIC_BACKEND_BASE;
 
   if (!backendBase) {
     throw new Error('BACKEND_BASE environment variable is not set');
   }
 
-  const url = `${backendBase}/api/tarot/cards?cardDeck=${DEFAULT_CARD_DECK}&analysisType=${DEFAULT_ANALYSIS_TYPE}`;
+  const url = `${backendBase}/api/tarot/cards?cardDeck=${cardDeck}&analysisType=${analysisType}`;
 
   const response = await fetch(url, {
     method: 'GET',
