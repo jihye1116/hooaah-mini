@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import TableOfContents from './TableOfContents';
 import { getLineDescription } from './utils/lineDescriptions';
+import { palmistryPremiumKorean, wealthLinePremiumKorean } from './premium';
 
 // Components
 import FundamentalSection from './components/FundamentalSection';
@@ -83,6 +84,8 @@ export default function BundleResultPage() {
       const lineName = LINE_NAMES[key] || key;
       const lineData = result.lines[key];
       const stepNumber = index + 1;
+      const premiumData =
+        palmistryPremiumKorean[key] || wealthLinePremiumKorean;
 
       // Page 1: Steps 1-3 (Basic Info, Personality, Chronology)
       generatedSteps.push({
@@ -101,25 +104,31 @@ export default function BundleResultPage() {
                 onBack={() => setMode('toc')}
               />
               {/* Step 1 */}
-              <StepHeader step="STEP 01" title="기본 정보 분석" />
+              <StepHeader step="STEP 01" title={premiumData.title[0]} />
             </div>
             <FundamentalSection
               data={lineData.primitive}
               lineName={lineName}
               lineKey={key}
               resultImageUrl={resultImageUrl}
+              premiumData={premiumData}
             />
 
             {/* Step 2 */}
-            <StepHeader step="STEP 02" title="성향 분석" />
+            <StepHeader step="STEP 02" title={premiumData.title[1]} />
             <PersonalitySection
               data={lineData.personality}
               lineName={lineName}
+              premiumData={premiumData}
             />
 
             {/* Step 3 */}
-            <StepHeader step="STEP 03" title="시기별 운명 흐름" />
-            <ChronologySection data={lineData.flow} age={result.age || 25} />
+            <StepHeader step="STEP 03" title={premiumData.title[2]} />
+            <ChronologySection
+              data={lineData.flow}
+              age={result.age || 25}
+              premiumData={premiumData}
+            />
           </div>
         ),
       });
@@ -140,19 +149,28 @@ export default function BundleResultPage() {
               onBack={() => setMode('toc')}
             />
             {/* Step 4 */}
-            <StepHeader step="STEP 04" title="위험 요소 점검" />
-            <RiskSection data={lineData.risk} age={result.age || 25} />
+            <StepHeader step="STEP 04" title={premiumData.title[3]} />
+            <RiskSection
+              data={lineData.risk}
+              age={result.age || 25}
+              premiumData={premiumData}
+            />
 
             {/* Step 5 */}
-            <StepHeader step="STEP 05" title="성장 기회 타이밍" />
-            <ChanceSection data={lineData.chance} age={result.age || 25} />
+            <StepHeader step="STEP 05" title={premiumData.title[4]} />
+            <ChanceSection
+              data={lineData.chance}
+              age={result.age || 25}
+              premiumData={premiumData}
+            />
 
             {/* Step 6 */}
-            <StepHeader step="STEP 06" title="현재 시점 해석" />
+            <StepHeader step="STEP 06" title={premiumData.title[5]} />
             <PresentSection
               data={lineData.present}
               age={result.age || 25}
               total={lineData.total}
+              premiumData={premiumData}
             />
           </div>
         ),
@@ -240,6 +258,7 @@ export default function BundleResultPage() {
   // Get line name from current step ID
   const currentLineKey = currentStep.id.split('-')[0];
   const currentLineName = LINE_NAMES[currentLineKey] || currentLineKey;
+  const currentPremiumData = palmistryPremiumKorean[currentLineKey];
 
   // Determine Button Labels
   let nextLabel = '';
@@ -247,7 +266,8 @@ export default function BundleResultPage() {
 
   if (isPage1) {
     // Page 1: Only show right button with "Step 4: 위험 요소 점검"
-    nextLabel = 'Step 4: 위험 요소 점검';
+    const nextStepTitle = currentPremiumData?.title[3] || '위험 요소 점검';
+    nextLabel = `Step 4: ${nextStepTitle}`;
   } else if (isPage2) {
     // Page 2: Left button and right button
     prevLabel = `${currentLineName} 보기`;

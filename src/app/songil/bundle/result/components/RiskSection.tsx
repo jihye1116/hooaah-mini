@@ -3,13 +3,16 @@ import { Zap } from 'lucide-react';
 import riskGraphLine from '@/assets/images/songil/risk-graph-line.svg';
 import { LineData } from '../types';
 import WhiteBox, { SectionTitle, SubTitle } from './WhiteBox';
+import { PremiumData } from '../premium';
 
 const RiskSection = ({
   data,
   age,
+  premiumData,
 }: {
   data: LineData['risk'];
   age: number;
+  premiumData: PremiumData;
 }) => {
   const maxValue = Math.max(...(data.time || []), 100);
   const currentValue = data.time?.[1] ?? 0;
@@ -24,7 +27,7 @@ const RiskSection = ({
   return (
     <div className="space-y-6">
       <WhiteBox>
-        <SectionTitle>주의할 점</SectionTitle>
+        <SectionTitle>{premiumData.safety_title}</SectionTitle>
         {/* Bar Chart */}
         <div className="mb-6 flex w-full justify-center">
           <div className="relative h-[184px] w-[310px]">
@@ -95,7 +98,7 @@ const RiskSection = ({
 
         {/* Risk Types */}
         <div className="space-y-4">
-          <SubTitle>예상되는 위험 유형</SubTitle>
+          <SubTitle>{premiumData.risk_type}</SubTitle>
           {data.type?.map((item, idx) => (
             <div key={idx} className="rounded-lg bg-gray-50 p-3">
               <h5 className="mb-1 font-semibold text-[#111111]">
@@ -111,7 +114,7 @@ const RiskSection = ({
       </WhiteBox>
 
       <WhiteBox>
-        <SectionTitle>조언</SectionTitle>
+        <SectionTitle>{premiumData.advice}</SectionTitle>
         <div className="space-y-4">
           {data.advice?.map((item, idx) => (
             <div key={idx}>

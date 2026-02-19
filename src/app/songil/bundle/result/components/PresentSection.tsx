@@ -1,15 +1,18 @@
 import React from 'react';
 import { LineData } from '../types';
 import WhiteBox, { PointList, SectionTitle } from './WhiteBox';
+import { PremiumData } from '../premium';
 
 const PresentSection = ({
   data,
   age,
   total,
+  premiumData,
 }: {
   data: LineData['present'];
   age: number;
   total: LineData['total'];
+  premiumData: PremiumData;
 }) => {
   const t = { age: '세' };
   // 그래프 값 파싱 (기본값 66)
@@ -21,9 +24,9 @@ const PresentSection = ({
   return (
     <div className="space-y-6">
       <WhiteBox>
-        <SectionTitle>현재와 미래</SectionTitle>
+        <SectionTitle>{premiumData.present_title}</SectionTitle>
         <p className="mb-6 text-sm text-[#424242]">
-          최근 5년간의 흐름을 분석합니다.
+          {premiumData.present_description}
         </p>
 
         <div className="relative mt-5 h-[200px] pr-[40px]">
@@ -73,7 +76,7 @@ const PresentSection = ({
       </WhiteBox>
 
       <WhiteBox>
-        <SectionTitle>미래 운세</SectionTitle>
+        <SectionTitle>{premiumData.present_analysis}</SectionTitle>
         <div
           className={`mb-4 inline-block rounded-xl px-4 py-2 font-bold ${data.fortune.evaluation === 'positive' ? 'bg-[#EBF7E9] text-[#2E7D32]' : 'bg-[#E3E3E6] text-[#424242]'}`}
         >
@@ -90,7 +93,7 @@ const PresentSection = ({
       </WhiteBox>
 
       <WhiteBox>
-        <SectionTitle>주의사항</SectionTitle>
+        <SectionTitle>{premiumData.precaution}</SectionTitle>
         <div className="mb-4 inline-block rounded-xl bg-[#FFEDE0] px-4 py-2 font-bold text-[#883A2E]">
           {data.risk.title}
         </div>

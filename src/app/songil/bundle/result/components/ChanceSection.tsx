@@ -1,18 +1,21 @@
 import React from 'react';
 import { LineData } from '../types';
 import WhiteBox, { SectionTitle } from './WhiteBox';
+import { PremiumData } from '../premium';
 
 const ChanceSection = ({
   data,
   age,
+  premiumData,
 }: {
   data: LineData['chance'];
   age: number;
+  premiumData: PremiumData;
 }) => {
   return (
     <div className="space-y-6">
       <WhiteBox>
-        <SectionTitle>기회의 시기</SectionTitle>
+        <SectionTitle>{premiumData.chance_flow}</SectionTitle>
         <div className="relative space-y-8 pl-4">
           <div className="absolute top-2 bottom-2 left-[23px] w-[2px] bg-[#E3E3E6]" />
           {data.years?.map((year, idx) => (
@@ -42,7 +45,7 @@ const ChanceSection = ({
       </WhiteBox>
 
       <WhiteBox>
-        <SectionTitle>투자 조언</SectionTitle>
+        <SectionTitle>{premiumData.chance_time}</SectionTitle>
         <div className="mb-4 inline-block rounded-xl bg-[#FEF3F1] px-4 py-2 font-bold text-[#883A2E]">
           {data.investment.month1}월, {data.investment.month2}월이 좋아요
         </div>

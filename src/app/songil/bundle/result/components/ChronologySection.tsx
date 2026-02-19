@@ -1,18 +1,21 @@
 import React from 'react';
 import { LineData } from '../types';
 import WhiteBox, { SectionTitle } from './WhiteBox';
+import { PremiumData } from '../premium';
 
 const ChronologySection = ({
   data,
   age,
+  premiumData,
 }: {
   data: LineData['flow'];
   age: number;
+  premiumData: PremiumData;
 }) => {
   return (
     <div className="space-y-6">
       <WhiteBox>
-        <SectionTitle>흐름 분석</SectionTitle>
+        <SectionTitle>{premiumData.flow}</SectionTitle>
         <div className="relative space-y-8 pl-4">
           {/* Vertical Line */}
           <div className="absolute top-2 bottom-2 left-[23px] w-[2px] bg-[#E3E3E6]" />

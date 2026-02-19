@@ -8,13 +8,16 @@ import intelligenceScoreIcon from '@/assets/icons/songil/intelligence_score.svg'
 import marriageScoreIcon from '@/assets/icons/songil/marriage_score.svg';
 import wealthScoreIcon from '@/assets/icons/songil/wealth_score.svg';
 import sunScoreIcon from '@/assets/icons/songil/sun_score.svg';
+import { PremiumData } from '../premium';
 
 const PersonalitySection = ({
   data,
   lineName,
+  premiumData,
 }: {
   data: LineData['personality'];
   lineName: string;
+  premiumData: PremiumData;
 }) => {
   const score = Number(data.score) || 66;
 
@@ -23,7 +26,7 @@ const PersonalitySection = ({
       {/* Header */}
       <div className="text-center">
         <h3 className="text-base font-semibold text-[#424242]">
-          {lineName} 성향
+          {premiumData.character}
         </h3>
         <div className="mt-2 inline-block rounded-xl bg-white px-6 py-3 text-xl font-bold text-[#883A2E]">
           {data.type}
@@ -59,7 +62,7 @@ const PersonalitySection = ({
       {/* Details (Skill/Will/Sense) */}
       {data.skill && (
         <WhiteBox>
-          <SectionTitle>재능과 적성</SectionTitle>
+          <SectionTitle>{premiumData.skill}</SectionTitle>
           <div className="mb-3 inline-block rounded-lg bg-[#FEF3F1] px-3 py-1 text-base font-semibold text-[#883A2E]">
             {data.skill.level === 'high' || data.skill.level === 'very high'
               ? '탁월함'
@@ -78,7 +81,7 @@ const PersonalitySection = ({
 
       {data.will && (
         <WhiteBox>
-          <SectionTitle>의지와 관계</SectionTitle>
+          <SectionTitle>{premiumData.will}</SectionTitle>
           <div className="mb-3 inline-block rounded-lg bg-[#FEF3F1] px-3 py-1 text-base font-semibold text-[#883A2E]">
             {data.will.level === 'high' || data.will.level === 'very high'
               ? '강함'
@@ -95,7 +98,7 @@ const PersonalitySection = ({
 
       {data.sense && (
         <WhiteBox>
-          <SectionTitle>감각과 판단</SectionTitle>
+          <SectionTitle>{premiumData.sense}</SectionTitle>
           <div className="mb-3 inline-block rounded-lg bg-[#FEF3F1] px-3 py-1 text-base font-semibold text-[#883A2E]">
             {data.sense.level === 'high' || data.sense.level === 'very high'
               ? '뛰어남'
