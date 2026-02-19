@@ -18,7 +18,9 @@ export default function BundleInputPage() {
   useEffect(() => {
     const savedType = localStorage.getItem('temp_bundle_type');
     if (savedType) {
-      setBundleType(savedType);
+      // contentsType에서 bundle 타입 추출 (e.g., "bundle:wealth" -> "wealth")
+      const bundleTypeValue = savedType.split(':')[1] || 'love';
+      setTimeout(() => setBundleType(bundleTypeValue), 0);
     }
   }, []);
 
@@ -129,6 +131,7 @@ export default function BundleInputPage() {
 
       localStorage.setItem('bundle_result', JSON.stringify(bundleResult));
       localStorage.setItem('bundle_image', uploadedImageUrl);
+      localStorage.setItem('bundle_type', bundleType);
 
       // 임시 데이터 삭제
       localStorage.removeItem('temp_bundle_image');

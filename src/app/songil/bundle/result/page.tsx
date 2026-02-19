@@ -52,11 +52,13 @@ export default function BundleResultPage() {
   // Data State
   const [result, setResult] = useState<BundleResult | null>(null);
   const [resultImageUrl, setResultImageUrl] = useState<string>('');
+  const [bundle, setBundle] = useState<string>('');
 
   useEffect(() => {
     // Client-side only logic
     const savedResult = localStorage.getItem('bundle_result');
     const savedImage = localStorage.getItem('bundle_image');
+    const savedBundle = localStorage.getItem('bundle_type');
 
     if (savedResult) {
       try {
@@ -68,6 +70,9 @@ export default function BundleResultPage() {
     }
     if (savedImage) {
       setTimeout(() => setResultImageUrl(savedImage), 0);
+    }
+    if (savedBundle) {
+      setTimeout(() => setBundle(savedBundle), 0);
     }
   }, []);
 
@@ -236,6 +241,7 @@ export default function BundleResultPage() {
       <TableOfContents
         lineKeys={Object.keys(result.lines)}
         lineNames={LINE_NAMES}
+        bundle={bundle}
         onSelect={(idx) => {
           // idx is 1-based index from TOC
           // The TOC component maps lineKeys and passes idx+1.

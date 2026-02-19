@@ -2,19 +2,39 @@ import React from 'react';
 import Image from 'next/image';
 import backgroundEffects from '@/assets/images/songil/background-effects.svg';
 import checkIcon from '@/assets/images/songil/check-icon.svg';
+import wealthIcon from '@/assets/icons/songil/wealth_icon.svg';
 import { getLineDescription } from './utils/lineDescriptions';
 
 interface TableOfContentsProps {
   lineKeys: string[];
   lineNames: Record<string, string>;
+  bundle?: string;
   onSelect: (idx: number) => void;
 }
 
 export default function TableOfContents({
   lineKeys,
   lineNames,
+  bundle,
   onSelect,
 }: TableOfContentsProps) {
+  // 번들 타입에 따라 다른 아이콘과 텍스트 설정
+  const getPackageInfo = () => {
+    switch (bundle) {
+      case 'wealth':
+        return {
+          icon: wealthIcon,
+          title: '재물운 패키지',
+        };
+      default:
+        return {
+          icon: checkIcon,
+          title: '연애운 패키지',
+        };
+    }
+  };
+
+  const packageInfo = getPackageInfo();
   return (
     <div
       className="relative flex min-h-screen flex-col items-center justify-start overflow-hidden px-5 pt-6"
@@ -52,8 +72,8 @@ export default function TableOfContents({
             }}
           >
             <Image
-              src={checkIcon}
-              alt="check"
+              src={packageInfo.icon}
+              alt="package"
               width={20}
               height={17}
               className="flex-shrink-0"
@@ -62,7 +82,7 @@ export default function TableOfContents({
               className="text-xl leading-[1.3] font-bold tracking-[-0.024em]"
               style={{ color: '#3680FF' }}
             >
-              연애운 패키지
+              {packageInfo.title}
             </span>
           </div>
         </div>
