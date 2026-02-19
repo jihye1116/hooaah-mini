@@ -107,7 +107,7 @@ const FundamentalSection = ({
 
       {/* Curve */}
       <WhiteBox>
-        <SectionTitle>{lineName} 곡선</SectionTitle>
+        <SectionTitle>{lineName} 곡선 유형</SectionTitle>
 
         {/* Curve Image */}
         {getDetailImage('curve', data.curve.evaluation) && (
@@ -134,11 +134,11 @@ const FundamentalSection = ({
 
       {/* Visibility */}
       <WhiteBox>
-        <SectionTitle>선명도 및 끊김</SectionTitle>
+        <SectionTitle>손금 선명도 & 단절여부</SectionTitle>
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-lg font-bold text-[#883A2E]">
+          <div className="mb-2 rounded-xl bg-[#FEF3F1] p-3 text-center text-lg font-bold text-[#883A2E]">
             {data.visibility.evaluation}
-          </span>
+          </div>
           <span className="text-sm font-semibold text-[#696969]">{score}%</span>
         </div>
         <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-[#E3E3E6]">
@@ -154,7 +154,7 @@ const FundamentalSection = ({
 
         <div className="my-6 h-[1px] w-full bg-[#E3E3E6]" />
 
-        <div className="mb-2 rounded-xl bg-[#FEF3F1] p-3 text-center text-lg font-bold text-[#883A2E]">
+        <div className="mb-2 inline-block rounded-xl bg-[#E3E3E6] p-3 text-lg font-bold text-[#111]">
           {data.cut.evaluation}
         </div>
         <p className="mb-4 text-sm text-[#424242]">{data.cut.description}</p>
@@ -163,7 +163,7 @@ const FundamentalSection = ({
 
       {/* Total */}
       <WhiteBox>
-        <SectionTitle>종합 분석</SectionTitle>
+        <SectionTitle>대표 특징 해석</SectionTitle>
         <p className="text-sm leading-relaxed font-medium text-[#696969]">
           {data.total}
         </p>

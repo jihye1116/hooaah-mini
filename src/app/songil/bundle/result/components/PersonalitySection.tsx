@@ -23,7 +23,7 @@ const PersonalitySection = ({
       {/* Header */}
       <div className="text-center">
         <h3 className="text-base font-semibold text-[#424242]">
-          {lineName}으로 보는 성향
+          {lineName} 성향
         </h3>
         <div className="mt-2 inline-block rounded-xl bg-white px-6 py-3 text-xl font-bold text-[#883A2E]">
           {data.type}
