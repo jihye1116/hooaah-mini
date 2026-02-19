@@ -29,6 +29,8 @@ const FundamentalSection = ({
     return images[evaluation] || null;
   };
 
+  console.log('Detail Images for', lineKey, data);
+
   return (
     <div className="space-y-6">
       {/* 이미지 및 기본 정보 */}

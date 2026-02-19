@@ -1,4 +1,7 @@
 import React from 'react';
+import Image from 'next/image';
+import backgroundEffects from '@/assets/images/songil/background-effects.svg';
+import checkIcon from '@/assets/images/songil/check-icon.svg';
 
 interface TableOfContentsProps {
   lineKeys: string[];
@@ -12,25 +15,125 @@ export default function TableOfContents({
   onSelect,
 }: TableOfContentsProps) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#F5F3F1] px-6 pb-[120px]">
-      <h2 className="mb-8 text-2xl font-bold text-[#111]">분석할 손금 선택</h2>
-      <div className="mb-10 grid w-full max-w-md grid-cols-2 gap-4">
-        {lineKeys.map((key, idx) => (
-          <button
-            key={key}
-            onClick={() => onSelect(idx + 1)}
-            className="flex flex-col items-center rounded-2xl border-2 border-[#FCC1B9] bg-white px-4 py-8 shadow-md transition-colors hover:bg-[#FFF3F1]"
-          >
-            <span className="mb-2 text-lg font-bold text-[#F97B68]">
-              {lineNames[key] || key}
-            </span>
-            <span className="text-xs text-[#696969]">정밀 분석</span>
-          </button>
-        ))}
+    <div
+      className="relative flex min-h-screen flex-col items-center justify-start overflow-hidden px-5 pt-6"
+      style={{
+        background:
+          'linear-gradient(180deg, rgba(54, 128, 255, 1) 0%, rgba(186, 134, 244, 1) 50%, rgba(249, 149, 157, 1) 100%)',
+      }}
+    >
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={backgroundEffects}
+          alt=""
+          fill
+          className="object-cover object-left opacity-100"
+          priority
+        />
       </div>
-      <p className="text-sm text-[#A0A0A0]">
-        원하는 손금을 선택해 상세 분석을 확인하세요.
-      </p>
+
+      {/* Content Container - Relative to position above background effects */}
+      <div className="relative z-10 flex w-full flex-col items-center pt-20">
+        {/* Premium Section */}
+        <div className="flex flex-col items-center gap-1.5">
+          <div className="text-base font-semibold text-white">
+            프리미엄 분석
+          </div>
+          <div
+            className="flex items-center justify-center gap-1.5 rounded-xl px-3.5 py-2"
+            style={{
+              background:
+                'linear-gradient(white, white) padding-box, linear-gradient(54deg, rgba(120, 224, 255, 1) 6%, rgba(186, 134, 244, 1) 41%, rgba(249, 149, 157, 1) 88%) border-box',
+              border: '2px solid transparent',
+              width: '185px',
+              height: '48px',
+            }}
+          >
+            <Image
+              src={checkIcon}
+              alt="check"
+              width={20}
+              height={17}
+              className="flex-shrink-0"
+            />
+            <span
+              className="text-xl leading-[1.3] font-bold tracking-[-0.024em]"
+              style={{ color: '#3680FF' }}
+            >
+              연애운 패키지
+            </span>
+          </div>
+        </div>
+
+        {/* Content Container */}
+        <div
+          className="mt-8 flex w-full max-w-xs flex-col items-center gap-3 pb-40"
+          style={{
+            padding: '0 20px',
+          }}
+        >
+          {lineKeys.map((key, idx) => (
+            <button
+              key={key}
+              onClick={() => onSelect(idx + 1)}
+              className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl p-6"
+              style={{
+                background: 'rgba(255, 255, 255, 0.7)',
+                borderRadius: '14px',
+                boxShadow: '0px 0px 10px 0px rgba(232, 175, 175, 0.25)',
+                height: '186px',
+              }}
+            >
+              {/* Number */}
+              <div
+                className="text-center text-base font-medium"
+                style={{
+                  background:
+                    'linear-gradient(180deg, rgba(186, 134, 244, 1) 0%, rgba(54, 128, 255, 1) 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {idx + 1}
+              </div>
+              {/* Line Name */}
+              <h3
+                className="text-center text-4xl font-bold"
+                style={{
+                  background:
+                    'linear-gradient(180deg, rgba(186, 134, 244, 1) 0%, rgba(54, 128, 255, 1) 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {lineNames[key] || key}
+              </h3>
+              {/* Description */}
+              <p
+                className="text-center text-base font-medium"
+                style={{
+                  color: '#424242',
+                }}
+              >
+                {getLineDescription(key)}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
+}
+
+function getLineDescription(key: string): string {
+  const descriptions: Record<string, string> = {
+    destiny:
+      '새끼손가락 아래에서 시작해\n손바닥 윗부분을 가로질러 검지 방향으로 뻗는 선',
+    emotion: '손바닥 아래 중앙에서 시작해\n중지 아래 방향으로 뻗는 선',
+    marriage: '새끼손가락 아래 측면에서 시작해\n손바닥 안쪽으로 짧게 뻗는 선',
+  };
+  return descriptions[key] || '손금 분석';
 }
