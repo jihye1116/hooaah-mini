@@ -44,14 +44,14 @@ export default function ResultContent() {
     try {
       const parsedResult = JSON.parse(resultText);
       return { result: parsedResult, errorText: '' };
-    } catch (e) {
+    } catch {
       return { result: null, errorText: resultText };
     }
   }, [searchParams]);
 
   const resultImage = searchParams.get('resultImage') || '';
 
-  const rawContentsType = searchParams.get('contents') || 'myfuture';
+  const rawContentsType = searchParams.get('contents') || 'myfacereading';
   const contentsType = normalizeContentsType(rawContentsType);
 
   if (!result) {
@@ -63,6 +63,16 @@ export default function ResultContent() {
           </p>
         </div>
       </div>
+    );
+  }
+
+  if (contentsType === 'myFaceReading') {
+    return (
+      <FaceResult
+        result={result as FaceResultData}
+        resultImage={resultImage}
+        onBack={() => router.back()}
+      />
     );
   }
 
@@ -132,6 +142,9 @@ const normalizeContentsType = (value: string) => {
   const normalized = value.replace(/\s+/g, '').toLowerCase();
 
   switch (normalized) {
+    case 'myfacereading':
+    case '':
+      return 'myFaceReading';
     case 'myfuture':
       return 'myFuture';
     case 'mypair':
@@ -141,6 +154,6 @@ const normalizeContentsType = (value: string) => {
     case 'mytype':
       return 'myType';
     default:
-      return value;
+      return 'myFaceReading';
   }
 };

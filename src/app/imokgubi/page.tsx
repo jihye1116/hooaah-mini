@@ -6,14 +6,16 @@ import { Suspense } from 'react';
 interface ImokgubiPageProps {
   searchParams?: Promise<{
     category?: string;
+    contents?: string;
   }>;
 }
 
 export default async function Page({ searchParams }: ImokgubiPageProps) {
-  const { category } = (await searchParams) ?? {};
+  const params = await searchParams;
+  const category = params?.contents ?? params?.category ?? '';
 
   // 유료 콘텐츠인지 확인
-  const isPremium = category ? isPremiumContent(`imokgubi:${category}`) : false;
+  const isPremium = isPremiumContent(`imokgubi:${category}`);
 
   const content = (
     <Suspense
@@ -30,7 +32,7 @@ export default async function Page({ searchParams }: ImokgubiPageProps) {
   );
 
   // 유료 콘텐츠인 경우 PremiumContentGate로 감싸기
-  if (isPremium && category) {
+  if (isPremium) {
     return (
       <PremiumContentGate
         contentId={`imokgubi:${category}`}

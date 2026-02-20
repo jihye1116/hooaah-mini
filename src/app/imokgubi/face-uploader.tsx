@@ -19,7 +19,9 @@ export default function FaceUploader() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawContentsType =
-    searchParams.get('contents') || searchParams.get('category') || 'myfuture';
+    searchParams.get('contents') ||
+    searchParams.get('category') ||
+    'myfacereading';
   const contentsType = normalizeContentsType(rawContentsType);
 
   // 상태 관리
@@ -36,7 +38,7 @@ export default function FaceUploader() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 카메라 훅 사용
-  const { streamRef, stopStream } = useCamera({
+  const { stopStream } = useCamera({
     facingMode,
     videoRef,
     enabled: !imageSrc && !isLoading,
@@ -59,7 +61,7 @@ export default function FaceUploader() {
       try {
         const dataUrl = await fileToDataUrl(file);
         setImageSrc(dataUrl);
-      } catch (error) {
+      } catch {
         setErrorText('파일을 읽을 수 없습니다.');
       }
     }
@@ -99,7 +101,9 @@ export default function FaceUploader() {
       }
 
       // 3단계: 분석 결과 가져오기
-      const resultText = await analyzeImage(uploadedImageUrl, contentsType);
+      const categoryForApi =
+        contentsType === 'myFaceReading' ? 'myFace' : contentsType;
+      const resultText = await analyzeImage(uploadedImageUrl, categoryForApi);
 
       // 4단계: 결과 페이지로 이동
       router.push(
@@ -133,7 +137,7 @@ export default function FaceUploader() {
           </p>
         </div>
         <div className="flex flex-1 items-center justify-center px-8 py-4">
-          <div className="relative aspect-[10/11] w-full max-w-xs overflow-hidden rounded-3xl border border-gray-200 bg-gray-100">
+          <div className="relative aspect-10/11 w-full max-w-xs overflow-hidden rounded-3xl border border-gray-200 bg-gray-100">
             <Image
               src={imageSrc}
               alt="Captured"
@@ -162,7 +166,7 @@ export default function FaceUploader() {
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="h-16 flex-1 rounded-[15px] border-2 border-[#7A8CFF] bg-gradient-to-r from-[#7A8CFF] to-[#CAD1FF] text-base font-bold text-gray-900"
+            className="h-16 flex-1 rounded-[15px] border-2 border-[#7A8CFF] bg-linear-to-r from-[#7A8CFF] to-[#CAD1FF] text-base font-bold text-gray-900"
           >
             {isLoading ? '분석중...' : '확인'}
           </button>
@@ -273,7 +277,10 @@ const normalizeContentsType = (value: string) => {
       return 'myAnimal';
     case 'mytype':
       return 'myType';
+    case 'myfacereading':
+    case '':
+      return 'myFaceReading';
     default:
-      return value;
+      return 'myFaceReading';
   }
 };
