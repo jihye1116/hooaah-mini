@@ -24,6 +24,7 @@ export const uploadImage = async (imageSrc: string): Promise<string> => {
 
   if (uploadResponse.status === 201) {
     const imageUrl = await uploadResponse.text();
+    console.log('Uploaded Image URL:', imageUrl);
     return imageUrl;
   } else {
     throw new Error('Image upload failed');
