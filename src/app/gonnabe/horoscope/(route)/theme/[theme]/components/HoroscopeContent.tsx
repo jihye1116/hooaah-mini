@@ -4,6 +4,7 @@ import HoroscopeUserInfoForm from '@/app/gonnabe/horoscope/(route)/theme/[theme]
 import type { ThemeKey } from '@/app/gonnabe/horoscope/types/fortune';
 import Image, { StaticImageData } from 'next/image';
 import { Suspense } from 'react';
+import ActionButtonGroup from './ActionButtonGroup';
 
 interface HoroscopeContentProps {
   theme: ThemeKey;

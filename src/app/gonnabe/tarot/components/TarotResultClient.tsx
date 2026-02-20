@@ -194,7 +194,7 @@ export default function TarotResultClient({
               </div>
             </div>
 
-            <div className="flex-wrap mb-6 flex justify-center gap-x-1.5 gap-y-2.5">
+            <div className="mb-6 flex flex-wrap justify-center gap-x-1.5 gap-y-2.5">
               {analysis.overallInsight.keywords.map((tag, idx) => (
                 <TagButton key={idx} text={tag} />
               ))}
@@ -234,14 +234,18 @@ export default function TarotResultClient({
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-white p-4 font-bold text-[#1E1E1E] disabled:opacity-50"
+          className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-white/20 bg-transparent px-5 py-3.5 text-[13px] font-medium tracking-[0.04em] text-white/75 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/35 hover:text-white/95 hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)] active:translate-y-0 active:shadow-none disabled:pointer-events-none disabled:opacity-60"
         >
+          <span className="pointer-events-none absolute inset-0 bg-white/5 opacity-0 transition-opacity duration-200 hover:opacity-100" />
           {isSaving ? (
-            <span>저장 중...</span>
+            <>
+              <Download className="h-4 w-4 animate-pulse" />
+              <span className="relative">저장 중...</span>
+            </>
           ) : (
             <>
-              <Download className="h-5 w-5" />
-              결과 이미지 저장하기
+              <Download className="h-4 w-4" />
+              <span className="relative">결과 이미지 저장하기</span>
             </>
           )}
         </button>

@@ -377,17 +377,13 @@ export default function BundleResultPage() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-white p-4 font-bold text-[#3680FF] disabled:opacity-50"
-                style={{
-                  border: '1px solid #3680FF',
-                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                }}
+                className="mt-8 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#1E1450]/20 bg-white/30 px-[22px] py-[10px] text-[12px] font-semibold tracking-[0.03em] text-[#1E1450]/60 transition-all duration-200 hover:border-[#1E1450]/35 hover:bg-white/50 hover:text-[#1E1450]/90 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
               >
                 {isSaving ? (
                   <span>저장 중...</span>
                 ) : (
                   <>
-                    <Download className="h-5 w-5" />
+                    <Download className="h-[13px] w-[13px]" />
                     전체 결과 이미지로 저장하기
                   </>
                 )}

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Download } from 'lucide-react';
 import { toJpeg } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { getPretendardFontCSS } from '@/app/gonnabe/tarot/utils/fontUtils';
+import ActionButtonGroup from './ActionButtonGroup';
 
 interface HoroscopeCaptureWrapperProps {
   children: React.ReactNode;
@@ -49,24 +49,13 @@ export default function HoroscopeCaptureWrapper({
   };
 
   return (
-    <div className="flex flex-col items-center bg-white min-h-screen">
+    <div className="flex min-h-screen flex-col items-center bg-white">
       <div ref={ref} className="w-full bg-white">
         {children}
       </div>
-      <button
-        onClick={handleSave}
-        disabled={isSaving}
-        className="mt-6 mb-10 flex w-[calc(100%-48px)] items-center justify-center gap-2 rounded-xl bg-[#111111] py-4 font-bold text-white transition-colors hover:bg-black/90 disabled:opacity-50"
-      >
-        {isSaving ? (
-          '저장 중...'
-        ) : (
-          <>
-            <Download className="h-5 w-5" />
-            <span>결과 이미지 저장하기</span>
-          </>
-        )}
-      </button>
+      <div className="w-full px-6 pb-10">
+        <ActionButtonGroup onSave={handleSave} />
+      </div>
     </div>
   );
 }
