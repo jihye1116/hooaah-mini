@@ -146,15 +146,17 @@ const ScoreGauge = ({ score = 57, lineName = '' }) => {
   // 3시 방향(0도) 기준, 하단 90도를 비우려면 시작점이 135도(90+45)여야 함.
   // SVG rotate는 시계방향이므로 -225도(-180-45) 회전하여 시작점을 맞춤.
   const rotation = -225;
+  const gradientId = `gaugeGradient-${lineName.replace(/\s+/g, '')}`;
 
   return (
     <div className="flex justify-center py-6">
       {/* 컨테이너 크기 설정 (선 두께 고려) */}
       <div className="relative flex h-[180px] w-[180px] items-center justify-center">
         <svg
-          className="h-full w-full transform"
-          style={{ transform: `rotate(${rotation}deg)` }} // 계산된 회전 각도 적용
+          className="h-full w-full"
           viewBox="0 0 100 100"
+          width="100"
+          height="100"
         >
           <defs>
             {/* 그라데이션 정의 수정:
@@ -162,7 +164,7 @@ const ScoreGauge = ({ score = 57, lineName = '' }) => {
               - 색상: 요청하신 두 가지 색상 적용
             */}
             <linearGradient
-              id="gaugeGradient"
+              id={gradientId}
               x1="0%"
               y1="0%"
               x2="100%"
@@ -173,32 +175,35 @@ const ScoreGauge = ({ score = 57, lineName = '' }) => {
             </linearGradient>
           </defs>
 
-          {/* 배경 트랙 (연한 회색) */}
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            fill="transparent"
-            stroke="#E5E7EB" // Tailwind gray-200
-            strokeWidth={strokeWidth}
-            // 트랙도 totalLength만큼만 그려서 하단을 비움
-            strokeDasharray={`${totalLength} ${circumference}`}
-            strokeLinecap="round"
-          />
+          {/* 회전 적용 그룹 */}
+          <g transform={`rotate(${rotation} 50 50)`}>
+            {/* 배경 트랙 (연한 회색) */}
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="transparent"
+              stroke="#E5E7EB" // Tailwind gray-200
+              strokeWidth={strokeWidth}
+              // 트랙도 totalLength만큼만 그려서 하단을 비움
+              strokeDasharray={`${totalLength} ${circumference}`}
+              strokeLinecap="round"
+            />
 
-          {/* 실제 점수 바 (그라데이션 적용) */}
-          <circle
-            cx="50"
-            cy="50"
-            r={radius}
-            fill="transparent"
-            stroke="url(#gaugeGradient)" // 위에서 정의한 그라데이션 ID 사용
-            strokeWidth={strokeWidth}
-            strokeDasharray={`${progress} ${circumference}`}
-            strokeLinecap="round"
-            // 점수 변경 시 부드러운 애니메이션
-            style={{ transition: 'stroke-dasharray 1s ease-in-out' }}
-          />
+            {/* 실제 점수 바 (그라데이션 적용) */}
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              fill="transparent"
+              stroke={`url(#${gradientId})`} // 위에서 정의한 그라데이션 ID 사용
+              strokeWidth={strokeWidth}
+              strokeDasharray={`${progress} ${circumference}`}
+              strokeLinecap="round"
+              // 점수 변경 시 부드러운 애니메이션
+              style={{ transition: 'stroke-dasharray 1s ease-in-out' }}
+            />
+          </g>
         </svg>
 
         {/* 중앙 컨텐츠 영역 (아이콘 및 점수) */}
