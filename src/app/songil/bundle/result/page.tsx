@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import html2canvas from 'html2canvas-pro';
-import { saveAs } from 'file-saver';
 import { Download } from 'lucide-react';
 import TableOfContents from './TableOfContents';
 import { getLineDescription } from './utils/lineDescriptions';
 import { palmistryPremiumKorean, wealthLinePremiumKorean } from './premium';
+import { getPretendardFontCSS } from './utils/fontUtils';
 
 // Components
 import FundamentalSection from './components/FundamentalSection';
@@ -21,6 +20,8 @@ import PageHeader from './components/PageHeader';
 import BottomNavigation from './components/BottomNavigation';
 import ResultImageTemplate from './components/ResultImageTemplate';
 import { BundleResult } from './types';
+import { toJpeg } from 'html-to-image';
+import { saveAs } from 'file-saver';
 
 // --- Constants & Mappings ---
 
@@ -85,45 +86,60 @@ export default function BundleResultPage() {
     if (isSaving) return;
     setIsSaving(true);
     try {
-      // 1. Capture TOC
+      // 🚀 핵심 3: 폰트를 미리 로드하여 base64 CSS로 변환. 이렇게 하면 매번 재요청하지 않음.
+      const fontCSS = await getPretendardFontCSS();
+
+      const options = {
+        backgroundColor: '#F5F8FF',
+        pixelRatio: 1,
+        quality: 0.8,
+        cacheBust: false, // 🚀 핵심 1: 매 캡쳐마다 폰트/이미지 재다운로드하는 현상 방지
+        fontEmbedCSS: fontCSS, // 수동으로 폰트 삽입
+        skipFonts: true, // 🚨 자동 폰트 로딩 스킵 (속도 최적화)
+      };
+
+      // 1. 캡쳐할 대상(Element)과 파일명을 배열에 싹 다 모아둡니다.
+      const captureTargets = [];
+
       const tocElement = document.getElementById('capture-toc');
       if (tocElement) {
-        const canvas = await html2canvas(tocElement, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#F5F8FF',
-        });
-        canvas.toBlob((blob) => {
-          if (blob) saveAs(blob, 'hooaah-result-00-toc.png');
+        captureTargets.push({
+          element: tocElement,
+          fileName: 'hooaah-result-00-toc.jpg',
         });
       }
 
-      // 2. Capture Lines
       if (result && result.lines) {
         const lineKeys = Object.keys(result.lines);
         for (let i = 0; i < lineKeys.length; i++) {
           const key = lineKeys[i];
-          // Images 1 to 5
           for (let step = 1; step <= 5; step++) {
             const elementId = `capture-${key}-image${step}`;
             const element = document.getElementById(elementId);
             if (element) {
-              const canvas = await html2canvas(element, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#F5F8FF',
+              captureTargets.push({
+                element,
+                fileName: `hooaah-result-${String(i + 1).padStart(2, '0')}-${key}-image${step}.jpg`,
               });
-              canvas.toBlob((blob) => {
-                if (blob) {
-                  const fileName = `hooaah-result-${String(i + 1).padStart(2, '0')}-${key}-image${step}.png`;
-                  saveAs(blob, fileName);
-                }
-              });
-              // Small delay
-              await new Promise((resolve) => setTimeout(resolve, 100));
             }
           }
         }
+      }
+
+      // 2. 모아둔 대상을 병렬로 처리하여 캡쳐합니다. (배치 크기: 3)
+      const batchSize = 3;
+      for (let i = 0; i < captureTargets.length; i += batchSize) {
+        const batch = captureTargets.slice(i, i + batchSize);
+
+        await Promise.all(
+          batch.map(async (target) => {
+            const dataUrl = await toJpeg(target.element, options);
+            saveAs(dataUrl, target.fileName);
+          }),
+        );
+
+        // 🚀 핵심 2: 브라우저가 완전히 멈추는 것만 막기 위해 아주 짧은 숨통(50ms)만 틔워줍니다.
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
     } catch (e) {
       console.error('Save failed', e);
