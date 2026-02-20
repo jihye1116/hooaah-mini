@@ -65,9 +65,9 @@ export default function ResultImageTemplate({
 
         return (
           <React.Fragment key={key}>
-            {/* Step 1: Title + Step 1 + Content */}
+            {/* Image 1: Title + Step 1 */}
             <div
-              id={`capture-${key}-step1`}
+              id={`capture-${key}-image1`}
               className="min-h-screen bg-[#F5F8FF] px-5 pb-10"
             >
               <PageHeader
@@ -87,9 +87,9 @@ export default function ResultImageTemplate({
               />
             </div>
 
-            {/* Step 2 */}
+            {/* Image 2: Step 2 */}
             <div
-              id={`capture-${key}-step2`}
+              id={`capture-${key}-image2`}
               className="min-h-screen bg-[#F5F8FF] px-5 pb-10"
             >
               <StepHeader step="STEP 02" title={premiumData.title[1]} />
@@ -100,9 +100,9 @@ export default function ResultImageTemplate({
               />
             </div>
 
-            {/* Step 3 */}
+            {/* Image 3: Step 3 */}
             <div
-              id={`capture-${key}-step3`}
+              id={`capture-${key}-image3`}
               className="min-h-screen bg-[#F5F8FF] px-5 pb-10"
             >
               <StepHeader step="STEP 03" title={premiumData.title[2]} />
@@ -113,9 +113,9 @@ export default function ResultImageTemplate({
               />
             </div>
 
-            {/* Step 4 */}
+            {/* Image 4: Step 4 + Step 5 */}
             <div
-              id={`capture-${key}-step4`}
+              id={`capture-${key}-image4`}
               className="min-h-screen bg-[#F5F8FF] px-5 pb-10"
             >
               <StepHeader step="STEP 04" title={premiumData.title[3]} />
@@ -124,13 +124,7 @@ export default function ResultImageTemplate({
                 age={result.age || 25}
                 premiumData={premiumData}
               />
-            </div>
-
-            {/* Step 5 */}
-            <div
-              id={`capture-${key}-step5`}
-              className="min-h-screen bg-[#F5F8FF] px-5 pb-10"
-            >
+              <div className="h-10" />
               <StepHeader step="STEP 05" title={premiumData.title[4]} />
               <ChanceSection
                 data={lineData.chance}
@@ -139,9 +133,9 @@ export default function ResultImageTemplate({
               />
             </div>
 
-            {/* Step 6: Step 6 + Content (includes Core Message) */}
+            {/* Image 5: Step 6 (includes Core Message) */}
             <div
-              id={`capture-${key}-step6`}
+              id={`capture-${key}-image5`}
               className="min-h-screen bg-[#F5F8FF] px-5 pb-10"
             >
               <StepHeader step="STEP 06" title={premiumData.title[5]} />

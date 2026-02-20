@@ -103,9 +103,9 @@ export default function BundleResultPage() {
         const lineKeys = Object.keys(result.lines);
         for (let i = 0; i < lineKeys.length; i++) {
           const key = lineKeys[i];
-          // Steps 1 to 6
-          for (let step = 1; step <= 6; step++) {
-            const elementId = `capture-${key}-step${step}`;
+          // Images 1 to 5
+          for (let step = 1; step <= 5; step++) {
+            const elementId = `capture-${key}-image${step}`;
             const element = document.getElementById(elementId);
             if (element) {
               const canvas = await html2canvas(element, {
@@ -115,7 +115,7 @@ export default function BundleResultPage() {
               });
               canvas.toBlob((blob) => {
                 if (blob) {
-                  const fileName = `hooaah-result-${String(i + 1).padStart(2, '0')}-${key}-step${step}.png`;
+                  const fileName = `hooaah-result-${String(i + 1).padStart(2, '0')}-${key}-image${step}.png`;
                   saveAs(blob, fileName);
                 }
               });
