@@ -1,3 +1,4 @@
+import HoroscopeCaptureWrapper from '@/app/gonnabe/horoscope/(route)/theme/[theme]/components/HoroscopeCaptureWrapper';
 import HoroscopeFortuneResult from '@/app/gonnabe/horoscope/(route)/theme/[theme]/components/HoroscopeFortuneResult';
 import HoroscopeUserInfoForm from '@/app/gonnabe/horoscope/(route)/theme/[theme]/components/HoroscopeUserInfoForm';
 import type { ThemeKey } from '@/app/gonnabe/horoscope/types/fortune';
@@ -27,9 +28,15 @@ export default function HoroscopeContent({
 
   // 정보 입력 후 운세 내용 표시
   return (
-    <div>
+    <HoroscopeCaptureWrapper themeId={theme}>
       <div className="relative aspect-square w-full">
-        <Image src={themeImage} alt="Horoscope Theme" fill sizes="auto" />
+        <Image
+          src={themeImage}
+          alt="Horoscope Theme"
+          fill
+          sizes="100vw"
+          priority
+        />
       </div>
 
       <main className="mb-12 flex flex-col p-6">
@@ -57,6 +64,6 @@ export default function HoroscopeContent({
           </Suspense>
         </article>
       </main>
-    </div>
+    </HoroscopeCaptureWrapper>
   );
 }
