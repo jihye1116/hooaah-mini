@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Download } from 'lucide-react';
+import { Check, Download, Loader2 } from 'lucide-react';
 import backgroundEffects from '@/assets/images/songil/background-effects.svg';
 import checkIcon from '@/assets/images/songil/check-icon.svg';
 import wealthIcon from '@/assets/icons/songil/wealth_icon.svg';
@@ -12,6 +12,8 @@ interface TableOfContentsProps {
   bundle?: string;
   onSelect: (idx: number) => void;
   onSave?: () => void;
+  isSaving?: boolean;
+  saveStatus?: 'idle' | 'loading' | 'success';
 }
 
 export default function TableOfContents({
@@ -20,7 +22,12 @@ export default function TableOfContents({
   bundle,
   onSelect,
   onSave,
+  isSaving,
+  saveStatus,
 }: TableOfContentsProps) {
+  const resolvedSaveStatus = saveStatus ?? (isSaving ? 'loading' : 'idle');
+  const isLoading = resolvedSaveStatus === 'loading';
+  const isSuccess = resolvedSaveStatus === 'success';
   // 번들 타입에 따라 다른 아이콘과 텍스트 설정
   const getPackageInfo = () => {
     switch (bundle) {
@@ -151,10 +158,27 @@ export default function TableOfContents({
           {onSave && (
             <button
               onClick={onSave}
-              className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#1E1450]/20 bg-white/30 px-[22px] py-[10px] text-[12px] font-semibold tracking-[0.03em] text-[#1E1450]/60 transition-all duration-200 hover:border-[#1E1450]/35 hover:bg-white/50 hover:text-[#1E1450]/90 active:scale-95"
+              disabled={isLoading || isSuccess}
+              className={`mt-4 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#1E1450]/20 bg-white/30 px-[22px] py-[10px] text-[12px] font-semibold tracking-[0.03em] text-[#1E1450]/60 transition-all duration-200 hover:border-[#1E1450]/35 hover:bg-white/50 hover:text-[#1E1450]/90 active:scale-95 ${
+                isLoading ? 'pointer-events-none opacity-50' : ''
+              } ${
+                isSuccess
+                  ? 'pointer-events-none border-green-500/40 text-green-500'
+                  : ''
+              }`}
             >
-              <Download className="h-[13px] w-[13px]" />
-              전체 결과 이미지로 저장하기
+              {isLoading ? (
+                <Loader2 className="h-[13px] w-[13px] animate-spin" />
+              ) : isSuccess ? (
+                <Check className="h-[13px] w-[13px]" />
+              ) : (
+                <Download className="h-[13px] w-[13px]" />
+              )}
+              {isLoading
+                ? '저장 중...'
+                : isSuccess
+                  ? '저장 완료!'
+                  : '이미지로 저장'}
             </button>
           )}
         </div>

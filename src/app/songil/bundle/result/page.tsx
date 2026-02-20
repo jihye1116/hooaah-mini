@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Download } from 'lucide-react';
+import { Check, Download, Loader2 } from 'lucide-react';
 import TableOfContents from './TableOfContents';
 import { getLineDescription } from './utils/lineDescriptions';
 import { palmistryPremiumKorean, wealthLinePremiumKorean } from './premium';
@@ -59,6 +59,9 @@ export default function BundleResultPage() {
   const [resultImageUrl, setResultImageUrl] = useState<string>('');
   const [bundle, setBundle] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'loading' | 'success'>(
+    'idle',
+  );
 
   useEffect(() => {
     // Client-side only logic
@@ -85,6 +88,7 @@ export default function BundleResultPage() {
   const handleSave = async () => {
     if (isSaving) return;
     setIsSaving(true);
+    setSaveStatus('loading');
     try {
       // 🚀 핵심 3: 폰트를 미리 로드하여 base64 CSS로 변환. 이렇게 하면 매번 재요청하지 않음.
       const fontCSS = await getPretendardFontCSS();
@@ -141,9 +145,13 @@ export default function BundleResultPage() {
         // 🚀 핵심 2: 브라우저가 완전히 멈추는 것만 막기 위해 아주 짧은 숨통(50ms)만 틔워줍니다.
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
+
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus('idle'), 2500);
     } catch (e) {
       console.error('Save failed', e);
       alert('이미지 저장 중 오류가 발생했습니다.');
+      setSaveStatus('idle');
     } finally {
       setIsSaving(false);
     }
@@ -367,6 +375,8 @@ export default function BundleResultPage() {
             handleTOCSelect(key);
           }}
           onSave={handleSave}
+          isSaving={isSaving}
+          saveStatus={saveStatus}
         />
       ) : (
         <div className="min-h-screen bg-[#F5F8FF]">
@@ -376,15 +386,27 @@ export default function BundleResultPage() {
             {isPage2 && currentLineIndex === lineKeys.length - 1 && (
               <button
                 onClick={handleSave}
-                disabled={isSaving}
-                className="mt-8 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#1E1450]/20 bg-white/30 px-[22px] py-[10px] text-[12px] font-semibold tracking-[0.03em] text-[#1E1450]/60 transition-all duration-200 hover:border-[#1E1450]/35 hover:bg-white/50 hover:text-[#1E1450]/90 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+                disabled={isSaving || saveStatus === 'success'}
+                className={`mt-8 flex w-full items-center justify-center gap-1.5 rounded-[10px] border border-[#1E1450]/20 bg-white/30 px-[22px] py-[10px] text-[12px] font-semibold tracking-[0.03em] text-[#1E1450]/60 transition-all duration-200 hover:border-[#1E1450]/35 hover:bg-white/50 hover:text-[#1E1450]/90 active:scale-95 disabled:pointer-events-none disabled:opacity-50 ${
+                  saveStatus === 'success'
+                    ? 'border-green-500/40 text-green-500'
+                    : ''
+                }`}
               >
-                {isSaving ? (
-                  <span>저장 중...</span>
+                {saveStatus === 'loading' ? (
+                  <>
+                    <Loader2 className="h-[13px] w-[13px] animate-spin" />
+                    저장 중...
+                  </>
+                ) : saveStatus === 'success' ? (
+                  <>
+                    <Check className="h-[13px] w-[13px]" />
+                    저장 완료!
+                  </>
                 ) : (
                   <>
                     <Download className="h-[13px] w-[13px]" />
-                    전체 결과 이미지로 저장하기
+                    이미지로 저장
                   </>
                 )}
               </button>
