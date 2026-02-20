@@ -29,9 +29,9 @@ export const YEARLY_CHAPTERS = [
     type: 'flow',
     question: {
       number: 'Chapter 04',
-      title: '상반기 / 하반기 주요 흐름',
+      title: '상반기, 하반기\n주요 흐름',
       description:
-        '1월부터 6월, 7월부터 12월까지\n 각 시기별로 찾아올 기운을 미리 읽어봅니다.',
+        '1월~6월 사이 집중해야 할 에너지와 7월~12월 사이에 나타날 변화, 성과에 대해 알려드릴게요!',
     },
     maxCards: 2,
     resultType: 'dual',

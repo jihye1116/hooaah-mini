@@ -3,56 +3,82 @@ import yearlyResultBackground from '@/assets/images/gonnabe/tarot/yearly/yearly_
 import { cn } from '@sglara/cn';
 import Image from 'next/image';
 import { useState } from 'react';
+import ThemeIcon from '@/assets/icons/gonnabe/tarot/theme_icon.svg';
 
 interface YearlyResultProps {
   data: any;
   resultType: 'single' | 'dual';
   tabs?: string[];
+  onNext: () => void;
+  onPrev: () => void;
+  isLastChapter: boolean;
 }
 
 export default function YearlyResult({
   data,
   resultType,
   tabs,
+  onNext,
+  onPrev,
+  isLastChapter,
 }: YearlyResultProps) {
   const [activeTab, setActiveTab] = useState(0);
 
   const analysis = data?.analysis || {};
-  const selectedCards = data?.selectedCards || [];
+  const cardData = data?.cardData;
+  const selectedCards = data?.selectedCards || (cardData ? [cardData] : []);
 
-  // Helper to get content for current tab/card
+  // 탭 전환 시 부드러운 애니메이션을 위한 Key 처리용
+  const tabKey = `tab-content-${activeTab}`;
+
   const currentContent = () => {
     if (resultType === 'single') {
       const card = selectedCards[0];
-      const interpretation =
-        analysis.integratedMessage ||
-        analysis.cardsOverview ||
-        analysis.individualAnalysis?.[0]?.interpretation ||
-        '해석을 불러올 수 없습니다.';
-
-      const keywords = analysis.cardKeywords || analysis.keywords || [];
+      const keywords =
+        analysis.overallInsight?.keywords ||
+        analysis.cardKeywords ||
+        analysis.keywords ||
+        [];
 
       return {
         card,
-        interpretation,
         keywords,
-        title: '종합 분석',
+        title: '종합 분석', // Dart의 title 역할
+        subtitle: '한 해를 관통하는 주요 테마입니다.', // Dart의 subtitle 역할 (필요시 data에서 추출)
+        sections: [
+          { title: '훅킹 메시지', content: analysis.hookingMessage },
+          { title: '카드 해석', content: analysis.cardInterpretation },
+          { title: '현재 상황', content: analysis.currentSituation },
+          { title: '배움과 교훈', content: analysis.lesson },
+          { title: '오늘의 메시지', content: analysis.todaysMessage },
+        ].filter((section) => section.content),
       };
     } else {
-      // Dual result (2 cards, 2 tabs)
       const index = activeTab;
       const card = selectedCards[index];
       const individual = analysis.individualAnalysis?.[index];
-      const interpretation =
-        individual?.interpretation || '해석을 불러올 수 없습니다.';
-      // Keywords might be per card or global. Assuming global for simplicity or checking if individual has keywords
       const keywords = individual?.keywords || analysis.keywords || [];
 
       return {
         card,
-        interpretation,
         keywords,
         title: tabs?.[index] || `Card ${index + 1}`,
+        subtitle: '선택하신 카드의 상세 해석입니다.', // 필요시 수정
+        sections: [
+          {
+            title: '해석',
+            content:
+              individual?.interpretation || individual?.cardInterpretation,
+          },
+          {
+            title: '현재 상황',
+            content: individual?.currentSituation,
+          },
+          {
+            title: '조언',
+            content: individual?.advice || individual?.lesson,
+          },
+        ].filter((section) => section.content),
       };
     }
   };
@@ -63,79 +89,124 @@ export default function YearlyResult({
     : '';
 
   return (
-    <div className="relative flex size-full flex-col overflow-hidden bg-black pt-16 pb-28 text-white">
+    <div className="relative flex size-full min-h-screen flex-col overflow-hidden bg-black text-white">
+      {/* Background Image */}
       <Image
         src={yearlyResultBackground}
         alt="Result Background"
         fill
-        className="pointer-events-none object-cover opacity-50"
+        className="pointer-events-none object-cover"
+        priority
       />
 
-      {/* Scrollable Content */}
-      <div className="no-scrollbar z-10 flex flex-1 flex-col overflow-y-auto px-6 pt-4 pb-10">
-        {/* Tabs for Dual Result */}
-        {resultType === 'dual' && tabs && (
-          <div className="sticky top-0 z-10 mb-6 flex rounded-xl bg-white/10 p-1 backdrop-blur-md">
-            {tabs.map((tab, index) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(index)}
-                className={cn(
-                  'flex-1 rounded-lg py-2.5 text-sm font-bold transition-all',
-                  activeTab === index
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-white/60 hover:text-white',
-                )}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="flex grow flex-col items-center">
-          {/* Card Display */}
-          <div className="relative mb-6 flex h-[280px] w-full flex-col items-center justify-center rounded-2xl bg-white/5 backdrop-blur-sm">
-            {cardImageUrl && (
-              <div
-                className={cn(
-                  'relative h-[200px] w-[120px] transition-transform duration-500',
-                  content.card?.reversed && 'rotate-180',
-                )}
-              >
-                <Image
-                  src={cardImageUrl}
-                  alt={content.card?.cardName || 'Tarot Card'}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            )}
-            <p className="mt-4 text-sm font-bold text-white">
-              {content.card?.cardName}
-            </p>
-          </div>
-
-          {/* Keywords */}
-          {content.keywords.length > 0 && (
-            <div className="mb-6 flex flex-wrap justify-center gap-2">
-              {content.keywords.map((keyword: string, idx: number) => (
-                <span
-                  key={idx}
-                  className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm"
+      {/* Scrollable Area (Dart: padding: EdgeInsets.fromLTRB(20, 60, 20, 80)) */}
+      <div className="no-scrollbar z-10 flex h-full flex-col overflow-y-auto px-[20px] pt-[60px] pb-[80px]">
+        {/* Glassmorphic Container (Dart: _buildGlassmorphicContainer) */}
+        <div className="relative flex w-full flex-col rounded-[24px] border border-white/10 bg-white/10 p-[20px] shadow-lg backdrop-blur-md">
+          {/* Tabs for Dual Result (Dart: _buildStyledTabBar) */}
+          {resultType === 'dual' && tabs && (
+            <div className="mb-6 flex w-full rounded-xl bg-black/20 p-1 backdrop-blur-sm">
+              {tabs.map((tab, index) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(index)}
+                  className={cn(
+                    'flex-1 rounded-lg py-2.5 text-sm font-medium transition-all duration-250',
+                    activeTab === index
+                      ? 'bg-white/20 text-white shadow-sm'
+                      : 'text-white/60 hover:text-white/80',
+                  )}
                 >
-                  #{keyword}
-                </span>
+                  {tab}
+                </button>
               ))}
             </div>
           )}
 
-          {/* Interpretation */}
-          <div className="w-full rounded-2xl bg-white/10 p-5 backdrop-blur-md">
-            <h3 className="mb-3 text-lg font-bold">{content.title}</h3>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap text-white/90">
-              {content.interpretation}
+          {/* Animated Tab Content Wrapper */}
+          <div
+            key={tabKey}
+            className="animate-in fade-in flex flex-col items-center duration-300"
+          >
+            {/* Theme Icon Mockup (Dart: SvgPicture.asset) */}
+            <div className="mb-5 flex h-[11.27px] w-[28px] items-center justify-center">
+              <Image
+                src={ThemeIcon}
+                alt="Theme Icon"
+                className="mx-2 h-[11.27px] w-[28px] text-white/60"
+              />
+            </div>
+
+            {/* Title (Dart: fontSize 19, fontWeight 500) */}
+            <h2 className="text-center font-serif text-[19px] leading-[1.3] font-medium text-white">
+              {content.title}
+            </h2>
+
+            {/* Subtitle (Dart: fontSize 11, color white/80, letterSpacing -0.11) */}
+            <p className="mt-1.5 text-center text-[11px] leading-[1.6] tracking-[-0.11px] text-white/80">
+              {content.subtitle}
             </p>
+
+            {/* Tarot Card Display */}
+            <div className="mt-5 mb-5 flex w-full flex-col items-center justify-center">
+              <div className="flex flex-col items-center rounded-lg bg-gray-400 px-2 py-3">
+                {cardImageUrl && (
+                  <div
+                    className={cn(
+                      'relative h-[220px] w-[130px] drop-shadow-xl transition-transform duration-500',
+                      content.card?.reversed && 'rotate-180',
+                    )}
+                  >
+                    {/* 모서리 둥글기를 처리하는 내부 래퍼 */}
+                    <div className="relative size-full overflow-hidden rounded-xl">
+                      <Image
+                        src={cardImageUrl}
+                        alt={content.card?.cardName || 'Tarot Card'}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+                {content.card?.cardName && (
+                  <span className="mt-2 text-xs text-white">
+                    {content.card.cardName}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Tags / Keywords */}
+            {content.keywords.length > 0 && (
+              <div className="mb-5 flex flex-wrap justify-center gap-2">
+                {content.keywords.map((keyword: string, idx: number) => (
+                  <span
+                    key={idx}
+                    className="rounded-full border border-white/5 bg-white/15 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm"
+                  >
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Description Sections (Dart: fontSize 14, color white/80, letterSpacing -0.12, height 1.7) */}
+            <div className="flex w-full flex-col gap-6 font-serif text-[14px] leading-[1.7] tracking-[-0.12px] text-white/80">
+              {content.sections && content.sections.length > 0 ? (
+                content.sections.map((section: any, idx: number) => (
+                  <div key={idx} className="flex flex-col">
+                    {/* <h3 className="mb-1.5 font-bold text-white/90">
+                      [{section.title}]
+                    </h3> */}
+                    <p className="whitespace-pre-wrap">{section.content}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center whitespace-pre-wrap">
+                  해석을 불러올 수 없습니다.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

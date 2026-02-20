@@ -6,6 +6,7 @@ import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import type { TarotCard as TarotCardType } from '@/app/gonnabe/tarot/types/theme';
 import { cn } from '@sglara/cn';
 import { useEffect, useRef, useState } from 'react';
+import yearlyBg from '@/assets/images/gonnabe/tarot/yearly/yearly_report_select_background.png';
 
 interface YearlyTarotCardSelectionProps {
   initialCards: TarotCardType[];
@@ -140,12 +141,22 @@ export default function YearlyTarotCardSelection({
   }, [isSelectionComplete, selectedCardIds, onComplete]);
 
   return (
-    <div className="relative flex size-full flex-col items-center pt-16 pb-28">
+    <div
+      className="relative flex size-full flex-col items-center pt-16 pb-28"
+      style={{
+        backgroundImage: `url(${yearlyBg.src})`,
+        backgroundPosition: 'bottom center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+      }}
+    >
+      {/* 컨텐츠 */}
+
       <div className="z-10 mt-[clamp(1rem,3vh,2rem)] px-5">
         <p className="text-center text-sm leading-normal text-white">
-          {maxSelectableCards === 1
-            ? '마음을 편히 하여, 선택한 질문을 떠올린 뒤 \n눈길이 가는 카드 한 장을 선택하세요.'
-            : '마음을 편히 하여, 선택한 질문을 떠올린 뒤 \n눈길이 가는 카드 두 장을 선택하세요.'}
+          마음을 편안하게 하고, {new Date().getFullYear()}년을 생각하며
+          <br />
+          눈길이 가는 카드 &quot;{maxSelectableCards}장&quot;을 선택하세요.
         </p>
       </div>
 

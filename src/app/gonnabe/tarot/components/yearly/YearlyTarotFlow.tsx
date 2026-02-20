@@ -1,7 +1,7 @@
 'use client';
 
 import { fetchTarotCards } from '@/app/gonnabe/tarot/actions';
-import { generateThemeTarotAnalysis } from '@/app/gonnabe/tarot/api/analysis';
+import { generateTarotAnalysis } from '@/app/gonnabe/tarot/api/analysis';
 import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import type { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
 import type { TarotCard } from '@/app/gonnabe/tarot/types/theme';
@@ -80,13 +80,21 @@ export default function YearlyTarotFlow() {
         {},
       );
 
+      // 1장일 때는 String, 여러 장일 때는 List로 전달
+      const cardId = selectedIds.length === 1 ? selectedIds[0] : selectedIds;
+
+      const result = await generateTarotAnalysis({
+        cardId,
+        analysisType: 'premium',
+        cardReversedInfo:
+          Object.keys(cardReversedInfo).length > 0 ? cardReversedInfo : null,
+      });
+
       setAnalysisResult(result);
       setStep('result');
     } catch (error) {
       console.error('Analysis failed:', error);
       alert('분석에 실패했습니다. 다시 시도해주세요.');
-      // Reset selection if failed?
-      // For now, let user retry or get stuck (alert shows error)
     } finally {
       setIsAnalyzing(false);
     }
@@ -126,7 +134,32 @@ export default function YearlyTarotFlow() {
     router.push('/gonnabe/tarot');
   };
 
-  const canNavigateNext = currentChapter.type !== 'flow' || step === 'result';
+  const canNavigateNext = true;
+  // const canNavigateNext = currentChapter.type == 'flow' || step == 'result';
+
+  // Calculate total pages: intro(1) + preview(1) + (5 flow chapters * 2 pages each = 10)
+  const TOTAL_PAGES = 12;
+
+  // Calculate current page index (0-based)
+  const calculatePageIndex = () => {
+    let pageIndex = 0;
+
+    // Pages 0-1: intro and preview
+    if (currentChapterIndex === 0) return 0; // intro
+    if (currentChapterIndex === 1) return 1; // preview
+
+    // Pages 2-11: flow chapters (each has 2 pages: question + select)
+    const flowChapterIndex = currentChapterIndex - 2;
+    pageIndex = 2 + flowChapterIndex * 2;
+
+    if (step === 'select') {
+      pageIndex += 1; // select is the 2nd page of each flow chapter
+    }
+
+    return pageIndex;
+  };
+
+  const currentPageIndex = calculatePageIndex();
 
   const content = (() => {
     if (currentChapter.type === 'intro') {
@@ -221,18 +254,27 @@ export default function YearlyTarotFlow() {
         }`}
       >
         <ReportNavControl
-          index={currentChapterIndex + 1}
-          total={YEARLY_CHAPTERS.length}
+          index={currentPageIndex + 1}
+          total={TOTAL_PAGES}
           onPrev={() => {
             if (currentChapterIndex === 0) {
               handleClose();
+            } else if (currentChapter.type === 'flow' && step === 'select') {
+              // Go back to question page in same chapter
+              setStep('question');
             } else {
               handlePrevChapter();
             }
           }}
           onNext={() => {
             if (!canNavigateNext) return;
-            handleNextChapter();
+
+            if (currentChapter.type === 'flow' && step === 'question') {
+              // Move to select page in same chapter
+              setStep('select');
+            } else {
+              handleNextChapter();
+            }
           }}
           onClose={handleClose}
           backgroundColor="white"
