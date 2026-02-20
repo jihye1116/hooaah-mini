@@ -2,6 +2,7 @@
 
 import { fetchTarotCards } from '@/app/gonnabe/tarot/actions';
 import { generateTarotAnalysis } from '@/app/gonnabe/tarot/api/analysis';
+import type { GenerateTarotAnalysisParams } from '@/app/gonnabe/tarot/api/analysis';
 import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import type { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
 import type { TarotCard } from '@/app/gonnabe/tarot/types/theme';
@@ -27,6 +28,7 @@ export default function YearlyTarotFlow() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [showControls, setShowControls] = useState(true);
+  const [reportId, setReportId] = useState<string | null>(null);
 
   const currentChapter = YEARLY_CHAPTERS[currentChapterIndex];
   const chapterTitles = useMemo(
@@ -83,12 +85,27 @@ export default function YearlyTarotFlow() {
       // 1장일 때는 String, 여러 장일 때는 List로 전달
       const cardId = selectedIds.length === 1 ? selectedIds[0] : selectedIds;
 
-      const result = await generateTarotAnalysis({
-        cardId,
-        analysisType: 'premium',
-        cardReversedInfo:
-          Object.keys(cardReversedInfo).length > 0 ? cardReversedInfo : null,
-      });
+      const payload: GenerateTarotAnalysisParams = reportId
+        ? { cardId, reportId, analysisType: 'premium' }
+        : {
+            cardId,
+            analysisType: 'premium',
+            cardReversedInfo:
+              Object.keys(cardReversedInfo).length > 0
+                ? cardReversedInfo
+                : null,
+          };
+
+      const result = await generateTarotAnalysis(payload);
+
+      const nextReportId =
+        typeof result === 'object' && result !== null
+          ? String((result as { reportId?: unknown }).reportId ?? '').trim()
+          : '';
+
+      if (nextReportId) {
+        setReportId(nextReportId);
+      }
 
       setAnalysisResult(result);
       setStep('result');

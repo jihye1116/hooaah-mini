@@ -24,9 +24,46 @@ export default function YearlyResult({
 }: YearlyResultProps) {
   const [activeTab, setActiveTab] = useState(0);
 
-  const analysis = data?.analysis || {};
-  const cardData = data?.cardData;
-  const selectedCards = data?.selectedCards || (cardData ? [cardData] : []);
+  const normalizePayload = () => {
+    if (data && typeof data === 'object') {
+      const record = data as Record<string, unknown>;
+      const wrapped = record.data as Record<string, unknown> | undefined;
+      if (wrapped && typeof wrapped === 'object') {
+        const values = Object.values(wrapped);
+        if (values.length > 0) {
+          return values[0] as Record<string, unknown>;
+        }
+        return wrapped as Record<string, unknown>;
+      }
+      return record as Record<string, unknown>;
+    }
+    return {} as Record<string, unknown>;
+  };
+
+  const payload = normalizePayload();
+  const stepName =
+    typeof (data as { stepName?: unknown })?.stepName === 'string'
+      ? String((data as { stepName?: unknown }).stepName)
+      : '';
+  const rawAnalysis =
+    (payload.analysis as Record<string, unknown> | undefined) ??
+    ((data as { analysis?: unknown })?.analysis as
+      | Record<string, unknown>
+      | undefined) ??
+    {};
+  const selectedCardFromResponse =
+    (data as { selectedCard?: unknown })?.selectedCard ??
+    (payload.cardData as unknown);
+  const selectedCardsFromResponse =
+    (data as { selectedCards?: unknown })?.selectedCards ??
+    (payload.selectedCards as unknown);
+  const selectedCards = Array.isArray(selectedCardsFromResponse)
+    ? selectedCardsFromResponse
+    : selectedCardFromResponse
+      ? [selectedCardFromResponse]
+      : [];
+
+  const analysis = rawAnalysis || {};
 
   // 탭 전환 시 부드러운 애니메이션을 위한 Key 처리용
   const tabKey = `tab-content-${activeTab}`;
@@ -35,29 +72,59 @@ export default function YearlyResult({
     if (resultType === 'single') {
       const card = selectedCards[0];
       const keywords =
-        analysis.overallInsight?.keywords ||
-        analysis.cardKeywords ||
-        analysis.keywords ||
+        (analysis as { overallInsight?: { keywords?: string[] } })
+          .overallInsight?.keywords ||
+        (analysis as { cardKeywords?: string[] }).cardKeywords ||
+        (analysis as { keywords?: string[] }).keywords ||
         [];
 
       return {
         card,
         keywords,
-        title: '종합 분석', // Dart의 title 역할
-        subtitle: '한 해를 관통하는 주요 테마입니다.', // Dart의 subtitle 역할 (필요시 data에서 추출)
+        title:
+          (analysis as { section_title?: string }).section_title || '종합 분석',
+        subtitle: stepName || '한 해를 관통하는 주요 테마입니다.',
         sections: [
-          { title: '훅킹 메시지', content: analysis.hookingMessage },
-          { title: '카드 해석', content: analysis.cardInterpretation },
-          { title: '현재 상황', content: analysis.currentSituation },
-          { title: '배움과 교훈', content: analysis.lesson },
-          { title: '오늘의 메시지', content: analysis.todaysMessage },
+          {
+            title: '카드 묘사',
+            content: (analysis as { visual_description?: string })
+              .visual_description,
+          },
+          {
+            title: '예측',
+            content: (analysis as { prediction?: string }).prediction,
+          },
+          {
+            title: '개인 인사이트',
+            content: (analysis as { personalized_insight?: string })
+              .personalized_insight,
+          },
+          {
+            title: '리스크',
+            content: (analysis as { risk?: string }).risk,
+          },
+          {
+            title: '마무리 조언',
+            content: (analysis as { closing_advice?: string }).closing_advice,
+          },
         ].filter((section) => section.content),
       };
     } else {
       const index = activeTab;
       const card = selectedCards[index];
-      const individual = analysis.individualAnalysis?.[index];
-      const keywords = individual?.keywords || analysis.keywords || [];
+      const individualAnalysis = Array.isArray(
+        (analysis as { individualAnalysis?: unknown }).individualAnalysis,
+      )
+        ? ((analysis as { individualAnalysis?: unknown })
+            .individualAnalysis as Record<string, unknown>[])
+        : Array.isArray(analysis)
+          ? (analysis as Record<string, unknown>[])
+          : [];
+      const individual = individualAnalysis[index] || {};
+      const keywords =
+        (individual as { keywords?: string[] }).keywords ||
+        (analysis as { keywords?: string[] }).keywords ||
+        [];
 
       return {
         card,
@@ -68,15 +135,20 @@ export default function YearlyResult({
           {
             title: '해석',
             content:
-              individual?.interpretation || individual?.cardInterpretation,
+              (individual as { interpretation?: string }).interpretation ||
+              (individual as { cardInterpretation?: string })
+                .cardInterpretation,
           },
           {
             title: '현재 상황',
-            content: individual?.currentSituation,
+            content: (individual as { currentSituation?: string })
+              .currentSituation,
           },
           {
             title: '조언',
-            content: individual?.advice || individual?.lesson,
+            content:
+              (individual as { advice?: string }).advice ||
+              (individual as { lesson?: string }).lesson,
           },
         ].filter((section) => section.content),
       };
@@ -87,6 +159,8 @@ export default function YearlyResult({
   const cardImageUrl = content.card
     ? `${TAROT_S3_BASE_URL}/${content.card.cardThumbnail || content.card.image}.png`
     : '';
+
+  console.log('data:', data);
 
   return (
     <div className="relative flex size-full min-h-screen flex-col overflow-hidden bg-black text-white">

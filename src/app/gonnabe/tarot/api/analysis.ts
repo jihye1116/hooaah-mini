@@ -1,8 +1,11 @@
 export interface GenerateTarotAnalysisParams {
   userId?: string;
-  cardId: string | string[];
+  cardId?: string | string[];
   analysisType?: string;
   cardReversedInfo?: Record<string, boolean> | null;
+  reportId?: string;
+  language?: string;
+  jwt?: string;
 }
 
 export interface GenerateThemeTarotAnalysisParams {
@@ -13,8 +16,12 @@ export interface GenerateThemeTarotAnalysisParams {
 
 export async function generateTarotAnalysis<TResponse = unknown>({
   cardId,
-  analysisType = 'premium',
+  analysisType = 'daily',
   cardReversedInfo,
+  userId,
+  reportId,
+  language,
+  jwt,
 }: GenerateTarotAnalysisParams): Promise<TResponse> {
   const url = '/api/tarot/analysis/generate';
 
@@ -25,9 +32,13 @@ export async function generateTarotAnalysis<TResponse = unknown>({
       Accept: 'application/json',
     },
     body: JSON.stringify({
+      jwt,
       cardId,
       analysisType,
       cardReversedInfo,
+      userId,
+      reportId,
+      language,
     }),
     cache: 'no-store',
   });
