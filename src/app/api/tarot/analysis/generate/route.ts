@@ -7,7 +7,17 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { cardId, analysisType, cardReversedInfo } = body;
+    const {
+      jwt: incomingJwt,
+      cardId,
+      analysisType,
+      cardReversedInfo,
+      userId,
+      reportId,
+      language,
+    } = body;
+
+    console.log('[tarot][generate] incoming body', body);
 
     if (!BACKEND_BASE) {
       return NextResponse.json(
@@ -26,18 +36,27 @@ export async function POST(request: NextRequest) {
     const backendBase = BACKEND_BASE.replace(/\/+$/g, '');
     const url = `${backendBase}/api/tarot/analysis/generate`;
 
-    const token = jwt.sign(
-      {
-        cardId,
-        analysisType,
-        cardReversedInfo,
-      },
-      JWT_SECRET,
-      {
-        algorithm: 'HS256',
-        expiresIn: '5m',
-      },
-    );
+    const token =
+      typeof incomingJwt === 'string' && incomingJwt.trim()
+        ? incomingJwt.trim()
+        : jwt.sign(
+            {
+              cardId,
+              analysisType,
+              cardReversedInfo,
+              userId,
+              reportId,
+              language,
+            },
+            JWT_SECRET,
+            {
+              algorithm: 'HS256',
+              expiresIn: '5m',
+            },
+          );
+
+    const outboundBody = { jwt: token };
+    console.log('[tarot][generate] outbound body', outboundBody);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -45,7 +64,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: JSON.stringify({ jwt: token }),
+      body: JSON.stringify(outboundBody),
     });
 
     if (!response.ok) {
