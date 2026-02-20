@@ -163,13 +163,7 @@ const ScoreGauge = ({ score = 57, lineName = '' }) => {
               - 방향: 수평 (x1=0% -> x2=100%)
               - 색상: 요청하신 두 가지 색상 적용
             */}
-            <linearGradient
-              id={gradientId}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="0%"
-            >
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#F97B68" /> {/* 끝: 코랄/레드 */}
               <stop offset="100%" stopColor="#3680FF" /> {/* 시작: 파랑 */}
             </linearGradient>
