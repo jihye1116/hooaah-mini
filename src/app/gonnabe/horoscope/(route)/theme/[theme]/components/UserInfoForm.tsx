@@ -17,6 +17,26 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
     }
   };
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value; // "YYYY-MM-DD" 형태로 들어옴
+
+    // 값이 완전히 지워졌을 때 처리
+    if (!inputValue) {
+      setBirthDate('');
+      return;
+    }
+
+    // '-' 기준으로 연도 부분만 분리
+    const year = inputValue.split('-')[0];
+
+    // 연도가 4자리를 초과하면 상태를 업데이트하지 않고 무시함
+    if (year.length > 4) {
+      return;
+    }
+
+    setBirthDate(inputValue);
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
       <div className="w-full max-w-md">
@@ -57,7 +77,8 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
               id="birthDate"
               type="date"
               value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
+              onChange={handleDateChange} // 수정한 핸들러 적용
+              max={new Date().toISOString().split('T')[0]} // 달력 팝업용 제한
               className="rounded-xl border border-[#E0E0E0] px-4 py-3 transition-colors outline-none focus:border-[#333333]"
               required
             />
