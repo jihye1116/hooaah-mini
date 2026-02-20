@@ -8,7 +8,7 @@ const WhiteBox = ({
   className?: string;
 }) => (
   <div
-    className={`rounded-[20px] border border-white bg-white/80 p-6 backdrop-blur-sm ${className}`}
+    className={`rounded-[20px] border border-white bg-[rgba(255,255,255,0.8)] p-6 backdrop-blur-sm ${className}`}
   >
     {children}
   </div>

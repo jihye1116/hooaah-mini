@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { Download } from 'lucide-react';
 import backgroundEffects from '@/assets/images/songil/background-effects.svg';
 import checkIcon from '@/assets/images/songil/check-icon.svg';
 import wealthIcon from '@/assets/icons/songil/wealth_icon.svg';
@@ -10,6 +11,7 @@ interface TableOfContentsProps {
   lineNames: Record<string, string>;
   bundle?: string;
   onSelect: (idx: number) => void;
+  onSave?: () => void;
 }
 
 export default function TableOfContents({
@@ -17,6 +19,7 @@ export default function TableOfContents({
   lineNames,
   bundle,
   onSelect,
+  onSave,
 }: TableOfContentsProps) {
   // 번들 타입에 따라 다른 아이콘과 텍스트 설정
   const getPackageInfo = () => {
@@ -143,6 +146,21 @@ export default function TableOfContents({
               </p>
             </button>
           ))}
+
+          {/* Save Button */}
+          {onSave && (
+            <button
+              onClick={onSave}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white p-4 font-bold text-[#3680FF]"
+              style={{
+                border: '1px solid #3680FF',
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+              }}
+            >
+              <Download className="h-5 w-5" />
+              전체 결과 이미지로 저장하기
+            </button>
+          )}
         </div>
       </div>
     </div>

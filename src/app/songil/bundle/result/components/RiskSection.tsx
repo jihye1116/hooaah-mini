@@ -100,7 +100,7 @@ const RiskSection = ({
         <div className="space-y-4">
           <SubTitle>{premiumData.risk_type}</SubTitle>
           {data.type?.map((item, idx) => (
-            <div key={idx} className="rounded-lg bg-gray-50 p-3">
+            <div key={idx} className="rounded-lg bg-[#f9fafb] p-3">
               <h5 className="mb-1 font-semibold text-[#111111]">
                 {item.title}
               </h5>

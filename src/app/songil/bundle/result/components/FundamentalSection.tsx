@@ -38,7 +38,7 @@ const FundamentalSection = ({
     <div className="space-y-6">
       {/* 이미지 및 기본 정보 */}
       <div className="flex flex-col items-center">
-        <div className="relative mb-4 h-[200px] w-[170px] overflow-hidden rounded-[20px] border border-black/10">
+        <div className="relative mb-4 h-[200px] w-[170px] overflow-hidden rounded-[20px] border border-[rgba(0,0,0,0.1)]">
           {resultImageUrl ? (
             <Image
               src={resultImageUrl}
@@ -47,7 +47,7 @@ const FundamentalSection = ({
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">
+            <div className="flex h-full w-full items-center justify-center bg-[#f3f4f6] text-[#9ca3af]">
               No Image
             </div>
           )}

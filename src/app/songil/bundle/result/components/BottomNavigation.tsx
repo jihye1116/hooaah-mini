@@ -25,10 +25,12 @@ export default function BottomNavigation({
           <button
             onClick={onNext}
             disabled={isNextDisabled}
-            className="flex flex-1 items-center justify-center gap-[19px] rounded-[13px] px-[37px] py-[19px] text-[16px] leading-[1.4] font-semibold tracking-[-0.024em] text-white shadow-lg transition-transform active:scale-[0.98] disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-[19px] rounded-[13px] px-[37px] py-[19px] text-[16px] leading-[1.4] font-semibold tracking-[-0.024em] text-white transition-transform active:scale-[0.98] disabled:opacity-50"
             style={{
               backgroundImage:
                 'linear-gradient(54deg, rgba(54, 128, 255, 1) 39%, rgba(186, 134, 244, 1) 73%, rgba(249, 149, 157, 1) 100%)',
+              boxShadow:
+                '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             }}
           >
             {nextLabel}
@@ -74,11 +76,13 @@ export default function BottomNavigation({
               <button
                 onClick={onNext}
                 disabled={isNextDisabled}
-                className="flex flex-1 items-center justify-center gap-[19px] rounded-[14px] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-white shadow-lg transition-transform active:scale-[0.98] disabled:opacity-50"
+                className="flex flex-1 items-center justify-center gap-[19px] rounded-[14px] px-6 py-0 text-[18px] leading-[1.4] font-bold tracking-[-0.044444em] text-white transition-transform active:scale-[0.98] disabled:opacity-50"
                 style={{
                   height: '64px',
                   backgroundImage:
                     'linear-gradient(54deg, rgba(54, 128, 255, 1) 39%, rgba(186, 134, 244, 1) 73%, rgba(249, 149, 157, 1) 100%)',
+                  boxShadow:
+                    '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                 }}
               >
                 {nextLabel}

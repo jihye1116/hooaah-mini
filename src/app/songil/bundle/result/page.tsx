@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import html2canvas from 'html2canvas-pro';
+import { saveAs } from 'file-saver';
+import { Download } from 'lucide-react';
 import TableOfContents from './TableOfContents';
 import { getLineDescription } from './utils/lineDescriptions';
 import { palmistryPremiumKorean, wealthLinePremiumKorean } from './premium';
@@ -16,6 +19,7 @@ import PresentSection from './components/PresentSection';
 import StepHeader from './components/StepHeader';
 import PageHeader from './components/PageHeader';
 import BottomNavigation from './components/BottomNavigation';
+import ResultImageTemplate from './components/ResultImageTemplate';
 import { BundleResult } from './types';
 
 // --- Constants & Mappings ---
@@ -53,6 +57,7 @@ export default function BundleResultPage() {
   const [result, setResult] = useState<BundleResult | null>(null);
   const [resultImageUrl, setResultImageUrl] = useState<string>('');
   const [bundle, setBundle] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     // Client-side only logic
@@ -75,6 +80,58 @@ export default function BundleResultPage() {
       setTimeout(() => setBundle(savedBundle), 0);
     }
   }, []);
+
+  const handleSave = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      // 1. Capture TOC
+      const tocElement = document.getElementById('capture-toc');
+      if (tocElement) {
+        const canvas = await html2canvas(tocElement, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#F5F8FF',
+        });
+        canvas.toBlob((blob) => {
+          if (blob) saveAs(blob, 'hooaah-result-00-toc.png');
+        });
+      }
+
+      // 2. Capture Lines
+      if (result && result.lines) {
+        const lineKeys = Object.keys(result.lines);
+        for (let i = 0; i < lineKeys.length; i++) {
+          const key = lineKeys[i];
+          // Steps 1 to 6
+          for (let step = 1; step <= 6; step++) {
+            const elementId = `capture-${key}-step${step}`;
+            const element = document.getElementById(elementId);
+            if (element) {
+              const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#F5F8FF',
+              });
+              canvas.toBlob((blob) => {
+                if (blob) {
+                  const fileName = `hooaah-result-${String(i + 1).padStart(2, '0')}-${key}-step${step}.png`;
+                  saveAs(blob, fileName);
+                }
+              });
+              // Small delay
+              await new Promise((resolve) => setTimeout(resolve, 100));
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Save failed', e);
+      alert('이미지 저장 중 오류가 발생했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // --- Step Generation Logic ---
   const steps = useMemo<Step[]>(() => {
@@ -234,38 +291,19 @@ export default function BundleResultPage() {
     }
   };
 
-  // --- Main Render ---
-
-  if (mode === 'toc') {
-    return (
-      <TableOfContents
-        lineKeys={Object.keys(result.lines)}
-        lineNames={LINE_NAMES}
-        bundle={bundle}
-        onSelect={(idx) => {
-          // idx is 1-based index from TOC
-          // The TOC component maps lineKeys and passes idx+1.
-          // So if I select 1st item (idx=1), the key is lineKeys[0].
-          const key = Object.keys(result.lines)[idx - 1];
-          handleTOCSelect(key);
-        }}
-      />
-    );
-  }
-
   const currentStep = steps[currentStepIndex];
-  const nextStep = steps[currentStepIndex + 1];
-  const prevStep = steps[currentStepIndex - 1];
+  // const nextStep = steps[currentStepIndex + 1]; // Unused
+  // const prevStep = steps[currentStepIndex - 1]; // Unused
 
   // Determine if current step is page1 or page2
-  const isPage1 = currentStep.id.endsWith('-page1');
-  const isPage2 = currentStep.id.endsWith('-page2');
+  const isPage1 = currentStep?.id.endsWith('-page1');
+  const isPage2 = currentStep?.id.endsWith('-page2');
 
   // Get line name from current step ID
-  const currentLineKey = currentStep.id.split('-')[0];
+  const currentLineKey = currentStep?.id.split('-')[0];
   const currentLineName = LINE_NAMES[currentLineKey] || currentLineKey;
   const currentPremiumData = palmistryPremiumKorean[currentLineKey];
-  const lineKeys = Object.keys(result.lines);
+  const lineKeys = result ? Object.keys(result.lines) : [];
   const currentLineIndex = lineKeys.indexOf(currentLineKey);
   const nextLineKey =
     currentLineIndex >= 0 ? lineKeys[currentLineIndex + 1] : undefined;
@@ -290,28 +328,75 @@ export default function BundleResultPage() {
     nextLabel = '처음으로';
   }
 
-  return (
-    <div className="min-h-screen bg-[#F5F8FF]">
-      <main className="px-5 pb-40">{currentStep.render(null)}</main>
+  // --- Main Render ---
 
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        onPrev={
-          isPage1
-            ? undefined
-            : nextLineName
-              ? () => {
-                  if (nextLineStepIndex !== -1) {
-                    setCurrentStepIndex(nextLineStepIndex);
-                  }
-                }
-              : undefined
-        }
-        onNext={isPage2 ? handleGoToToc : isPage1 ? handleNext : () => {}}
-        prevLabel={prevLabel}
-        nextLabel={nextLabel}
-        isPage1={isPage1}
-      />
-    </div>
+  return (
+    <>
+      {/* Hidden Template for Image Generation */}
+      {result && (
+        <ResultImageTemplate
+          result={result}
+          resultImageUrl={resultImageUrl}
+          bundle={bundle}
+        />
+      )}
+
+      {mode === 'toc' ? (
+        <TableOfContents
+          lineKeys={Object.keys(result.lines)}
+          lineNames={LINE_NAMES}
+          bundle={bundle}
+          onSelect={(idx) => {
+            const key = Object.keys(result.lines)[idx - 1];
+            handleTOCSelect(key);
+          }}
+          onSave={handleSave}
+        />
+      ) : (
+        <div className="min-h-screen bg-[#F5F8FF]">
+          <main className="px-5 pb-40">
+            {currentStep.render(null)}
+            {/* Save Button for Detail View */}
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-white p-4 font-bold text-[#3680FF] disabled:opacity-50"
+              style={{
+                border: '1px solid #3680FF',
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+              }}
+            >
+              {isSaving ? (
+                <span>저장 중...</span>
+              ) : (
+                <>
+                  <Download className="h-5 w-5" />
+                  전체 결과 이미지로 저장하기
+                </>
+              )}
+            </button>
+          </main>
+
+          {/* Bottom Navigation */}
+          <BottomNavigation
+            onPrev={
+              isPage1
+                ? undefined
+                : nextLineName
+                  ? () => {
+                      if (nextLineStepIndex !== -1) {
+                        setCurrentStepIndex(nextLineStepIndex);
+                      }
+                    }
+                  : undefined
+            }
+            onNext={isPage2 ? handleGoToToc : isPage1 ? handleNext : () => {}}
+            prevLabel={prevLabel}
+            nextLabel={nextLabel}
+            isPage1={isPage1}
+          />
+        </div>
+      )}
+    </>
   );
 }

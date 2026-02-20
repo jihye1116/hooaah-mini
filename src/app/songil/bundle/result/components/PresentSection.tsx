@@ -101,7 +101,12 @@ const PresentSection = ({
       </WhiteBox>
 
       {/* Core Message (Total) */}
-      <div className="rounded-[20px] bg-gradient-to-r from-[#3680FF] via-[#BA86F4] to-[#F9959D] p-[2px]">
+      <div
+        className="rounded-[20px] p-[2px]"
+        style={{
+          background: 'linear-gradient(to right, #3680FF, #BA86F4, #F9959D)',
+        }}
+      >
         <WhiteBox className="h-full border-none !bg-white">
           <SectionTitle>핵심 메시지</SectionTitle>
           <p className="mb-6 text-center text-lg font-bold text-[#111111]">
