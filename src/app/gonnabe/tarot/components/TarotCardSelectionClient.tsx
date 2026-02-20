@@ -85,13 +85,6 @@ export default function TarotCardSelectionClient({
       if (prev.length >= maxSelectableCards) return prev;
       return [...prev, cardId];
     });
-
-    // 선택된 카드는 "뒤집힘(역방향)"으로 간주
-    setCards((prev) =>
-      prev.map((card) =>
-        card.id === cardId ? { ...card, reversed: true } : card,
-      ),
-    );
   };
 
   const handleShuffle = async () => {
@@ -124,7 +117,8 @@ export default function TarotCardSelectionClient({
 
     const cardReversedInfo = selectedCardIds.reduce<Record<string, boolean>>(
       (acc, id) => {
-        acc[id] = true;
+        const card = cards.find((c) => c.id === id);
+        acc[id] = card?.reversed ?? false;
         return acc;
       },
       {},
@@ -142,7 +136,10 @@ export default function TarotCardSelectionClient({
       setIsLoadingAnalysis(true);
 
       const selected = selectedCardIds.join(',');
-      const params = new URLSearchParams({ cardId, selected });
+      const reversed = selectedCardIds
+        .map((id) => `${id}:${cardReversedInfo[id] ? 'true' : 'false'}`)
+        .join(',');
+      const params = new URLSearchParams({ cardId, selected, reversed });
 
       router.push(
         `/gonnabe/tarot/theme/${encodeURIComponent(theme)}/result?${params.toString()}`,
@@ -150,7 +147,7 @@ export default function TarotCardSelectionClient({
     };
 
     void run();
-  }, [isSelectionComplete, selectedCardIds, theme]);
+  }, [isSelectionComplete, selectedCardIds, theme, cards]);
 
   return (
     <div className="relative flex size-full flex-col items-center bg-black">

@@ -7,7 +7,11 @@ import Link from 'next/link'; // 네비게이션용
 // --- Interfaces ---
 interface TarotThemeResultPageProps {
   params: Promise<{ theme: string }>;
-  searchParams: Promise<{ cardId?: string; selected?: string }>;
+  searchParams: Promise<{
+    cardId?: string;
+    selected?: string;
+    reversed?: string;
+  }>;
 }
 
 interface TarotAnalysisPayload {
@@ -134,8 +138,11 @@ export default async function TarotThemeResultPage({
   searchParams,
 }: TarotThemeResultPageProps) {
   const { theme } = await params;
-  const { cardId: cardIdFromQuery, selected: selectedFromQuery } =
-    (await searchParams) ?? {};
+  const {
+    cardId: cardIdFromQuery,
+    selected: selectedFromQuery,
+    reversed: reversedFromQuery,
+  } = (await searchParams) ?? {};
 
   // 선택된 카드 ID 파싱
   const selectedCardIds = (selectedFromQuery ?? '')
@@ -154,13 +161,16 @@ export default async function TarotThemeResultPage({
   let errorMessage: string | null = null;
 
   if (cardId) {
-    const cardReversedInfo = selectedCardIds.reduce<Record<string, boolean>>(
-      (acc, id) => {
-        acc[id] = true;
+    // reversed 파라미터 파싱: "cardId1:true,cardId2:false" 형태
+    const cardReversedInfo = (reversedFromQuery ?? '')
+      .split(',')
+      .reduce<Record<string, boolean>>((acc, pair) => {
+        const [id, reversed] = pair.split(':');
+        if (id) {
+          acc[id.trim()] = reversed === 'true';
+        }
         return acc;
-      },
-      {},
-    );
+      }, {});
 
     try {
       const response = await generateThemeTarotAnalysisOnServer<unknown>({
