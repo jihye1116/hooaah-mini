@@ -6,19 +6,19 @@ export interface TarotCardLocalizedInfo {
 
 export interface TarotCardsApiItem {
   _id: string;
-  updatedAt: string;
-  modify: boolean;
+  updatedAt?: string;
+  modify?: boolean;
   reversed: boolean;
-  cardDeck: string;
-  cardDivision: string;
+  cardDeck?: string;
+  cardDivision?: string;
   cardName: string;
-  cardNumber: number;
-  cardThumbnail: string;
-  cardType: string;
-  image: string;
-  informationEn: TarotCardLocalizedInfo;
-  informationJp: TarotCardLocalizedInfo;
-  informationKo: TarotCardLocalizedInfo;
+  cardNumber?: number;
+  cardThumbnail?: string;
+  cardType?: string;
+  image?: string;
+  informationEn?: TarotCardLocalizedInfo;
+  informationJp?: TarotCardLocalizedInfo;
+  informationKo?: TarotCardLocalizedInfo;
 }
 
 export type TarotCardsApiPayload = TarotCardsApiItem[];

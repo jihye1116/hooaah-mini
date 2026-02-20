@@ -80,3 +80,92 @@ export async function generateThemeTarotAnalysisOnServer<TResponse = unknown>({
 
   return (await response.text()) as TResponse;
 }
+
+export interface GenerateTarotAnalysisServerParams {
+  cardId: string | string[];
+  analysisType: string;
+  cardReversedInfo?: Record<string, boolean>;
+  userId?: string;
+  language?: string;
+}
+
+export async function generateTarotAnalysisOnServer<TResponse = unknown>({
+  cardId,
+  analysisType,
+  cardReversedInfo,
+  userId,
+  language = 'ko',
+}: GenerateTarotAnalysisServerParams): Promise<TResponse> {
+  const backendBaseRaw = process.env.NEXT_PUBLIC_BACKEND_BASE;
+  const backendBase = backendBaseRaw?.replace(/\/+$/g, '');
+
+  if (!backendBase) {
+    throw new Error('BACKEND_BASE environment variable is not set');
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+
+  // Default user ID for unauthenticated requests (mirrors route handler)
+  // In a real app, this should come from session/auth context
+  const effectiveUserId = userId || '67442ba40f22df5c20ec83aa';
+
+  const token = jwt.sign(
+    {
+      cardId,
+      analysisType,
+      cardReversedInfo,
+      userId: effectiveUserId,
+      language,
+    },
+    secret,
+    {
+      algorithm: 'HS256',
+      expiresIn: '5m',
+    },
+  );
+
+  const requestInit: RequestInit = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ jwt: token }),
+    cache: 'no-store',
+  };
+
+  const response = await fetch(
+    `${backendBase}/api/tarot/analysis/generate`,
+    requestInit,
+  );
+
+  if (!response) {
+    throw new Error('Failed to reach backend tarot analysis endpoint');
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!response.ok) {
+    if (contentType.includes('application/json')) {
+      const errorJson = (await response.json()) as Record<string, unknown>;
+      const message =
+        (typeof errorJson.message === 'string' && errorJson.message) ||
+        (typeof errorJson.error === 'string' && errorJson.error) ||
+        `Failed to generate tarot analysis (${response.status})`;
+      throw new Error(message);
+    }
+
+    const text = await response.text();
+    throw new Error(
+      text || `Failed to generate tarot analysis (${response.status})`,
+    );
+  }
+
+  if (contentType.includes('application/json')) {
+    return (await response.json()) as TResponse;
+  }
+
+  return (await response.text()) as TResponse;
+}

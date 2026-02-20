@@ -12,12 +12,16 @@ interface TarotCardSelectionClientProps {
   theme: string;
   initialCards: TarotCardType[];
   maxSelectableCards: number;
+  instruction: string;
+  resultPath: string;
 }
 
 export default function TarotCardSelectionClient({
   theme,
   initialCards,
   maxSelectableCards,
+  instruction,
+  resultPath,
 }: TarotCardSelectionClientProps) {
   const router = useRouter();
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
@@ -141,13 +145,17 @@ export default function TarotCardSelectionClient({
         .join(',');
       const params = new URLSearchParams({ cardId, selected, reversed });
 
-      router.push(
-        `/gonnabe/tarot/theme/${encodeURIComponent(theme)}/result?${params.toString()}`,
-      );
+      router.push(`${resultPath}?${params.toString()}`);
     };
 
     void run();
-  }, [isSelectionComplete, selectedCardIds, theme, cards]);
+  }, [
+    isSelectionComplete,
+    selectedCardIds,
+    theme,
+    cards,
+    resultPath,
+  ]);
 
   return (
     <div className="relative flex size-full flex-col items-center bg-black">
@@ -160,10 +168,8 @@ export default function TarotCardSelectionClient({
       </div>
 
       <div className="z-10 mt-[clamp(2rem,5vh,4rem)] px-5">
-        <p className="text-center text-sm leading-normal text-white">
-          마음을 편히 하여, 선택한 질문을 떠올린 뒤
-          <br />
-          눈길이 가는 카드 한 장을 선택하세요.
+        <p className="whitespace-pre-wrap text-center text-sm leading-normal text-white">
+          {instruction}
         </p>
       </div>
 
