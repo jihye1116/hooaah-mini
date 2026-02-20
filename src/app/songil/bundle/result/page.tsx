@@ -372,25 +372,27 @@ export default function BundleResultPage() {
         <div className="min-h-screen bg-[#F5F8FF]">
           <main className="px-5 pb-40">
             {currentStep.render(null)}
-            {/* Save Button for Detail View */}
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-white p-4 font-bold text-[#3680FF] disabled:opacity-50"
-              style={{
-                border: '1px solid #3680FF',
-                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-              }}
-            >
-              {isSaving ? (
-                <span>저장 중...</span>
-              ) : (
-                <>
-                  <Download className="h-5 w-5" />
-                  전체 결과 이미지로 저장하기
-                </>
-              )}
-            </button>
+            {/* Save Button for Detail View - Only show on last theme's page 2 */}
+            {isPage2 && currentLineIndex === lineKeys.length - 1 && (
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-white p-4 font-bold text-[#3680FF] disabled:opacity-50"
+                style={{
+                  border: '1px solid #3680FF',
+                  boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                {isSaving ? (
+                  <span>저장 중...</span>
+                ) : (
+                  <>
+                    <Download className="h-5 w-5" />
+                    전체 결과 이미지로 저장하기
+                  </>
+                )}
+              </button>
+            )}
           </main>
 
           {/* Bottom Navigation */}
