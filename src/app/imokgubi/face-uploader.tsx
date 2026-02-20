@@ -18,7 +18,8 @@ import {
 export default function FaceUploader() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawContentsType = searchParams.get('contents') || 'myfuture';
+  const rawContentsType =
+    searchParams.get('contents') || searchParams.get('category') || 'myfuture';
   const contentsType = normalizeContentsType(rawContentsType);
 
   // 상태 관리
