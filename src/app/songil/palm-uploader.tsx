@@ -133,8 +133,26 @@ export default function PalmUploader({
         resultKey = `bundle_result_${contentsType}`;
         imageKey = `bundle_image_${contentsType}`;
       } else {
-        resultKey = 'palmistry_result';
-        imageKey = 'palmistry_image';
+        switch (contentsType) {
+          case 'handSkinCare':
+            resultKey = 'skincare_result';
+            imageKey = 'skincare_image';
+            break;
+          case 'handHealthCare':
+            resultKey = 'healthcare_result';
+            imageKey = 'healthcare_image';
+            break;
+          case 'nailReading':
+            resultKey = 'nail_result';
+            imageKey = 'nail_image';
+            break;
+          case 'palmistry':
+          case 'ringReading':
+          default:
+            resultKey = 'palmistry_result';
+            imageKey = 'palmistry_image';
+            break;
+        }
       }
 
       localStorage.setItem(resultKey, resultText);
