@@ -40,3 +40,18 @@ export const tarotThemeCategories: Record<
   [TarotTheme.MISSING_IN_RELATIONSHIP]: FortuneSubject.LOVE,
   [TarotTheme.RELATIONSHIP_LESSON]: FortuneSubject.LOVE,
 };
+
+export const THEME_TO_IMAGE: Record<string, string> = {
+  [TarotTheme.MISSING_IN_RELATIONSHIP]: `${TAROT_S3_BASE_URL}/overlooking_relationship.png`,
+  [TarotTheme.RELATIONSHIP_LESSON]: `${TAROT_S3_BASE_URL}/learning_relationship.png`,
+  [TarotTheme.NEXT_CAREER_CHAPTER]: `${TAROT_S3_BASE_URL}/next_chapter.png`,
+  [TarotTheme.WORK_VALUE_ALIGNMENT]: `${TAROT_S3_BASE_URL}/align_job.png`,
+  [TarotTheme.HABIT_TO_CHANGE]: `${TAROT_S3_BASE_URL}/change_grow.png`,
+  [TarotTheme.FIND_TRUE_PATH]: `${TAROT_S3_BASE_URL}/truly_want.png`,
+  [TarotTheme.IGNORED_EMOTION]: `${TAROT_S3_BASE_URL}/turning_away.png`,
+  [TarotTheme.CHANGE_EMOTION_TONE]: `${TAROT_S3_BASE_URL}/emotion_tone.png`,
+  [TarotTheme.RELATIONSHIP_ROLE]: `${TAROT_S3_BASE_URL}/relationship_role.png`,
+  [TarotTheme.RESOLVE_CONFLICT]: `${TAROT_S3_BASE_URL}/resolve_conflict.png`,
+  [TarotTheme.STUDY_LIFE_PURPOSE]: `${TAROT_S3_BASE_URL}/connect_studies.png`,
+  [TarotTheme.OVERCOME_EXAM_ANXIETY]: `${TAROT_S3_BASE_URL}/exam_anxiety.png`,
+};

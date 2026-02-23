@@ -3,7 +3,11 @@
 import TarotCardGrid from '@/app/gonnabe/tarot/components/TarotCardGrid';
 import TarotShuffleControls from '@/app/gonnabe/tarot/components/TarotShuffleControls';
 import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
-import type { TarotCard as TarotCardType } from '@/app/gonnabe/tarot/types/theme';
+import { TarotPeriod } from '@/app/gonnabe/tarot/types/period';
+import {
+  TarotTheme,
+  type TarotCard as TarotCardType,
+} from '@/app/gonnabe/tarot/types/theme';
 import { cn } from '@sglara/cn';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -32,6 +36,13 @@ export default function TarotCardSelectionClient({
 
   const gridRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  const validThemes = Object.values(TarotTheme).map((v) => String(v));
+  const validPeriods = [
+    TarotPeriod.DAILY,
+    TarotPeriod.WEEKLY,
+    TarotPeriod.MONTHLY,
+  ].map((v) => String(v));
 
   const wait = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -139,10 +150,20 @@ export default function TarotCardSelectionClient({
       .join(',');
     const params = new URLSearchParams({ cardId: selected, reversed });
 
-    router.push(
-      `/gonnabe/tarot/${encodeURIComponent(theme)}/result?${params.toString()}`,
-    );
-  }, [selectedCardIds, cards, theme, router]);
+    if (validThemes.includes(theme)) {
+      router.push(
+        `/gonnabe/tarot/theme/${encodeURIComponent(theme)}/result?${params.toString()}`,
+      );
+      return;
+    }
+
+    if (validPeriods.includes(theme)) {
+      router.push(
+        `/gonnabe/tarot/${encodeURIComponent(theme)}/result?${params.toString()}`,
+      );
+      return;
+    }
+  }, [selectedCardIds, validThemes, theme, validPeriods, cards, router]);
 
   useEffect(() => {
     if (!isSelectionComplete) return;

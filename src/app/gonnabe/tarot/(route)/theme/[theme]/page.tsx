@@ -1,9 +1,6 @@
 import TarotCardSelection from '@/app/gonnabe/tarot/components/TarotCardSelection';
 import { tarotThemeTitles } from '@/app/gonnabe/tarot/constants';
-import {
-  PREMIUM_TAROT_THEMES,
-  TarotTheme,
-} from '@/app/gonnabe/tarot/types/theme';
+import { TarotTheme } from '@/app/gonnabe/tarot/types/theme';
 import PremiumContentGate from '@/components/PremiumContentGate';
 import { isPremiumContent } from '@/utils/premium';
 import type { ValueOf } from 'next/dist/shared/lib/constants';

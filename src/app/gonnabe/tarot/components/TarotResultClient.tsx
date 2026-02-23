@@ -1,83 +1,25 @@
 'use client';
 
+import type { ThemeTarotAnalysisResult } from '@/app/gonnabe/tarot/types/analysis';
 import { saveAs } from 'file-saver';
 import { toJpeg } from 'html-to-image';
 import { Download } from 'lucide-react';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
-import { TAROT_S3_BASE_URL, tarotThemeTitles } from '../constants';
+import {
+  TAROT_S3_BASE_URL,
+  tarotThemeCategories,
+  tarotThemeTitles,
+  THEME_TO_IMAGE,
+} from '../constants';
 import { TarotTheme } from '../types/theme';
 import { getPretendardFontCSS } from '../utils/fontUtils';
 
-// --- Interfaces ---
-export interface TarotAnalysisPayload {
-  cardData: {
-    cardThumbnail: string;
-    cardName?: string;
-    image?: string;
-  };
-  analysis: {
-    overallInsight: {
-      cardName: string;
-      keywords: string[];
-    };
-    hookingMessage: string;
-    cardInterpretation: string;
-    currentSituation: string;
-    lesson: string;
-    todaysMessage: string;
-    themeTopic: ValueOf<typeof TarotTheme>;
-  };
-}
-
 interface TarotResultClientProps {
-  theme: string;
-  result: TarotAnalysisPayload;
+  theme: ValueOf<typeof TarotTheme>;
+  result: ThemeTarotAnalysisResult;
 }
-
-// --- Constants & Mappers (From page.tsx) ---
-const BASE_IMG_URL = 'https://durumo.s3.ap-northeast-2.amazonaws.com/tarot';
-
-const THEME_TO_IMAGE: Record<string, string> = {
-  [TarotTheme.MISSING_IN_RELATIONSHIP]: `${BASE_IMG_URL}/overlooking_relationship.png`,
-  [TarotTheme.RELATIONSHIP_LESSON]: `${BASE_IMG_URL}/learning_relationship.png`,
-  [TarotTheme.NEXT_CAREER_CHAPTER]: `${BASE_IMG_URL}/next_chapter.png`,
-  [TarotTheme.WORK_VALUE_ALIGNMENT]: `${BASE_IMG_URL}/align_job.png`,
-  [TarotTheme.HABIT_TO_CHANGE]: `${BASE_IMG_URL}/change_grow.png`,
-  [TarotTheme.FIND_TRUE_PATH]: `${BASE_IMG_URL}/truly_want.png`,
-  [TarotTheme.IGNORED_EMOTION]: `${BASE_IMG_URL}/turning_away.png`,
-  [TarotTheme.CHANGE_EMOTION_TONE]: `${BASE_IMG_URL}/emotion_tone.png`,
-  [TarotTheme.RELATIONSHIP_ROLE]: `${BASE_IMG_URL}/relationship_role.png`,
-  [TarotTheme.RESOLVE_CONFLICT]: `${BASE_IMG_URL}/resolve_conflict.png`,
-  [TarotTheme.STUDY_LIFE_PURPOSE]: `${BASE_IMG_URL}/connect_studies.png`,
-  [TarotTheme.OVERCOME_EXAM_ANXIETY]: `${BASE_IMG_URL}/exam_anxiety.png`,
-};
-
-const getThemeTag = (theme: string) => {
-  switch (theme) {
-    case TarotTheme.MISSING_IN_RELATIONSHIP:
-    case TarotTheme.RELATIONSHIP_LESSON:
-      return 'LOVE & ROMANCE';
-    case TarotTheme.WORK_VALUE_ALIGNMENT:
-    case TarotTheme.NEXT_CAREER_CHAPTER:
-      return 'CAREER & PATH';
-    case TarotTheme.HABIT_TO_CHANGE:
-    case TarotTheme.FIND_TRUE_PATH:
-      return 'GROWTH & SELF';
-    case TarotTheme.IGNORED_EMOTION:
-    case TarotTheme.CHANGE_EMOTION_TONE:
-      return 'EMOTION & MIND';
-    case TarotTheme.RELATIONSHIP_ROLE:
-    case TarotTheme.RESOLVE_CONFLICT:
-      return 'RELATIONSHIP';
-    case TarotTheme.STUDY_LIFE_PURPOSE:
-    case TarotTheme.OVERCOME_EXAM_ANXIETY:
-      return 'STUDY & GOAL';
-    default:
-      return 'TAROT';
-  }
-};
 
 const getThemeTitle = (theme: ValueOf<typeof TarotTheme>): string => {
   return tarotThemeTitles[theme] || '당신의 운세 흐름을 읽어드립니다.';
@@ -133,7 +75,7 @@ export default function TarotResultClient({
       {/* Capture Wrapper */}
       <div ref={captureRef} className="bg-[#1E1E1E]">
         {/* 1. Header Section with Background Image */}
-        <div className="relative h-[270px] w-full">
+        <div className="relative h-67.5 w-full">
           <div className="absolute inset-0 h-full w-full">
             <Image
               src={
@@ -142,6 +84,7 @@ export default function TarotResultClient({
               }
               alt="Header Background"
               fill
+              sizes="auto"
               className="object-cover"
               priority
             />
@@ -149,17 +92,17 @@ export default function TarotResultClient({
           <div className="absolute inset-0 bg-black/80" />
           <div className="absolute right-0 bottom-0 left-0 p-6">
             <p className="font-playfair-display text-[15px] leading-[2.2] font-semibold tracking-[1.2px] text-white uppercase">
-              {getThemeTag(theme)}
+              {tarotThemeCategories[theme]}
             </p>
             <h1 className="mt-2 line-clamp-3 text-2xl leading-[1.3] font-bold text-white">
-              {getThemeTitle(analysis.themeTopic)}
+              {getThemeTitle(result.themeTopic)}
             </h1>
           </div>
         </div>
 
         <div className="flex flex-col items-center pb-10">
           {/* 2. Main Analysis Card */}
-          <div className="relative z-10 mx-5 -mt-0 mt-[30px] w-[calc(100%-40px)] rounded-[20px] bg-white/15 px-5 py-10 backdrop-blur-sm">
+          <div className="relative z-10 mx-5 mt-7.5 w-[calc(100%-40px)] rounded-[20px] bg-white/15 px-5 py-10 backdrop-blur-sm">
             <h2 className="mb-3 text-center text-[19px] font-semibold text-white">
               전체적인 통찰
             </h2>
@@ -169,7 +112,7 @@ export default function TarotResultClient({
                 <span className="mb-2 text-xs text-white">
                   {analysis.overallInsight.cardName}
                 </span>
-                <div className="relative h-62.5 w-37.5">
+                <div className="relative h-56.75 w-37.5">
                   <Image
                     src={thumbnailSrc}
                     alt={analysis.overallInsight.cardName}
@@ -206,11 +149,11 @@ export default function TarotResultClient({
           </div>
 
           {/* 3. Today's Message Card */}
-          <div className="mx-5 my-[30px] w-[calc(100%-40px)] rounded-[20px] bg-white/15 px-5 py-10 backdrop-blur-sm">
+          <div className="mx-5 my-7.5 w-[calc(100%-40px)] rounded-[20px] bg-white/15 px-5 py-10 backdrop-blur-sm">
             <h3 className="mb-6 text-center text-[19px] font-semibold text-white">
               오늘의 메시지
             </h3>
-            <p className="text-center text-sm leading-[1.5] font-medium text-white/70">
+            <p className="text-center text-sm leading-normal font-medium text-white/70">
               {analysis.todaysMessage}
             </p>
           </div>

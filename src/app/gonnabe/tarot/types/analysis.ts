@@ -1,4 +1,5 @@
 import type { TarotPeriod } from '@/app/gonnabe/tarot/types/period';
+import type { TarotTheme } from '@/app/gonnabe/tarot/types/theme';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import { TarotCardsApiItem } from './cards';
 
@@ -44,4 +45,22 @@ export interface TarotAnalysisResult<
         ? MonthlyTarotAnalysisData
         : never;
   selectedCards: TarotCardsApiItem[];
+}
+
+interface ThemeTarotAnalysisData {
+  overallInsight: {
+    cardName: string;
+    keywords: string[];
+  };
+  hookingMessage: string;
+  cardInterpretation: string;
+  currentSituation: string;
+  lesson: string;
+  todaysMessage: string;
+}
+
+export interface ThemeTarotAnalysisResult {
+  themeTopic: ValueOf<typeof TarotTheme>;
+  analysis: ThemeTarotAnalysisData;
+  cardData: TarotCardsApiItem;
 }

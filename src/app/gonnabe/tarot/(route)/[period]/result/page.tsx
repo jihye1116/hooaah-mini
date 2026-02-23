@@ -22,8 +22,6 @@ export default async function TarotPeriodResultPage({
   searchParams,
 }: TarotPeriodResultPageProps) {
   const { period } = await params;
-  const { cardId: cardIdFromQuery, reversed: reversedFromQuery } =
-    await searchParams;
 
   const validPeriods = [
     TarotPeriod.DAILY,
@@ -35,8 +33,10 @@ export default async function TarotPeriodResultPage({
     notFound();
   }
 
-  const cardIds = cardIdFromQuery.split(',');
-  const reversed = reversedFromQuery
+  const { cardId, reversed } = await searchParams;
+
+  const cardIds = cardId.split(',');
+  const reversedInfo = reversed
     .split(',')
     .reduce<Record<string, boolean>>((acc, pair) => {
       const [id, rev] = pair.split(':');
@@ -47,9 +47,9 @@ export default async function TarotPeriodResultPage({
   const response = await generateTarotAnalysisOnServer<
     TarotAnalysisResult<typeof period>
   >({
-    cardId: period === TarotPeriod.DAILY ? cardIdFromQuery : cardIds,
+    cardId: period === TarotPeriod.DAILY ? cardId : cardIds,
     analysisType: period,
-    cardReversedInfo: reversed,
+    cardReversedInfo: reversedInfo,
   });
 
   switch (period) {
