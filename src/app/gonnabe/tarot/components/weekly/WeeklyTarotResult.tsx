@@ -6,10 +6,11 @@ import TarotSummaryCard from '@/app/gonnabe/tarot/components/TarotSummaryCard';
 import { TarotAnalysisData } from '@/app/gonnabe/tarot/types/analysis';
 import { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
 import Image from 'next/image';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import DeckDetailBackground from '@/assets/images/gonnabe/tarot/deck_detail_background.png';
 interface WeeklyTarotResultProps {
-  cards: TarotCardsApiItem[];
+  cards: (any)[];
   analysis: TarotAnalysisData;
   userId: string;
 }
@@ -17,18 +18,47 @@ interface WeeklyTarotResultProps {
 export default function WeeklyTarotResult({
   cards,
   analysis,
-  userId,
 }: WeeklyTarotResultProps) {
   const [view, setView] = useState<'card' | 'analysis'>('card');
   const [isBlurred, setIsBlurred] = useState(true);
+  const router = useRouter();
+  const [cardsData, setCardsData] = useState(cards);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (cards.length < 3) {
+  useEffect(() => {
+    // Props의 cards가 있으면 사용    // eslint-disable-next-line react-hooks/set-state-in-effect    if (cards && cards.length > 0) {
+      setCardsData(cards);
+    } else {
+      // localStorage에서 저장된 카드 정보 읽기 (fallback)
+      const stored = localStorage.getItem('tarot_selected_cards_info');
+      if (stored) {
+        try {
+          const cardInfo = JSON.parse(stored);
+          console.log('[Weekly] Loaded cards from localStorage:', cardInfo);
+          setCardsData(cardInfo);
+        } catch (error) {
+          console.error('Failed to parse stored cards:', error);
+        }
+      }
+    }
+    setIsLoading(false);
+  }, [cards]);
+
+  if (isLoading) {
+    return <div className="p-10 text-white">로딩 중...</div>;
+  }
+
+  if (cardsData.length < 3) {
     return <div className="text-white">Not enough cards selected.</div>;
   }
 
-  const card1 = cards[0];
-  const card2 = cards[1];
-  const card3 = cards[2];
+  const card1 = cardsData[0];
+  const card2 = cardsData[1];
+  const card3 = cardsData[2];
+
+  const handleCardClick = (id: string) => {
+    router.push(`/gonnabe/tarot/card/${id}`);
+  };
 
   const getCardUrl = (c: TarotCardsApiItem) =>
     `https://durumo.s3.ap-northeast-2.amazonaws.com/tarot/${c.cardThumbnail || c.image}.png`;
@@ -38,7 +68,7 @@ export default function WeeklyTarotResult({
       <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
         <div className="absolute inset-0 z-0 opacity-50">
           <Image
-            src="/assets/images/tarot/deck_detail_background.png"
+            src={DeckDetailBackground}
             alt="Background"
             fill
             className="object-cover"
@@ -55,37 +85,40 @@ export default function WeeklyTarotResult({
             {/* Top Card */}
             <ResultTarotCard
               imageUrl={getCardUrl(card1)}
-              name={card1.cardName}
+              name={card1.informationKo?.cardName || card1.cardName || card1.name}
               isReversed={card1.reversed}
               width={100}
               height={160}
               labelPosition="bottom"
+              onClick={() => handleCardClick(card1._id)}
             />
 
             {/* Bottom Two Cards */}
             <div className="flex gap-8">
               <ResultTarotCard
                 imageUrl={getCardUrl(card2)}
-                name={card2.cardName}
+                name={card2.informationKo?.cardName || card2.cardName || card2.name}
                 isReversed={card2.reversed}
                 width={100}
                 height={160}
                 labelPosition="bottom"
+                onClick={() => handleCardClick(card2._id)}
               />
               <ResultTarotCard
                 imageUrl={getCardUrl(card3)}
-                name={card3.cardName}
+                name={card3.informationKo?.cardName || card3.cardName || card3.name}
                 isReversed={card3.reversed}
                 width={100}
                 height={160}
                 labelPosition="bottom"
+                onClick={() => handleCardClick(card3._id)}
               />
             </div>
           </div>
 
           <button
             onClick={() => setView('analysis')}
-            className="mt-10 rounded-full bg-white px-8 py-3 text-black shadow-lg font-bold"
+            className="mt-10 rounded-full bg-white px-8 py-3 font-bold text-black shadow-lg"
           >
             결과 보기
           </button>
@@ -95,9 +128,9 @@ export default function WeeklyTarotResult({
   }
 
   return (
-    <div className="min-h-screen w-full bg-black text-white px-5 pt-10 pb-20">
+    <div className="min-h-screen w-full bg-black px-5 pt-10 pb-20 text-white">
       <h1 className="mb-2 text-center text-2xl font-bold">주간 타로 리딩</h1>
-      
+
       <TarotSummaryCard
         title="이번 주의 아르카나"
         subtitle="전체적인 테마"
@@ -107,20 +140,23 @@ export default function WeeklyTarotResult({
         onSeeFullReading={() => setIsBlurred(false)}
         cards={
           <div className="flex gap-2">
-             <ResultTarotCard
+            <ResultTarotCard
               imageUrl={getCardUrl(card1)}
               width={60}
               height={90}
+              onClick={() => handleCardClick(card1._id)}
             />
-             <ResultTarotCard
+            <ResultTarotCard
               imageUrl={getCardUrl(card2)}
               width={60}
               height={90}
+              onClick={() => handleCardClick(card2._id)}
             />
-             <ResultTarotCard
+            <ResultTarotCard
               imageUrl={getCardUrl(card3)}
               width={60}
               height={90}
+              onClick={() => handleCardClick(card3._id)}
             />
           </div>
         }
@@ -133,7 +169,7 @@ export default function WeeklyTarotResult({
             subtitle="나의 모습"
             description={analysis.mirrorCard || ''}
             imageUrl={getCardUrl(card1)}
-            name={card1.cardName}
+            name={card1.informationKo?.cardName || card1.cardName}
             isReversed={card1.reversed}
           />
           <TarotMessageCard
@@ -141,7 +177,7 @@ export default function WeeklyTarotResult({
             subtitle="다가오는 사건"
             description={analysis.windsOfChange || ''}
             imageUrl={getCardUrl(card2)}
-            name={card2.cardName}
+            name={card2.informationKo?.cardName || card2.cardName}
             isReversed={card2.reversed}
           />
           <TarotMessageCard
@@ -149,7 +185,7 @@ export default function WeeklyTarotResult({
             subtitle="주의할 점"
             description={analysis.shadowAndChallenge || ''}
             imageUrl={getCardUrl(card3)}
-            name={card3.cardName}
+            name={card3.informationKo?.cardName || card3.cardName}
             isReversed={card3.reversed}
           />
           <TarotMessageCard

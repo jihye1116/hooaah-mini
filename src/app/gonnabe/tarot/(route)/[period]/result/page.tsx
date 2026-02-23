@@ -1,4 +1,5 @@
 import { generateTarotAnalysisOnServer } from '@/app/gonnabe/tarot/api/analysis.server';
+import { loadTarotCards } from '@/app/gonnabe/tarot/api/cards';
 import DailyTarotResult from '@/app/gonnabe/tarot/components/daily/DailyTarotResult';
 import MonthlyTarotResult from '@/app/gonnabe/tarot/components/monthly/MonthlyTarotResult';
 import WeeklyTarotResult from '@/app/gonnabe/tarot/components/weekly/WeeklyTarotResult';
@@ -24,13 +25,13 @@ function parseTarotAnalysisResult(input: any): TarotAnalysisResult {
   }
 
   const analysis = input.analysis || {};
+  // Initial parsing - detailed data will be merged from loadTarotCards
   const selectedCards = (input.selectedCards || []).map((card: any) => ({
     _id: card.id || card._id,
-    cardName: card.cardName || '',
+    cardName: card.informationKo?.cardName || card.cardName || '',
     cardThumbnail: card.cardThumbnail || '',
     image: card.image || '',
     reversed: card.reversed || false,
-    // Add other fields as needed
     cardDeck: card.cardDeck || 'bubble',
     informationEn: card.informationEn,
     informationKo: card.informationKo,
@@ -88,8 +89,6 @@ export default async function TarotPeriodResultPage({
     .map((s) => s.trim())
     .filter(Boolean);
 
-  // For Daily, we might have passed cardId directly or via selected
-  // For Weekly/Monthly, we definitely have multiple IDs in selected
   const cardId =
     selectedCardIds.length > 0
       ? selectedCardIds
@@ -113,12 +112,33 @@ export default async function TarotPeriodResultPage({
   let errorMsg = '';
 
   try {
-    const response = await generateTarotAnalysisOnServer({
-      cardId: period === TarotPeriod.DAILY ? cardId[0] : cardId,
-      analysisType: period,
-      cardReversedInfo,
-    });
-    result = parseTarotAnalysisResult(response);
+    const [analysisResponse, allCards] = await Promise.all([
+      generateTarotAnalysisOnServer({
+        cardId: period === TarotPeriod.DAILY ? cardId[0] : cardId,
+        analysisType: period,
+        cardReversedInfo,
+      }),
+      loadTarotCards(),
+    ]);
+
+    result = parseTarotAnalysisResult(analysisResponse);
+
+    // Merge full card data from loadTarotCards
+    if (result && result.selectedCards) {
+      result.selectedCards = result.selectedCards.map((selectedCard) => {
+        const fullCard = allCards.find((c) => c._id === selectedCard._id);
+        if (fullCard) {
+          return {
+            ...fullCard,
+            // Preserve specific reading data (like reversed status from query/analysis)
+            reversed: selectedCard.reversed,
+            // Ensure localized name is used
+            cardName: fullCard.informationKo?.cardName || fullCard.cardName || 'Unknown Card',
+          };
+        }
+        return selectedCard;
+      });
+    }
   } catch (e: any) {
     console.error('Failed to generate analysis:', e);
     errorMsg = e.message || 'Failed to generate analysis';
@@ -133,7 +153,7 @@ export default async function TarotPeriodResultPage({
     );
   }
 
-  const userId = 'user_id_placeholder'; // Should be retrieved from session/auth
+  const userId = 'user_id_placeholder'; 
 
   switch (period) {
     case TarotPeriod.DAILY:

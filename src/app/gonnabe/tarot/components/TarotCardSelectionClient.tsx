@@ -149,13 +149,7 @@ export default function TarotCardSelectionClient({
     };
 
     void run();
-  }, [
-    isSelectionComplete,
-    selectedCardIds,
-    theme,
-    cards,
-    resultPath,
-  ]);
+  }, [isSelectionComplete, selectedCardIds, theme, cards, resultPath]);
 
   return (
     <div className="relative flex size-full flex-col items-center bg-black">
@@ -168,7 +162,7 @@ export default function TarotCardSelectionClient({
       </div>
 
       <div className="z-10 mt-[clamp(2rem,5vh,4rem)] px-5">
-        <p className="whitespace-pre-wrap text-center text-sm leading-normal text-white">
+        <p className="text-center text-sm leading-normal whitespace-pre-wrap text-white">
           {instruction}
         </p>
       </div>

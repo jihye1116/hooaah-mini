@@ -6,10 +6,11 @@ import TarotSummaryCard from '@/app/gonnabe/tarot/components/TarotSummaryCard';
 import { TarotAnalysisData } from '@/app/gonnabe/tarot/types/analysis';
 import { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface MonthlyTarotResultProps {
-  cards: TarotCardsApiItem[];
+  cards: (any)[];
   analysis: TarotAnalysisData;
   userId: string;
 }
@@ -17,14 +18,43 @@ interface MonthlyTarotResultProps {
 export default function MonthlyTarotResult({
   cards,
   analysis,
-  userId,
 }: MonthlyTarotResultProps) {
   const [view, setView] = useState<'card' | 'analysis'>('card');
   const [isBlurred, setIsBlurred] = useState(true);
+  const router = useRouter();
+  const [cardsData, setCardsData] = useState(cards);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (cards.length < 5) {
+  useEffect(() => {
+    // Props의 cards가 있으면 사용    // eslint-disable-next-line react-hooks/set-state-in-effect    if (cards && cards.length > 0) {
+      setCardsData(cards);
+    } else {
+      // localStorage에서 저장된 카드 정보 읽기 (fallback)
+      const stored = localStorage.getItem('tarot_selected_cards_info');
+      if (stored) {
+        try {
+          const cardInfo = JSON.parse(stored);
+          console.log('[Monthly] Loaded cards from localStorage:', cardInfo);
+          setCardsData(cardInfo);
+        } catch (error) {
+          console.error('Failed to parse stored cards:', error);
+        }
+      }
+    }
+    setIsLoading(false);
+  }, [cards]);
+
+  if (isLoading) {
+    return <div className="p-10 text-white">로딩 중...</div>;
+  }
+
+  if (cardsData.length < 5) {
     return <div className="text-white">Not enough cards selected.</div>;
   }
+
+  const handleCardClick = (id: string) => {
+    router.push(`/gonnabe/tarot/card/${id}`);
+  };
 
   const getCardUrl = (c: TarotCardsApiItem) =>
     `https://durumo.s3.ap-northeast-2.amazonaws.com/tarot/${c.cardThumbnail || c.image}.png`;
@@ -50,51 +80,66 @@ export default function MonthlyTarotResult({
           <div className="mt-10 flex grow flex-col items-center justify-center gap-4">
             {/* Top: Past */}
             <ResultTarotCard
-              imageUrl={getCardUrl(cards[0])}
-              name="과거"
-              isReversed={cards[0].reversed}
+              imageUrl={getCardUrl(cardsData[0])}
+              name={
+                cardsData[0].informationKo?.cardName || cardsData[0].cardName || cardsData[0].name
+              }
+              isReversed={cardsData[0].reversed}
               width={70}
               height={100}
+              onClick={() => handleCardClick(cardsData[0]._id)}
             />
 
             {/* Middle: Challenge, Present, Advice */}
             <div className="flex gap-4">
               <ResultTarotCard
-                imageUrl={getCardUrl(cards[1])}
-                name="도전"
-                isReversed={cards[1].reversed}
+                imageUrl={getCardUrl(cardsData[1])}
+                name={
+                  cardsData[1].informationKo?.cardName || cardsData[1].cardName || cardsData[1].name
+                }
+                isReversed={cardsData[1].reversed}
                 width={70}
                 height={100}
+                onClick={() => handleCardClick(cardsData[1]._id)}
               />
               <ResultTarotCard
-                imageUrl={getCardUrl(cards[2])}
-                name="현재"
-                isReversed={cards[2].reversed}
+                imageUrl={getCardUrl(cardsData[2])}
+                name={
+                  cardsData[2].informationKo?.cardName || cardsData[2].cardName || cardsData[2].name
+                }
+                isReversed={cardsData[2].reversed}
                 width={70}
                 height={100}
+                onClick={() => handleCardClick(cardsData[2]._id)}
               />
               <ResultTarotCard
-                imageUrl={getCardUrl(cards[3])}
-                name="조언"
-                isReversed={cards[3].reversed}
+                imageUrl={getCardUrl(cardsData[3])}
+                name={
+                  cardsData[3].informationKo?.cardName || cardsData[3].cardName || cardsData[3].name
+                }
+                isReversed={cardsData[3].reversed}
                 width={70}
                 height={100}
+                onClick={() => handleCardClick(cardsData[3]._id)}
               />
             </div>
 
             {/* Bottom: Future */}
             <ResultTarotCard
-              imageUrl={getCardUrl(cards[4])}
-              name="미래"
-              isReversed={cards[4].reversed}
+              imageUrl={getCardUrl(cardsData[4])}
+              name={
+                cardsData[4].informationKo?.cardName || cardsData[4].cardName || cardsData[4].name
+              }
+              isReversed={cardsData[4].reversed}
               width={70}
               height={100}
+              onClick={() => handleCardClick(cardsData[4]._id)}
             />
           </div>
 
           <button
             onClick={() => setView('analysis')}
-            className="mt-10 rounded-full bg-white px-8 py-3 text-black shadow-lg font-bold"
+            className="mt-10 rounded-full bg-white px-8 py-3 font-bold text-black shadow-lg"
           >
             결과 보기
           </button>
@@ -104,9 +149,9 @@ export default function MonthlyTarotResult({
   }
 
   return (
-    <div className="min-h-screen w-full bg-black text-white px-5 pt-10 pb-20">
+    <div className="min-h-screen w-full bg-black px-5 pt-10 pb-20 text-white">
       <h1 className="mb-2 text-center text-2xl font-bold">월간 타로 리딩</h1>
-      
+
       <TarotSummaryCard
         title="이달의 흐름"
         subtitle="전체 테마"
@@ -117,13 +162,38 @@ export default function MonthlyTarotResult({
         cards={
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-               <ResultTarotCard imageUrl={getCardUrl(cards[0])} width={50} height={75} />
-               <ResultTarotCard imageUrl={getCardUrl(cards[1])} width={50} height={75} />
-               <ResultTarotCard imageUrl={getCardUrl(cards[2])} width={50} height={75} />
+              <ResultTarotCard
+                imageUrl={getCardUrl(cardsData[0])}
+                width={50}
+                height={75}
+                onClick={() => handleCardClick(cardsData[0]._id)}
+              />
+              <ResultTarotCard
+                imageUrl={getCardUrl(cardsData[1])}
+                width={50}
+                height={75}
+                onClick={() => handleCardClick(cardsData[1]._id)}
+              />
+              <ResultTarotCard
+                imageUrl={getCardUrl(cardsData[2])}
+                width={50}
+                height={75}
+                onClick={() => handleCardClick(cardsData[2]._id)}
+              />
             </div>
-             <div className="flex gap-2 justify-center">
-               <ResultTarotCard imageUrl={getCardUrl(cards[3])} width={50} height={75} />
-               <ResultTarotCard imageUrl={getCardUrl(cards[4])} width={50} height={75} />
+            <div className="flex justify-center gap-2">
+              <ResultTarotCard
+                imageUrl={getCardUrl(cardsData[3])}
+                width={50}
+                height={75}
+                onClick={() => handleCardClick(cardsData[3]._id)}
+              />
+              <ResultTarotCard
+                imageUrl={getCardUrl(cardsData[4])}
+                width={50}
+                height={75}
+                onClick={() => handleCardClick(cardsData[4]._id)}
+              />
             </div>
           </div>
         }
@@ -135,35 +205,35 @@ export default function MonthlyTarotResult({
             title="강점과 기회"
             subtitle="활용할 수 있는 자원"
             description={analysis.opportunitiesResources || ''}
-            imageUrl={getCardUrl(cards[1])}
-            name={cards[1].cardName}
-            isReversed={cards[1].reversed}
+            imageUrl={getCardUrl(cardsData[1])}
+            name={cardsData[1].informationKo?.cardName || cardsData[1].cardName || cardsData[1].name}
+            isReversed={cardsData[1].reversed}
           />
           <TarotMessageCard
             title="위험과 장애물"
             subtitle="주의해야 할 점"
             description={analysis.challengesObstacles || ''}
-            imageUrl={getCardUrl(cards[2])}
-            name={cards[2].cardName}
-            isReversed={cards[2].reversed}
+            imageUrl={getCardUrl(cardsData[2])}
+            name={cardsData[2].informationKo?.cardName || cardsData[2].cardName || cardsData[2].name}
+            isReversed={cardsData[2].reversed}
           />
           <TarotMessageCard
             title="조언과 태도"
             subtitle="어떻게 대처할까"
             description={analysis.guidanceAttitude || ''}
-            imageUrl={getCardUrl(cards[3])}
-            name={cards[3].cardName}
-            isReversed={cards[3].reversed}
+            imageUrl={getCardUrl(cardsData[3])}
+            name={cardsData[3].informationKo?.cardName || cardsData[3].cardName || cardsData[3].name}
+            isReversed={cardsData[3].reversed}
           />
           <TarotMessageCard
             title="결과와 성장"
             subtitle="이달의 마무리"
             description={analysis.growthOutcome || ''}
-            imageUrl={getCardUrl(cards[4])}
-            name={cards[4].cardName}
-            isReversed={cards[4].reversed}
+            imageUrl={getCardUrl(cardsData[4])}
+            name={cardsData[4].informationKo?.cardName || cardsData[4].cardName || cardsData[4].name}
+            isReversed={cardsData[4].reversed}
           />
-           <TarotMessageCard
+          <TarotMessageCard
             title="예언"
             subtitle="통찰의 한 방울"
             description={analysis.monthlySummary || ''}

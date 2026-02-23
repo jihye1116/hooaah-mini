@@ -29,5 +29,7 @@ export async function loadTarotCards(
 
   const payload: TarotCardsApiItem[] = await response.json();
 
+  // console.log('[tarot][loadTarotCards] payload', payload);
+
   return payload;
 }

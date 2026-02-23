@@ -5,12 +5,14 @@ import TarotMessageCard from '@/app/gonnabe/tarot/components/TarotMessageCard';
 import TarotSummaryCard from '@/app/gonnabe/tarot/components/TarotSummaryCard';
 import { TarotAnalysisData } from '@/app/gonnabe/tarot/types/analysis';
 import { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
-import { cn } from '@sglara/cn';
 import Image from 'next/image';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import DeckDetailBackground from '@/assets/images/gonnabe/tarot/deck_detail_background.png';
+import { loadTarotCards } from '@/app/gonnabe/tarot/api/cards';
+import { loadTarotCards } from '@/app/gonnabe/tarot/api/cards';
 interface DailyTarotResultProps {
-  cards: TarotCardsApiItem[];
+  cards: (any)[];
   analysis: TarotAnalysisData;
   userId: string;
 }
@@ -18,20 +20,53 @@ interface DailyTarotResultProps {
 export default function DailyTarotResult({
   cards,
   analysis,
-  userId,
 }: DailyTarotResultProps) {
   const [view, setView] = useState<'card' | 'analysis'>('card');
   const [isBlurred, setIsBlurred] = useState(true);
+  const router = useRouter();
+  const [cardsData, setCardsData] = useState(cards);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (!cards || cards.length === 0) {
-    return <div className="text-white p-10">No card data available.</div>;
+  useEffect(() => {
+    // Props의 cards가 있으면 사용
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (cards && cards.length > 0) {
+      setCardsData(cards);
+    } else {
+      // localStorage에서 저장된 카드 정보 읽기 (fallback)
+      const stored = localStorage.getItem('tarot_selected_cards_info');
+      if (stored) {
+        try {
+          const cardInfo = JSON.parse(stored);
+          console.log('[Daily] Loaded cards from localStorage:', cardInfo);
+          setCardsData(cardInfo);
+        } catch (error) {
+          console.error('Failed to parse stored cards:', error);
+        }
+      }
+    }
+    setIsLoading(false);
+  }, [cards]);
+
+  if (isLoading) {
+    return <div className="p-10 text-white">로딩 중...</div>;
   }
 
-  const card = cards[0];
-  const cardName = card?.cardName || 'Unknown Card';
-  const cardImage = card?.cardThumbnail || card?.image || 'dark_00_TheFool_upright';
+  if (!cardsData || cardsData.length === 0) {
+    return <div className="p-10 text-white">No card data available.</div>;
+  }
+
+  const card = cardsData[0];
+  const cardName =
+    card?.informationKo?.cardName || card?.cardName || card?.name || 'Unknown Card';
+  const cardImage =
+    card?.cardThumbnail || card?.image || 'dark_00_TheFool_upright';
   const cardImageUrl = `https://durumo.s3.ap-northeast-2.amazonaws.com/tarot/${cardImage}.png`;
   const isReversed = card?.reversed || false;
+
+  const handleCardClick = (id: string) => {
+    router.push(`/gonnabe/tarot/card/${id}`);
+  };
 
   if (view === 'card') {
     return (
@@ -39,7 +74,7 @@ export default function DailyTarotResult({
         {/* Background */}
         <div className="absolute inset-0 z-0 opacity-50">
           <Image
-            src="/assets/images/tarot/deck_detail_background.png"
+            src={DeckDetailBackground}
             alt="Background"
             fill
             className="object-cover"
@@ -48,13 +83,15 @@ export default function DailyTarotResult({
 
         <div className="relative z-10 flex h-full flex-col items-center px-5 pt-10 pb-10">
           {/* Header */}
-          <h1 className="text-xl font-bold">오늘의 카드 결과</h1>
-          
+          <h1 className="text-xl font-bold">타로 카드 선택 완료</h1>
+
           <div className="mt-10 flex grow flex-col items-center justify-center">
-             <p className="mb-8 text-center text-sm text-white/60">
-              오늘 당신에게 도착한 카드를 확인해보세요.
+            <p className="mb-8 text-center text-sm text-white/60">
+              선택한 타로 카드가 준비되었습니다
+              <br />
+              카드를 눌러 카드 스토리텔링도 확인해보세요.
             </p>
-            
+
             <ResultTarotCard
               imageUrl={cardImageUrl}
               name={cardName}
@@ -62,14 +99,19 @@ export default function DailyTarotResult({
               width={200}
               height={320}
               labelPosition="top"
+              onClick={() => handleCardClick(card._id)}
             />
           </div>
 
           <button
             onClick={() => setView('analysis')}
-            className="mt-10 h-16 w-16 rounded-full bg-white text-black shadow-lg transition-transform active:scale-95 flex items-center justify-center"
+            className="mt-10 flex h-16 w-16 items-center justify-center rounded-full bg-white text-black shadow-lg transition-transform active:scale-95"
           >
-             <span className="text-xs font-bold text-center">결과<br/>보기</span>
+            <span className="text-center text-xs font-bold">
+              결과
+              <br />
+              보기
+            </span>
           </button>
         </div>
       </div>
@@ -89,7 +131,9 @@ export default function DailyTarotResult({
       </div>
 
       <div className="relative z-10 px-5 pt-10 pb-20">
-        <h1 className="mb-2 text-center text-2xl font-bold">오늘의 타로 리딩</h1>
+        <h1 className="mb-2 text-center text-2xl font-bold">
+          오늘의 타로 리딩
+        </h1>
         <p className="mb-8 text-center text-sm text-white/70">
           {new Date().toLocaleDateString()}
         </p>
@@ -108,6 +152,7 @@ export default function DailyTarotResult({
               isReversed={isReversed}
               width={100}
               height={160}
+              onClick={() => handleCardClick(card._id)}
             />
           }
         />

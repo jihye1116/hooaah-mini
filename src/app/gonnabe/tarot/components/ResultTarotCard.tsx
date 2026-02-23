@@ -9,6 +9,7 @@ interface ResultTarotCardProps {
   height?: number | string;
   className?: string;
   labelPosition?: 'top' | 'bottom';
+  onClick?: () => void;
 }
 
 export default function ResultTarotCard({
@@ -19,11 +20,19 @@ export default function ResultTarotCard({
   height = 180,
   className,
   labelPosition = 'bottom',
+  onClick,
 }: ResultTarotCardProps) {
   return (
-    <div className={cn('flex flex-col items-center gap-2', className)}>
+    <div
+      onClick={onClick}
+      className={cn(
+        'flex flex-col items-center gap-2 rounded-2xl bg-gray-400 px-3 pb-3',
+        onClick && 'cursor-pointer hover:opacity-90',
+        className,
+      )}
+    >
       {labelPosition === 'top' && name && (
-        <span className="text-sm font-medium text-white">{name}</span>
+        <span className="pt-2 text-sm font-medium text-white">{name}</span>
       )}
       <div
         className={cn('relative overflow-hidden rounded-lg shadow-lg')}
