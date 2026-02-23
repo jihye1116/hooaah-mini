@@ -1,3 +1,4 @@
+import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import ThemeIcon from '@/assets/icons/gonnabe/tarot/theme_icon.svg';
 import { cn } from '@sglara/cn';
 import Image from 'next/image';
@@ -6,7 +7,7 @@ interface TarotMessageCardProps {
   title: string;
   subtitle: string;
   description: string;
-  imageUrl?: string;
+  image?: string;
   name?: string;
   tags?: string[];
   isReversed?: boolean;
@@ -16,7 +17,7 @@ export default function TarotMessageCard({
   title,
   subtitle,
   description,
-  imageUrl,
+  image,
   name,
   tags,
   isReversed,
@@ -33,18 +34,21 @@ export default function TarotMessageCard({
         {subtitle}
       </p>
 
-      {imageUrl && (
-        <div className="mb-6 flex flex-col items-center">
-          <div className="relative h-40 w-28 overflow-hidden rounded-lg shadow-lg">
+      {image && (
+        <div className="mt-2 mb-6 flex flex-col items-center">
+          <div className="relative aspect-2/3 w-30 overflow-hidden rounded-lg shadow-[0_0_20px_#FFFFFF]">
             <Image
-              src={ThemeIcon}
+              src={`${TAROT_S3_BASE_URL}/${image}.png`}
               alt={name || 'Tarot Card'}
               fill
+              sizes="auto"
               className={cn('object-cover', isReversed && 'rotate-180')}
             />
           </div>
           {name && (
-            <span className="mt-2 text-sm font-medium text-white">{name}</span>
+            <span className="font-plus-jakarta-sans mt-4 text-sm font-medium text-white">
+              {name}
+            </span>
           )}
         </div>
       )}

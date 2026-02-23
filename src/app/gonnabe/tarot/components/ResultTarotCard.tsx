@@ -28,11 +28,11 @@ export default function ResultTarotCard({
       )}
     >
       <div
-        className={cn(
-          'relative aspect-2/3 overflow-hidden rounded-[10px]',
-          width && `w-[${width}px]`,
-          height && `h-[${height}px]`,
-        )}
+        style={{
+          width: width ? `${width}px` : undefined,
+          height: height ? `${height}px` : undefined,
+        }}
+        className={cn('relative overflow-hidden rounded-[10px]')}
       >
         <Image
           src={`${TAROT_S3_BASE_URL}/${image}.png`}
@@ -44,9 +44,14 @@ export default function ResultTarotCard({
         />
       </div>
 
-      <span className="font-playfair-display text-xs leading-tight font-bold text-white">
-        {name}
-      </span>
+      <div className="flex flex-1 items-center justify-center">
+        <span
+          style={{ width: width ? `${width}px` : undefined }}
+          className="font-playfair-display text-center text-xs leading-tight font-bold text-white"
+        >
+          {name}
+        </span>
+      </div>
     </div>
   );
 }

@@ -52,7 +52,8 @@ export default function TarotSummaryCard({
               image={card.cardThumbnail ?? card.image}
               name={card.cardName}
               isReversed={card.reversed}
-              width={130}
+              width={cards.length === 1 ? 130 : 70}
+              height={cards.length === 1 ? 195 : 105}
             />
           ))}
         </div>
