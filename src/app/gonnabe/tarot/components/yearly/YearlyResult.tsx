@@ -4,9 +4,15 @@ import { cn } from '@sglara/cn';
 import Image from 'next/image';
 import { useState } from 'react';
 import ThemeIcon from '@/assets/icons/gonnabe/tarot/theme_icon.svg';
+import type {
+  TarotAnalysisResponse,
+  CurrentContent,
+  ContentSection,
+  ContentCard,
+} from './types';
 
 interface YearlyResultProps {
-  data: any;
+  data: TarotAnalysisResponse;
   resultType: 'single' | 'dual';
   tabs?: string[];
   onNext: () => void;
@@ -18,60 +24,70 @@ export default function YearlyResult({
   data,
   resultType,
   tabs,
-  onNext,
-  onPrev,
-  isLastChapter,
 }: YearlyResultProps) {
   const [activeTab, setActiveTab] = useState(0);
 
   const normalizePayload = () => {
     if (data && typeof data === 'object') {
-      const record = data as Record<string, unknown>;
-      const wrapped = record.data as Record<string, unknown> | undefined;
+      const wrapped = data.data as Record<string, unknown> | undefined;
       if (wrapped && typeof wrapped === 'object') {
         return wrapped as Record<string, unknown>;
       }
-      return record as Record<string, unknown>;
+      return {} as Record<string, unknown>;
     }
     return {} as Record<string, unknown>;
   };
 
   const payload = normalizePayload();
   console.log('data:', data);
-  const stepName =
-    typeof (data as { stepName?: unknown })?.stepName === 'string'
-      ? String((data as { stepName?: unknown }).stepName)
-      : '';
+  const stepName = data.stepName || '';
 
   // data.data.first_half / data.data.second_half 같은 구조 처리
   const dataWrapper = payload;
-  const selectedCardsFromResponse = (data as { selectedCards?: unknown })
-    ?.selectedCards;
+
+  // selectedCard (단수) 또는 selectedCards (복수) 처리
+  const selectedCardFromResponse = data.selectedCard;
+  const selectedCardsFromResponse = data.selectedCards;
   const selectedCards = Array.isArray(selectedCardsFromResponse)
     ? selectedCardsFromResponse
-    : [];
+    : selectedCardFromResponse
+      ? [selectedCardFromResponse]
+      : [];
 
   // dual 타입: first_half, second_half 등의 키에서 분석 추출
   const analysisKeys = Object.keys(dataWrapper).filter(
     (key) => typeof dataWrapper[key] === 'object' && dataWrapper[key] !== null,
   );
 
-  // single vs dual 판단 로직 개선
-  const isSingleCard = selectedCards.length === 1;
-  const analysis = isSingleCard
-    ? dataWrapper
-    : analysisKeys.length > 0
-      ? dataWrapper
-      : {};
+  const analysis = dataWrapper;
 
   // 탭 전환 시 부드러운 애니메이션을 위한 Key 처리용
   const tabKey = `tab-content-${activeTab}`;
 
-  const currentContent = () => {
+  const currentContent = (): CurrentContent => {
     if (resultType === 'single') {
-      const card = selectedCards[0];
+      // single 타입: data 내부에서 유효한 분석 키 찾기 (final_message, yearly_flow 등)
+      const validKeys = analysisKeys.filter(
+        (key) =>
+          analysis[key as keyof typeof analysis] &&
+          typeof analysis[key as keyof typeof analysis] === 'object',
+      );
+
+      // 첫 번째 유효한 키의 데이터 사용 (없으면 전체 analysis)
+      const singleData =
+        validKeys.length > 0
+          ? (analysis[validKeys[0] as keyof typeof analysis] as Record<
+              string,
+              unknown
+            >)
+          : analysis;
+
+      // 카드 정보: singleData에서 직접 가져오거나 selectedCards[0] 사용
+      const card = (
+        singleData.cardId ? singleData : selectedCards[0]
+      ) as ContentCard;
       const cardAnalysis =
-        (analysis as { analysis?: Record<string, unknown> }).analysis ?? {};
+        (singleData as { analysis?: Record<string, unknown> }).analysis ?? {};
       const keywords = (cardAnalysis as { keywords?: string[] }).keywords || [];
 
       return {
@@ -105,7 +121,7 @@ export default function YearlyResult({
             content: (cardAnalysis as { closing_advice?: string })
               .closing_advice,
           },
-        ].filter((section) => section.content),
+        ].filter((section): section is ContentSection => !!section.content),
       };
     } else {
       // dual 타입: data.first_half / data.second_half 같은 구조
@@ -162,14 +178,16 @@ export default function YearlyResult({
             content: (cardAnalysis as { closing_advice?: string })
               .closing_advice,
           },
-        ].filter((section) => section.content),
+        ].filter((section): section is ContentSection => !!section.content),
       };
     }
   };
 
   const content = currentContent();
   const cardImageUrl = content.card
-    ? `${TAROT_S3_BASE_URL}/${content.card.cardThumbnail || content.card.image}.png`
+    ? `${TAROT_S3_BASE_URL}/${
+        content.card.cardThumbnail || content.card.image
+      }.png`
     : '';
 
   console.log('data:', data);
@@ -280,7 +298,7 @@ export default function YearlyResult({
             {/* Description Sections (Dart: fontSize 14, color white/80, letterSpacing -0.12, height 1.7) */}
             <div className="flex w-full flex-col gap-6 font-serif text-[14px] leading-[1.7] tracking-[-0.12px] text-white/80">
               {content.sections && content.sections.length > 0 ? (
-                content.sections.map((section: any, idx: number) => (
+                content.sections.map((section: ContentSection, idx: number) => (
                   <div key={idx} className="flex flex-col">
                     {/* <h3 className="mb-1.5 font-bold text-white/90">
                       [{section.title}]

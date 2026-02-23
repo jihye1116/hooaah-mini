@@ -16,6 +16,7 @@ import YearlyPreview from './YearlyPreview';
 import YearlyQuestion from './YearlyQuestion';
 import YearlyResult from './YearlyResult';
 import YearlyTarotCardSelection from './YearlyTarotCardSelection';
+import type { TarotAnalysisResponse } from './types';
 
 type FlowStep = 'question' | 'select' | 'result';
 
@@ -26,7 +27,8 @@ export default function YearlyTarotFlow() {
   const [cards, setCards] = useState<TarotCard[]>([]);
   const [isLoadingCards, setIsLoadingCards] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [analysisResult, setAnalysisResult] =
+    useState<TarotAnalysisResponse | null>(null);
   const [showControls, setShowControls] = useState(true);
   const [reportId, setReportId] = useState<string | null>(null);
 
@@ -115,7 +117,7 @@ export default function YearlyTarotFlow() {
         setReportId(nextReportId);
       }
 
-      setAnalysisResult(result);
+      setAnalysisResult(result as TarotAnalysisResponse);
       setStep('result');
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -236,7 +238,7 @@ export default function YearlyTarotFlow() {
       if (step === 'result') {
         return (
           <YearlyResult
-            data={analysisResult}
+            data={analysisResult!}
             resultType={currentChapter.resultType as 'single' | 'dual'}
             tabs={currentChapter.tabs}
             onNext={handleNextChapter}
