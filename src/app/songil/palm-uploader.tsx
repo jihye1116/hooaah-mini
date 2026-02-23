@@ -18,14 +18,26 @@ interface PalmUploaderProps {
   resultPath?: string;
 }
 
+const NORMALIZE_CONTENTS: Record<string, string> = {
+  handskinecare: 'handSkinCare',
+  handskincare: 'handSkinCare',
+  handhealthcare: 'handHealthCare',
+  nailreading: 'nailReading',
+  ringreading: 'ringReading',
+  palmistry: 'palmistry',
+};
+
 export default function PalmUploader({
   contentsType: propContentsType,
   resultPath = 'result',
 }: PalmUploaderProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const contentsType =
+
+  const rawContentsType =
     propContentsType || searchParams.get('contents') || 'palmistry';
+  const contentsType =
+    NORMALIZE_CONTENTS[rawContentsType.toLowerCase()] || rawContentsType;
 
   // 상태 관리
   const [imageSrc, setImageSrc] = useState<string | null>(null);
