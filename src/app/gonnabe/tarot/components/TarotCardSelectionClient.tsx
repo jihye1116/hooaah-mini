@@ -6,14 +6,13 @@ import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import type { TarotCard as TarotCardType } from '@/app/gonnabe/tarot/types/theme';
 import { cn } from '@sglara/cn';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface TarotCardSelectionClientProps {
   theme: string;
   initialCards: TarotCardType[];
   maxSelectableCards: number;
   instruction: string;
-  resultPath: string;
 }
 
 export default function TarotCardSelectionClient({
@@ -21,7 +20,6 @@ export default function TarotCardSelectionClient({
   initialCards,
   maxSelectableCards,
   instruction,
-  resultPath,
 }: TarotCardSelectionClientProps) {
   const router = useRouter();
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
@@ -114,11 +112,7 @@ export default function TarotCardSelectionClient({
 
   const hasRequestedAnalysisRef = useRef(false);
 
-  useEffect(() => {
-    if (!isSelectionComplete) return;
-    if (hasRequestedAnalysisRef.current) return;
-    hasRequestedAnalysisRef.current = true;
-
+  const runAnalysis = useCallback(async () => {
     const cardReversedInfo = selectedCardIds.reduce<Record<string, boolean>>(
       (acc, id) => {
         const card = cards.find((c) => c.id === id);
@@ -135,21 +129,27 @@ export default function TarotCardSelectionClient({
       return;
     }
 
-    const run = async () => {
-      await wait(2000);
-      setIsLoadingAnalysis(true);
+    await wait(2000);
+    // setState를 비동기적으로 호출하여 React 경고 방지
+    setTimeout(() => setIsLoadingAnalysis(true), 0);
 
-      const selected = selectedCardIds.join(',');
-      const reversed = selectedCardIds
-        .map((id) => `${id}:${cardReversedInfo[id] ? 'true' : 'false'}`)
-        .join(',');
-      const params = new URLSearchParams({ cardId, selected, reversed });
+    const selected = selectedCardIds.join(',');
+    const reversed = selectedCardIds
+      .map((id) => `${id}:${cardReversedInfo[id] ? 'true' : 'false'}`)
+      .join(',');
+    const params = new URLSearchParams({ cardId: selected, reversed });
 
-      router.push(`${resultPath}?${params.toString()}`);
-    };
+    router.push(
+      `/gonnabe/tarot/${encodeURIComponent(theme)}/result?${params.toString()}`,
+    );
+  }, [selectedCardIds, cards, theme, router]);
 
-    void run();
-  }, [isSelectionComplete, selectedCardIds, theme, cards, resultPath]);
+  useEffect(() => {
+    if (!isSelectionComplete) return;
+    if (hasRequestedAnalysisRef.current) return;
+    hasRequestedAnalysisRef.current = true;
+    runAnalysis();
+  }, [isSelectionComplete, runAnalysis]);
 
   return (
     <div className="relative flex size-full flex-col items-center bg-black">

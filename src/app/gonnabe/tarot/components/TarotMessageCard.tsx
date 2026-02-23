@@ -1,3 +1,4 @@
+import ThemeIcon from '@/assets/icons/gonnabe/tarot/theme_icon.svg';
 import { cn } from '@sglara/cn';
 import Image from 'next/image';
 
@@ -9,7 +10,6 @@ interface TarotMessageCardProps {
   name?: string;
   tags?: string[];
   isReversed?: boolean;
-  className?: string;
 }
 
 export default function TarotMessageCard({
@@ -20,19 +20,16 @@ export default function TarotMessageCard({
   name,
   tags,
   isReversed,
-  className,
 }: TarotMessageCardProps) {
   return (
-    <div
-      className={cn(
-        'relative w-full rounded-[20px] bg-white/10 p-5 backdrop-blur-md',
-        className,
-      )}
-    >
-      <h3 className="mb-2 text-center text-lg font-semibold text-white">
+    <div className="flex w-full flex-col items-center rounded-3xl bg-white/15 p-6 backdrop-blur-md">
+      <Image src={ThemeIcon} alt="Theme Icon" width={60} className="mb-5" />
+
+      <h3 className="font-playfair-display mb-3 text-center text-xl font-semibold text-white">
         {title}
       </h3>
-      <p className="mb-6 text-center text-sm font-medium text-white/70">
+
+      <p className="font-plus-jakarta-sans mb-6 text-center text-xs font-light text-white/70">
         {subtitle}
       </p>
 
@@ -40,7 +37,7 @@ export default function TarotMessageCard({
         <div className="mb-6 flex flex-col items-center">
           <div className="relative h-40 w-28 overflow-hidden rounded-lg shadow-lg">
             <Image
-              src={imageUrl}
+              src={ThemeIcon}
               alt={name || 'Tarot Card'}
               fill
               className={cn('object-cover', isReversed && 'rotate-180')}
@@ -65,7 +62,7 @@ export default function TarotMessageCard({
         </div>
       )}
 
-      <p className="text-center text-sm leading-relaxed text-white">
+      <p className="font-plus-jakarta-sans text-xs leading-relaxed text-white/80">
         {description}
       </p>
     </div>
