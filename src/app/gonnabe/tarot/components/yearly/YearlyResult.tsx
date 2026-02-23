@@ -27,6 +27,61 @@ export default function YearlyResult({
 }: YearlyResultProps) {
   const [activeTab, setActiveTab] = useState(0);
 
+  // 현재 년도 동적 할당
+  const currentYear = new Date().getFullYear();
+
+  // step 기반 단계별 title/subtitle 매핑
+  const stepContentMap: Record<
+    number,
+    Record<number, { title: string; subtitle: string }>
+  > = {
+    1: {
+      0: {
+        title: `${currentYear}년 전체 흐름`,
+        subtitle: '올해를 관통하는 핵심 키워드와 분위기',
+      },
+    },
+    2: {
+      0: {
+        title: `${currentYear}년 상반기 흐름`,
+        subtitle: '1~6월 사이 집중해야 할 에너지',
+      },
+      1: {
+        title: `${currentYear}년 하반기 흐름`,
+        subtitle: '7~12월의 변화와 결과/성장 방향',
+      },
+    },
+    3: {
+      0: {
+        title: '위험 신호',
+        subtitle: '조심해야 할 선택이나 경계해야 할 태도',
+      },
+      1: {
+        title: '기회의 타이밍',
+        subtitle: '놓치지 말아야 할 결정적 순간',
+      },
+    },
+    4: {
+      0: {
+        title: '방향 전환',
+        subtitle: '운의 흐름이 바뀌는 터닝 포인트',
+      },
+      1: {
+        title: '조력자',
+        subtitle: '올해 나에게 실질적 도움을 줄 사람의 유형',
+      },
+    },
+    5: {
+      0: {
+        title: '마지막 메세지',
+        subtitle: `${currentYear}년을 위한 최종 자기 성상 서사`,
+      },
+    },
+  };
+
+  const step = data.step ?? 2;
+
+  // data.data.first_half / data.data.second_half 같은 구조 처리
   const normalizePayload = () => {
     if (data && typeof data === 'object') {
       const wrapped = data.data as Record<string, unknown> | undefined;
@@ -40,9 +95,6 @@ export default function YearlyResult({
 
   const payload = normalizePayload();
   console.log('data:', data);
-  const stepName = data.stepName || '';
-
-  // data.data.first_half / data.data.second_half 같은 구조 처리
   const dataWrapper = payload;
 
   // selectedCard (단수) 또는 selectedCards (복수) 처리
@@ -66,14 +118,12 @@ export default function YearlyResult({
 
   const currentContent = (): CurrentContent => {
     if (resultType === 'single') {
-      // single 타입: data 내부에서 유효한 분석 키 찾기 (final_message, yearly_flow 등)
       const validKeys = analysisKeys.filter(
         (key) =>
           analysis[key as keyof typeof analysis] &&
           typeof analysis[key as keyof typeof analysis] === 'object',
       );
 
-      // 첫 번째 유효한 키의 데이터 사용 (없으면 전체 analysis)
       const singleData =
         validKeys.length > 0
           ? (analysis[validKeys[0] as keyof typeof analysis] as Record<
@@ -82,7 +132,6 @@ export default function YearlyResult({
             >)
           : analysis;
 
-      // 카드 정보: singleData에서 직접 가져오거나 selectedCards[0] 사용
       const card = (
         singleData.cardId ? singleData : selectedCards[0]
       ) as ContentCard;
@@ -90,70 +139,19 @@ export default function YearlyResult({
         (singleData as { analysis?: Record<string, unknown> }).analysis ?? {};
       const keywords = (cardAnalysis as { keywords?: string[] }).keywords || [];
 
-      return {
-        card,
-        keywords,
-        title:
-          (cardAnalysis as { section_title?: string }).section_title ||
-          '종합 분석',
-        subtitle: stepName || '한 해를 관통하는 주요 테마입니다.',
-        sections: [
-          {
-            title: '카드 묘사',
-            content: (cardAnalysis as { visual_description?: string })
-              .visual_description,
-          },
-          {
-            title: '예측',
-            content: (cardAnalysis as { prediction?: string }).prediction,
-          },
-          {
-            title: '개인 인사이트',
-            content: (cardAnalysis as { personalized_insight?: string })
-              .personalized_insight,
-          },
-          {
-            title: '리스크',
-            content: (cardAnalysis as { risk?: string }).risk,
-          },
-          {
-            title: '마무리 조언',
-            content: (cardAnalysis as { closing_advice?: string })
-              .closing_advice,
-          },
-        ].filter((section): section is ContentSection => !!section.content),
-      };
-    } else {
-      // dual 타입: data.first_half / data.second_half 같은 구조
-      const index = activeTab;
-      const card = selectedCards[index];
-
-      // analysis 객체에서 first_half, second_half 등 키를 찾음
-      const analysisKeys = Object.keys(analysis).filter(
-        (key) =>
-          typeof analysis[key as keyof typeof analysis] === 'object' &&
-          analysis[key as keyof typeof analysis] !== null,
-      );
-
-      const currentKey = analysisKeys[index];
-      const individual = currentKey
-        ? (analysis[currentKey as keyof typeof analysis] as Record<
-            string,
-            unknown
-          >)
-        : {};
-
-      const cardAnalysis =
-        (individual as { analysis?: Record<string, unknown> }).analysis ?? {};
-      const keywords = (cardAnalysis as { keywords?: string[] }).keywords || [];
+      const stepContent = stepContentMap[step]?.[0];
+      const title =
+        stepContent?.title ||
+        (cardAnalysis as { section_title?: string }).section_title ||
+        '종합 분석';
+      const subtitle =
+        stepContent?.subtitle || '한 해를 관통하는 주요 테마입니다.';
 
       return {
         card,
         keywords,
-        title: tabs?.[index] || `Card ${index + 1}`,
-        subtitle:
-          (cardAnalysis as { section_title?: string }).section_title ||
-          '선택하신 카드의 상세 해석입니다.',
+        title,
+        subtitle,
         sections: [
           {
             title: '카드 묘사',
@@ -181,6 +179,59 @@ export default function YearlyResult({
         ].filter((section): section is ContentSection => !!section.content),
       };
     }
+
+    // dual 타입
+    const index = activeTab;
+    const card = selectedCards[index];
+    const currentKey = analysisKeys[index];
+    const individual = currentKey
+      ? (analysis[currentKey as keyof typeof analysis] as Record<
+          string,
+          unknown
+        >)
+      : {};
+
+    const cardAnalysis =
+      (individual as { analysis?: Record<string, unknown> }).analysis ?? {};
+    const keywords = (cardAnalysis as { keywords?: string[] }).keywords || [];
+
+    const stepContent = stepContentMap[step]?.[index];
+    const title = stepContent?.title || tabs?.[index] || `Card ${index + 1}`;
+    const subtitle =
+      stepContent?.subtitle ||
+      (cardAnalysis as { section_title?: string }).section_title ||
+      '선택하신 카드의 상세 해석입니다.';
+
+    return {
+      card,
+      keywords,
+      title,
+      subtitle,
+      sections: [
+        {
+          title: '카드 묘사',
+          content: (cardAnalysis as { visual_description?: string })
+            .visual_description,
+        },
+        {
+          title: '예측',
+          content: (cardAnalysis as { prediction?: string }).prediction,
+        },
+        {
+          title: '개인 인사이트',
+          content: (cardAnalysis as { personalized_insight?: string })
+            .personalized_insight,
+        },
+        {
+          title: '리스크',
+          content: (cardAnalysis as { risk?: string }).risk,
+        },
+        {
+          title: '마무리 조언',
+          content: (cardAnalysis as { closing_advice?: string }).closing_advice,
+        },
+      ].filter((section): section is ContentSection => !!section.content),
+    };
   };
 
   const content = currentContent();
@@ -242,7 +293,7 @@ export default function YearlyResult({
             </div>
 
             {/* Title (Dart: fontSize 19, fontWeight 500) */}
-            <h2 className="text-center font-serif text-[19px] leading-[1.3] font-medium text-white">
+            <h2 className="text-center text-[19px] leading-[1.3] font-medium text-white">
               {content.title}
             </h2>
 
@@ -296,7 +347,7 @@ export default function YearlyResult({
             )}
 
             {/* Description Sections (Dart: fontSize 14, color white/80, letterSpacing -0.12, height 1.7) */}
-            <div className="flex w-full flex-col gap-6 font-serif text-[14px] leading-[1.7] tracking-[-0.12px] text-white/80">
+            <div className="flex w-full flex-col gap-6 text-[14px] leading-[1.7] tracking-[-0.12px] text-white/80">
               {content.sections && content.sections.length > 0 ? (
                 content.sections.map((section: ContentSection, idx: number) => (
                   <div key={idx} className="flex flex-col">
