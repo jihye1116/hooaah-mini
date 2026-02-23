@@ -33,7 +33,7 @@ export default function ResultPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-[#F5F3F1]">
-          <div className="text-[#696969] font-medium">결과 불러오는 중...</div>
+          <div className="font-medium text-[#696969]">결과 불러오는 중...</div>
         </div>
       }
     >

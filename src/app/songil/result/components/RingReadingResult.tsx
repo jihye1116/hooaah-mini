@@ -3,9 +3,17 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
+import Image, { StaticImageData } from 'next/image';
 import BottomFloating from '@/app/songil/components/BottomFloating';
 import OtherContents from '@/app/songil/components/OtherContents';
+import { PERSONAL_COLORS } from '@/app/songil/result/constants/personalColors';
+
+import ThumbImage from '@/assets/images/songil/ring/thumb.png';
+import IndexImage from '@/assets/images/songil/ring/index.png';
+import MiddleImage from '@/assets/images/songil/ring/middle.png';
+import RingImage from '@/assets/images/songil/ring/ring.png';
+import PinkyImage from '@/assets/images/songil/ring/pinky.png';
+import OverallImage from '@/assets/images/songil/ring/overall.png';
 
 type FingerSize = {
   ks: string;
@@ -57,50 +65,56 @@ const WhiteBox = ({
 const FingerSection = ({
   fingerName,
   data,
-  imageName,
+  image,
 }: {
   fingerName: string;
   data: FingerData;
-  imageName: string;
+  image: StaticImageData;
 }) => (
   <div className="mb-8 last:mb-0">
-    <div className="inline-block bg-[#FEF3F1] rounded-[10px] px-3 py-1.5 mb-2">
+    <div className="mb-2 inline-block rounded-[10px] bg-[#FEF3F1] px-3 py-1.5">
       <span className="text-sm font-bold text-[#883A2E]">{fingerName}</span>
     </div>
-    <h4 className="text-base font-bold text-[#111111] mb-4">{data.jewel}</h4>
+    <h4 className="mb-4 text-base font-bold text-[#111111]">{data.jewel}</h4>
 
-    <div className="flex justify-center items-center gap-6 mb-4">
-      {/* Finger Image Placeholder */}
-      <div className="w-[90px] h-[90px] bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-xs">
-         {imageName}
+    <div className="mb-4 flex items-center justify-center gap-6">
+      {/* Finger Image */}
+      <div className="flex h-[90px] w-[90px] shrink-0 items-center justify-center overflow-hidden rounded-xl">
+        <Image
+          src={image}
+          alt={fingerName}
+          width={90}
+          height={90}
+          className="h-full w-full object-cover"
+        />
       </div>
 
-      <div className="bg-[#F5F6F8] rounded-xl py-3 px-6 text-center">
-         <div className="text-base font-bold text-[#696969] mb-2">
-            {data.size.ks}호
-         </div>
-         <div className="text-sm font-semibold text-[#696969]">
-            길이 <span className="text-[#FF8431]">{data.size.length}cm</span>
-         </div>
-         <div className="text-sm font-semibold text-[#696969]">
-            너비 <span className="text-[#547B55]">{data.size.width}cm</span>
-         </div>
+      <div className="rounded-xl bg-[#F5F6F8] px-8 py-3 text-center">
+        <div className="mb-2 text-base font-bold text-[#696969]">
+          {data.size.ks}호
+        </div>
+        <div className="text-sm font-semibold text-[#696969]">
+          길이 <span className="text-[#FF8431]">{data.size.length}cm</span>
+        </div>
+        <div className="text-sm font-semibold text-[#696969]">
+          너비 <span className="text-[#547B55]">{data.size.width}cm</span>
+        </div>
       </div>
     </div>
 
-    <div className="space-y-1 mb-4">
-       {data.rings.map((r, idx) => (
-         <p key={idx} className="text-sm font-semibold text-[#696969]">
-           • {r}
-         </p>
-       ))}
+    <div className="mb-4 space-y-1">
+      {data.rings.map((r, idx) => (
+        <p key={idx} className="text-sm font-semibold text-[#696969]">
+          • {r}
+        </p>
+      ))}
     </div>
 
-    <p className="text-sm font-semibold text-[#696969] leading-relaxed">
-       {data.description}
+    <p className="text-sm leading-relaxed font-semibold text-[#696969]">
+      {data.description}
     </p>
 
-    <div className="border-t border-[#F5F6F8] my-6" />
+    <div className="my-6 border-t border-[#F5F6F8]" />
   </div>
 );
 
@@ -140,6 +154,11 @@ export default function RingReadingResult() {
     );
   }
 
+  const pColor = PERSONAL_COLORS[result.color.personal] || {
+    title: result.color.personal,
+    colors: [],
+  };
+
   return (
     <div className="relative min-h-screen bg-[#F5F3F1] pb-[120px]">
       <header className="sticky top-0 z-10 px-4 pt-4 pb-2">
@@ -149,103 +168,160 @@ export default function RingReadingResult() {
       </header>
 
       <main className="px-5">
-        <div className="flex justify-between items-start gap-4 mb-6">
-           <div className="flex-1">
-              <div className="inline-block bg-[#FCC1B9] rounded-[10px] px-3 py-1.5 mb-2">
-                <span className="text-sm font-bold text-[#883A2E]">
-                  {result.color.personal || '퍼스널 컬러'}
-                </span>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <div className="mb-2 inline-block rounded-[10px] bg-[#FCC1B9] px-3 py-1.5">
+              <span className="text-sm font-bold text-[#883A2E]">
+                {pColor.title}
+              </span>
+            </div>
+            <h1 className="mb-2 text-xl leading-tight font-bold text-[#461008]">
+              {result.overall.summary}
+            </h1>
+            <p className="text-sm font-semibold text-[#696969]">
+              전체길이 | {result.overall.size}cm
+            </p>
+          </div>
+
+          <div className="h-[110px] w-[90px] shrink-0 overflow-hidden rounded-[15px] bg-[#FAE5D7]">
+            {resultImageUrl ? (
+              <Image
+                src={resultImageUrl}
+                alt="Result Hand"
+                width={90}
+                height={110}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+                No Image
               </div>
-              <h1 className="text-xl font-bold text-[#461008] mb-2 leading-tight">
-                {result.overall.summary}
-              </h1>
-              <p className="text-sm font-semibold text-[#696969]">
-                 총 손 길이 | {result.overall.size}cm
-              </p>
-           </div>
-           
-           <div className="w-[90px] h-[110px] bg-[#FAE5D7] rounded-[15px] overflow-hidden shrink-0">
-             {resultImageUrl ? (
-               <Image
-                 src={resultImageUrl}
-                 alt="Result Hand"
-                 width={90}
-                 height={110}
-                 className="object-cover w-full h-full"
-               />
-             ) : (
-               <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
-             )}
-           </div>
+            )}
+          </div>
         </div>
 
         {/* Finger Character */}
         <WhiteBox className="mb-4">
-           <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-[#111111]">손가락 특징</h3>
-              <span className="text-xs font-semibold text-[#B5B5B5]">중지 기준</span>
-           </div>
+          <div className="mb-6 flex items-center justify-between">
+            <h3 className="text-lg font-bold text-[#111111]">
+              나의 손가락 특징
+            </h3>
+            <span className="text-xs font-semibold text-[#B5B5B5]">
+              가운데 손가락 기준
+            </span>
+          </div>
 
-           <div className="flex justify-center gap-6 items-center mb-6">
-              {/* Overall Finger Image Placeholder */}
-              <div className="w-[90px] h-[90px] bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-xs">
-                 Overall
+          <div className="mb-6 flex items-center justify-center gap-6">
+            {/* Overall Finger Image */}
+            <div className="flex h-[90px] w-[90px] shrink-0 items-center justify-center overflow-hidden rounded-xl">
+              <Image
+                src={OverallImage}
+                alt="Overall Finger"
+                width={90}
+                height={90}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="rounded-xl bg-[#F5F6F8] px-8 py-3 text-center">
+              <div className="text-sm font-semibold text-[#696969]">
+                길이{' '}
+                <span className="text-[#FF8431]">
+                  {result.middle.size.length}cm
+                </span>
               </div>
-
-              <div className="bg-[#F5F6F8] rounded-xl py-3 px-6 text-center">
-                 <div className="text-sm font-semibold text-[#696969]">
-                    길이 <span className="text-[#FF8431]">{result.middle.size.length}cm</span>
-                 </div>
-                 <div className="text-sm font-semibold text-[#696969]">
-                    너비 <span className="text-[#547B55]">{result.middle.size.width}cm</span>
-                 </div>
+              <div className="text-sm font-semibold text-[#696969]">
+                너비{' '}
+                <span className="text-[#547B55]">
+                  {result.middle.size.width}cm
+                </span>
               </div>
-           </div>
+            </div>
+          </div>
 
-           <div className="space-y-2 mb-4">
-              {result.overall.point.map((p, idx) => (
-                <p key={idx} className="text-sm font-semibold text-[#696969] leading-relaxed">
-                  • {p}
-                </p>
-              ))}
-           </div>
-           
-           <p className="text-sm font-semibold text-[#696969] leading-relaxed">
-              {result.overall.description}
-           </p>
+          <div className="mb-4 space-y-2">
+            {result.overall.point.map((p, idx) => (
+              <p
+                key={idx}
+                className="text-sm leading-relaxed font-semibold text-[#696969]"
+              >
+                • {p}
+              </p>
+            ))}
+          </div>
+
+          <p className="text-sm leading-relaxed font-semibold text-[#696969]">
+            {result.overall.description}
+          </p>
         </WhiteBox>
 
         {/* Personal Color Detail */}
         <WhiteBox className="mb-4">
-           <h3 className="text-lg font-bold text-[#111111] mb-6">손 퍼스널 컬러</h3>
-           <div className="bg-[#F5F6F8] rounded-[10px] p-3 text-center mb-6 mx-auto w-fit min-w-[120px]">
-              <span className="text-base font-bold text-[#111111]">
-                 {result.color.personal}
-              </span>
-           </div>
-           
-           <div className="space-y-2">
-              {result.color.point.map((p, idx) => (
-                <p key={idx} className="text-sm font-semibold text-[#696969] leading-relaxed">
-                  • {p}
-                </p>
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">퍼스널 컬러</h3>
+          <div className="mb-4 flex items-center justify-center">
+            <div className="flex -space-x-6">
+              {pColor.colors.map((c, i) => (
+                <div
+                  key={i}
+                  className="h-16 w-16 rounded-full border-white"
+                  style={{ backgroundColor: c }}
+                />
               ))}
-           </div>
+            </div>
+          </div>
+          <div className="mx-auto mb-6 w-fit min-w-[120px] rounded-[10px] bg-[#F5F6F8] p-3 text-center">
+            <span className="text-base font-bold text-[#111111]">
+              {pColor.title}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {result.color.point.map((p, idx) => (
+              <p
+                key={idx}
+                className="text-sm leading-relaxed font-semibold text-[#696969]"
+              >
+                • {p}
+              </p>
+            ))}
+          </div>
         </WhiteBox>
 
         {/* Finger Recommendations */}
         <WhiteBox className="mb-4">
-           <h3 className="text-lg font-bold text-[#111111] mb-6">손가락별 추천 반지</h3>
-           
-           <FingerSection fingerName="엄지" data={result.thumb} imageName="Thumb" />
-           <FingerSection fingerName="검지" data={result.index} imageName="Index" />
-           <FingerSection fingerName="중지" data={result.middle} imageName="Middle" />
-           <FingerSection fingerName="약지" data={result.ring} imageName="Ring" />
-           <FingerSection fingerName="소지" data={result.pinky} imageName="Pinky" />
+          <h3 className="mb-6 text-lg font-bold text-[#111111]">
+            손가락별 추천 반지
+          </h3>
 
-           <div className="bg-[#F5F6F8] rounded-xl p-3 text-center text-xs font-semibold text-[#696969]">
-              ⚠️ 반지 호수는 측정 방법에 따라 오차가 있을 수 있습니다.
-           </div>
+          <FingerSection
+            fingerName="엄지"
+            data={result.thumb}
+            image={ThumbImage}
+          />
+          <FingerSection
+            fingerName="검지"
+            data={result.index}
+            image={IndexImage}
+          />
+          <FingerSection
+            fingerName="중지"
+            data={result.middle}
+            image={MiddleImage}
+          />
+          <FingerSection
+            fingerName="약지"
+            data={result.ring}
+            image={RingImage}
+          />
+          <FingerSection
+            fingerName="소지"
+            data={result.pinky}
+            image={PinkyImage}
+          />
+
+          <div className="rounded-xl bg-[#F5F6F8] p-3 text-center text-xs font-semibold text-[#696969]">
+            위 치수는 오차가 발생할 수 있습니다.
+          </div>
         </WhiteBox>
 
         <OtherContents />
