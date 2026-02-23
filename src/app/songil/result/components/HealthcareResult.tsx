@@ -70,7 +70,7 @@ const ProgressBar = ({ label, value }: { label: string; value: number }) => (
 export default function HealthcareResult() {
   const [result] = useState<HealthcareResultData | null>(() => {
     if (typeof window === 'undefined') return null;
-    const savedResult = localStorage.getItem('palmistry_result'); // Reuse key as per uploader logic
+    const savedResult = localStorage.getItem('healthcare_result');
     if (!savedResult) return null;
     try {
       return JSON.parse(savedResult) as HealthcareResultData;
@@ -82,7 +82,7 @@ export default function HealthcareResult() {
 
   const [resultImageUrl] = useState<string>(() => {
     if (typeof window === 'undefined') return '';
-    return localStorage.getItem('palmistry_image') || '';
+    return localStorage.getItem('healthcare_image') || '';
   });
 
   if (!result || result.error) {

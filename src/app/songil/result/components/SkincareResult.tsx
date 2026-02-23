@@ -81,7 +81,7 @@ const ConditionDetail = ({
 export default function SkincareResult() {
   const [result] = useState<SkincareResultData | null>(() => {
     if (typeof window === 'undefined') return null;
-    const savedResult = localStorage.getItem('palmistry_result');
+    const savedResult = localStorage.getItem('skincare_result');
     if (!savedResult) return null;
     try {
       return JSON.parse(savedResult) as SkincareResultData;
@@ -93,7 +93,7 @@ export default function SkincareResult() {
 
   const [resultImageUrl] = useState<string>(() => {
     if (typeof window === 'undefined') return '';
-    return localStorage.getItem('palmistry_image') || '';
+    return localStorage.getItem('skincare_image') || '';
   });
 
   if (!result || result.error) {

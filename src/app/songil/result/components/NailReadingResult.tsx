@@ -98,7 +98,7 @@ const NAIL_LENGTH_MAP: Record<string, string> = {
 export default function NailReadingResult() {
   const [result] = useState<NailReadingResultData | null>(() => {
     if (typeof window === 'undefined') return null;
-    const savedResult = localStorage.getItem('palmistry_result');
+    const savedResult = localStorage.getItem('nail_result');
     if (!savedResult) return null;
     try {
       return JSON.parse(savedResult) as NailReadingResultData;
