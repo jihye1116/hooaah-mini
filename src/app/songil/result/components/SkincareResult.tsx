@@ -44,33 +44,37 @@ const WhiteBox = ({
   </div>
 );
 
-const ProgressBar = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) => (
+const ProgressBar = ({ label, value }: { label: string; value: number }) => (
   <div className="mb-4 last:mb-0">
-    <div className="flex items-center gap-2 mb-1">
-      <span className="w-16 text-sm font-semibold text-[#696969] shrink-0">{label}</span>
-      <div className="flex-1 h-2.5 bg-[#E3E3E6] rounded-full overflow-hidden">
-        <div 
-          className="h-full bg-[#F97B68] rounded-full"
+    <div className="mb-1 flex items-center gap-2">
+      <span className="w-16 shrink-0 text-sm font-semibold text-[#696969]">
+        {label}
+      </span>
+      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E3E3E6]">
+        <div
+          className="h-full rounded-full bg-[#F97B68]"
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-xs font-semibold text-[#696969] w-8 text-right">{value}%</span>
+      <span className="w-8 text-right text-xs font-semibold text-[#696969]">
+        {value}%
+      </span>
     </div>
   </div>
 );
 
-const ConditionDetail = ({ label, data }: { label: string; data: ConditionScore }) => (
+const ConditionDetail = ({
+  label,
+  data,
+}: {
+  label: string;
+  data: ConditionScore;
+}) => (
   <div className="mb-6 last:mb-0">
-     <h4 className="text-base font-bold text-[#111111] mb-2">{label}</h4>
-     <p className="text-sm font-semibold text-[#696969] leading-relaxed">
-       {data.description}
-     </p>
+    <h4 className="mb-2 text-base font-bold text-[#111111]">{label}</h4>
+    <p className="text-sm leading-relaxed font-semibold text-[#696969]">
+      {data.description}
+    </p>
   </div>
 );
 
@@ -121,8 +125,8 @@ export default function SkincareResult() {
       <main className="px-5">
         <div className="mb-6">
           <h2 className="text-lg font-bold text-[#F97B68]">손 스킨케어 진단</h2>
-          <div className="mt-2 text-center px-8">
-             <h1 className="text-2xl font-bold text-[#883A2E] break-keep">
+          <div className="mt-2 px-8 text-center">
+            <h1 className="text-2xl font-bold break-keep text-[#883A2E]">
               {result.initial}
             </h1>
           </div>
@@ -130,9 +134,11 @@ export default function SkincareResult() {
 
         {/* Condition Scores */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-5">피부 상태 분석</h3>
-          
-          <div className="flex gap-4 items-start mb-6">
+          <h3 className="mb-5 text-lg font-bold text-[#111111]">
+            피부 상태 분석
+          </h3>
+
+          <div className="mb-6 flex items-start gap-4">
             <div className="flex-1">
               <ProgressBar label="주름" value={result.wrinkle.score} />
               <ProgressBar label="색소침착" value={result.pigmentation.score} />
@@ -141,7 +147,7 @@ export default function SkincareResult() {
             </div>
 
             {/* Hand Image */}
-            <div className="relative w-[100px] h-[140px] shrink-0 rounded-[20px] overflow-hidden bg-white border border-gray-100">
+            <div className="relative h-[140px] w-[100px] shrink-0 overflow-hidden rounded-[20px] border border-gray-100 bg-white">
               {resultImageUrl ? (
                 <Image
                   src={resultImageUrl}
@@ -150,51 +156,59 @@ export default function SkincareResult() {
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">No Image</div>
+                <div className="flex h-full w-full items-center justify-center text-xs text-gray-300">
+                  No Image
+                </div>
               )}
             </div>
           </div>
-          
-          <div className="border-t border-[#F5F6F8] my-6" />
+
+          <div className="my-6 border-t border-[#F5F6F8]" />
 
           {/* Condition Details */}
           <ConditionDetail label="주름 상태" data={result.wrinkle} />
           <ConditionDetail label="색소 침착" data={result.pigmentation} />
           <ConditionDetail label="건조함" data={result.dryness} />
           <ConditionDetail label="손톱 건강" data={result.nail} />
-
         </WhiteBox>
 
         {/* Skincare Solution */}
         <WhiteBox className="mb-4">
-           <h3 className="text-lg font-bold text-[#111111] mb-6">맞춤 관리 솔루션</h3>
-           
-           <div className="bg-[#F5F6F8] rounded-[10px] p-3 text-center mb-6">
-             <span className="text-base font-bold text-[#111111]">
-               {result.solution.recommendation}
-             </span>
-           </div>
-           
-           <p className="text-sm font-semibold text-[#696969] leading-relaxed mb-6">
-              {result.solution.description}
-           </p>
+          <h3 className="mb-6 text-lg font-bold text-[#111111]">
+            맞춤 관리 솔루션
+          </h3>
 
-           <div className="border-t border-[#F5F6F8] my-6" />
+          <div className="mb-6 rounded-[10px] bg-[#F5F6F8] p-3 text-center">
+            <span className="text-base font-bold text-[#111111]">
+              {result.solution.recommendation}
+            </span>
+          </div>
 
-           <h3 className="text-base font-bold text-[#111111] mb-4">추천 제품 성분</h3>
-           <div className="space-y-2">
-              {result.solution.products.map((p, idx) => (
-                <p key={idx} className="text-sm font-semibold text-[#696969] leading-relaxed">
-                  • {p}
-                </p>
-              ))}
-           </div>
+          <p className="mb-6 text-sm leading-relaxed font-semibold text-[#696969]">
+            {result.solution.description}
+          </p>
+
+          <div className="my-6 border-t border-[#F5F6F8]" />
+
+          <h3 className="mb-4 text-base font-bold text-[#111111]">
+            추천 제품 성분
+          </h3>
+          <div className="space-y-2">
+            {result.solution.products.map((p, idx) => (
+              <p
+                key={idx}
+                className="text-sm leading-relaxed font-semibold text-[#696969]"
+              >
+                • {p}
+              </p>
+            ))}
+          </div>
         </WhiteBox>
 
         {/* Total Analysis */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-4">종합 분석</h3>
-          <p className="text-sm font-semibold text-[#696969] leading-relaxed">
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">종합 분석</h3>
+          <p className="text-sm leading-relaxed font-semibold text-[#696969]">
             {result.summary}
           </p>
         </WhiteBox>
