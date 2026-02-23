@@ -52,19 +52,13 @@ const WhiteBox = ({
   </div>
 );
 
-const ProgressBar = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) => (
+const ProgressBar = ({ label, value }: { label: string; value: number }) => (
   <div className="mb-4 last:mb-0">
-    <div className="flex items-center gap-2 mb-1">
+    <div className="mb-1 flex items-center gap-2">
       <span className="w-20 text-sm font-semibold text-[#696969]">{label}</span>
-      <div className="flex-1 h-2.5 bg-[#E3E3E6] rounded-full overflow-hidden">
-        <div 
-          className="h-full bg-[#F97B68] rounded-full"
+      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[#E3E3E6]">
+        <div
+          className="h-full rounded-full bg-[#F97B68]"
           style={{ width: `${value}%` }}
         />
       </div>
@@ -118,10 +112,10 @@ export default function HealthcareResult() {
       </header>
 
       <main className="px-5">
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-[#F97B68]">혈류 건강 진단</h2>
-          <div className="mt-2 text-center px-8">
-             <h1 className="text-2xl font-bold text-[#883A2E] break-keep">
+        <div className="mb-6 text-center">
+          <h2 className="text-lg font-bold text-[#F97B68]">나의 건강 체크</h2>
+          <div className="mt-2 px-8 text-center">
+            <h1 className="text-2xl font-bold break-keep text-[#883A2E]">
               {result.initial}
             </h1>
           </div>
@@ -129,14 +123,22 @@ export default function HealthcareResult() {
 
         {/* Condition Section */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-5">혈관 건강 나이</h3>
-          
-          <div className="flex gap-4 items-start mb-6">
+          <h3 className="mb-5 text-lg font-bold text-[#111111]">
+            나의 혈류 나이는?
+          </h3>
+
+          <div className="mb-6 flex items-start gap-4">
             <div className="flex-1">
               {/* Age Box */}
-              <div className="bg-[#F5F6F8] rounded-xl py-3 px-4 text-center mb-4">
-                <span className="text-xl font-bold text-[#111111]">{result.condition.age}</span>
-                <span className="text-sm font-semibold text-[#696969] ml-1">세</span>
+              <div>
+                <div className="mb-4 w-fit rounded-xl bg-[#F5F6F8] px-4 py-3">
+                  <span className="text-xl font-bold text-[#111111]">
+                    {result.condition.age}
+                  </span>
+                  <span className="ml-1 text-sm font-semibold text-[#696969]">
+                    세
+                  </span>
+                </div>
               </div>
 
               <ProgressBar label="손 혈류 상태" value={result.condition.hand} />
@@ -144,7 +146,7 @@ export default function HealthcareResult() {
             </div>
 
             {/* Hand Image */}
-            <div className="relative w-[100px] h-[140px] shrink-0 rounded-[20px] overflow-hidden bg-white border border-gray-100">
+            <div className="relative h-[140px] w-[100px] shrink-0 overflow-hidden rounded-[20px] border border-gray-100 bg-white">
               {resultImageUrl ? (
                 <Image
                   src={resultImageUrl}
@@ -153,33 +155,42 @@ export default function HealthcareResult() {
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">No Image</div>
+                <div className="flex h-full w-full items-center justify-center text-xs text-gray-300">
+                  No Image
+                </div>
               )}
             </div>
           </div>
 
-          <div className="space-y-2 mb-6">
+          <div className="mb-6 space-y-2">
             {result.condition.point.map((p, idx) => (
-              <p key={idx} className="text-sm font-semibold text-[#696969] leading-relaxed">
+              <p
+                key={idx}
+                className="text-sm leading-relaxed font-semibold text-[#696969]"
+              >
                 • {p}
               </p>
             ))}
           </div>
 
-          <p className="text-sm font-semibold text-[#696969] leading-relaxed mb-6">
+          <p className="mb-6 text-sm leading-relaxed font-semibold text-[#696969]">
             {result.condition.description}
           </p>
 
-          <div className="border-t border-[#F5F6F8] my-6" />
+          <div className="my-6 border-t border-[#F5F6F8]" />
 
-          <h3 className="text-lg font-bold text-[#111111] mb-4">건강 분석</h3>
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">
+            건강 상태 분석
+          </h3>
           <div className="space-y-3">
             {result.condition.health.map((h, idx) => (
-              <div key={idx} className="flex gap-3 items-center">
-                <div className="w-[22px] h-[22px] rounded-full bg-[#F5F6F8] flex items-center justify-center text-[#696969] font-bold text-sm shrink-0">
+              <div key={idx} className="flex items-center gap-3">
+                <div className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-[#F5F6F8] text-sm font-bold text-[#696969]">
                   {idx + 1}
                 </div>
-                <span className="text-sm font-semibold text-[#696969]">{h}</span>
+                <span className="text-sm font-semibold text-[#696969]">
+                  {h}
+                </span>
               </div>
             ))}
           </div>
@@ -187,14 +198,18 @@ export default function HealthcareResult() {
 
         {/* Massage Recommendation */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-4">추천 마사지</h3>
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">
+            나를 위한 혈류 마사지 방법
+          </h3>
           <div className="space-y-3">
             {result.massage.map((m, idx) => (
-              <div key={idx} className="flex gap-3 items-center">
-                <div className="w-[22px] h-[22px] rounded-full bg-[#F5F6F8] flex items-center justify-center text-[#696969] font-bold text-sm shrink-0">
+              <div key={idx} className="flex items-center gap-3">
+                <div className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-[#F5F6F8] text-sm font-bold text-[#696969]">
                   {idx + 1}
                 </div>
-                <span className="text-sm font-semibold text-[#696969]">{m}</span>
+                <span className="text-sm font-semibold text-[#696969]">
+                  {m}
+                </span>
               </div>
             ))}
           </div>
@@ -202,18 +217,22 @@ export default function HealthcareResult() {
 
         {/* Food Recommendation */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-4">추천 음식</h3>
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">
+            지금 혈류를 좋게 만드는 음식
+          </h3>
           <div className="space-y-6">
             {result.food.map((f, idx) => (
               <div key={idx}>
-                <div className="inline-block bg-[#FCC1B9] rounded-[10px] px-3 py-1.5 mb-2">
-                  <span className="text-sm font-bold text-[#883A2E]">{f.name}</span>
+                <div className="mb-2 inline-block rounded-[10px] bg-[#FCC1B9] px-3 py-1.5">
+                  <span className="text-sm font-bold text-[#883A2E]">
+                    {f.name}
+                  </span>
                 </div>
-                <p className="text-sm font-semibold text-[#696969] leading-relaxed">
+                <p className="text-sm leading-relaxed font-semibold text-[#696969]">
                   {f.description}
                 </p>
                 {idx < result.food.length - 1 && (
-                  <div className="border-t border-[#F5F6F8] mt-6" />
+                  <div className="mt-6 border-t border-[#F5F6F8]" />
                 )}
               </div>
             ))}
@@ -222,30 +241,34 @@ export default function HealthcareResult() {
 
         {/* Caution Section */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-6">주의해야 할 질환</h3>
-          
-          <div className="bg-[#F5F6F8] rounded-[10px] p-3 text-center mb-6">
+          <h3 className="mb-6 text-lg font-bold text-[#111111]">
+            현재 조심해야하는 질병은
+          </h3>
+
+          <div className="mx-auto mb-6 w-fit rounded-[10px] bg-[#F5F6F8] p-3 text-center">
             <span className="text-base font-bold text-[#111111]">
               {result.caution.category}
             </span>
           </div>
 
-          <p className="text-sm font-semibold text-[#696969] leading-relaxed mb-6">
+          <p className="mb-6 text-sm leading-relaxed font-semibold text-[#696969]">
             {result.caution.reason}
           </p>
 
-          <div className="border-t border-[#F5F6F8] my-6" />
+          <div className="my-6 border-t border-[#F5F6F8]" />
 
-          <h3 className="text-base font-bold text-[#111111] mb-3">예방 가이드</h3>
-          <p className="text-sm font-semibold text-[#696969] leading-relaxed">
+          <h3 className="mb-3 text-base font-bold text-[#111111]">예방 방법</h3>
+          <p className="text-sm leading-relaxed font-semibold text-[#696969]">
             {result.caution.prevention}
           </p>
         </WhiteBox>
 
         {/* Total Analysis */}
         <WhiteBox className="mb-4">
-          <h3 className="text-lg font-bold text-[#111111] mb-4">종합 분석</h3>
-          <p className="text-sm font-semibold text-[#696969] leading-relaxed">
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">
+            종합 분석 결과
+          </h3>
+          <p className="text-sm leading-relaxed font-semibold text-[#696969]">
             {result.total}
           </p>
         </WhiteBox>
