@@ -16,6 +16,12 @@ import FutureResult, {
 import PairResultScreen, {
   type PairResultData,
 } from '@/app/imokgubi/result/pair-result';
+import FortuneResult, {
+  type FortuneResultData,
+} from '@/app/imokgubi/result/fortune-result';
+import TodayResult, {
+  type TodayResultData,
+} from '@/app/imokgubi/result/today-result';
 import TypeResultScreen from './type-result';
 
 // 타입 정의를 밖으로 빼거나 재사용하여 가독성을 높입니다.
@@ -24,6 +30,8 @@ type ResultType =
   | FaceResultData
   | AnimalResultData
   | PairResultData
+  | FortuneResultData
+  | TodayResultData
   | Record<string, unknown>
   | null;
 
@@ -119,6 +127,26 @@ export default function ResultContent() {
     );
   }
 
+  if (contentsType === 'myFortune') {
+    return (
+      <FortuneResult
+        result={result as FortuneResultData}
+        resultImage={resultImage}
+        onBack={() => router.back()}
+      />
+    );
+  }
+
+  if (contentsType === 'myToday') {
+    return (
+      <TodayResult
+        result={result as TodayResultData}
+        resultImage={resultImage}
+        onBack={() => router.back()}
+      />
+    );
+  }
+
   if (contentsType === 'myType') {
     return (
       <TypeResultScreen
@@ -153,6 +181,10 @@ const normalizeContentsType = (value: string) => {
       return 'myAnimal';
     case 'mytype':
       return 'myType';
+    case 'myfortune':
+      return 'myFortune';
+    case 'mytoday':
+      return 'myToday';
     default:
       return 'myFaceReading';
   }

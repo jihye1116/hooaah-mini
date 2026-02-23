@@ -277,6 +277,10 @@ const normalizeContentsType = (value: string) => {
       return 'myAnimal';
     case 'mytype':
       return 'myType';
+    case 'myfortune':
+      return 'myFortune';
+    case 'mytoday':
+      return 'myToday';
     case 'myfacereading':
     case '':
       return 'myFaceReading';
