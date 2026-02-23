@@ -22,4 +22,5 @@ export const TAROT_PREMIUM_CONTENTS = [
   'missing_in_relationship',
   'relationship_lesson',
   'next_career_chapter',
+  'yearly',
 ] as const;
