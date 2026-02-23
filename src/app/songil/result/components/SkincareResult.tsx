@@ -124,7 +124,9 @@ export default function SkincareResult() {
 
       <main className="px-5">
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-[#F97B68]">손 스킨케어 진단</h2>
+          <h2 className="text-center font-bold text-[#F97B68]">
+            나의 피부 분석
+          </h2>
           <div className="mt-2 px-8 text-center">
             <h1 className="text-2xl font-bold break-keep text-[#883A2E]">
               {result.initial}
@@ -140,10 +142,13 @@ export default function SkincareResult() {
 
           <div className="mb-6 flex items-start gap-4">
             <div className="flex-1">
-              <ProgressBar label="주름" value={result.wrinkle.score} />
-              <ProgressBar label="색소침착" value={result.pigmentation.score} />
-              <ProgressBar label="건조함" value={result.dryness.score} />
-              <ProgressBar label="손톱건강" value={result.nail.score} />
+              <ProgressBar label="주름 심화" value={result.wrinkle.score} />
+              <ProgressBar
+                label="색소 침착"
+                value={result.pigmentation.score}
+              />
+              <ProgressBar label="피부 건조" value={result.dryness.score} />
+              <ProgressBar label="손톱 건강" value={result.nail.score} />
             </div>
 
             {/* Hand Image */}
@@ -166,19 +171,19 @@ export default function SkincareResult() {
           <div className="my-6 border-t border-[#F5F6F8]" />
 
           {/* Condition Details */}
-          <ConditionDetail label="주름 상태" data={result.wrinkle} />
+          <ConditionDetail label="주름 심화" data={result.wrinkle} />
           <ConditionDetail label="색소 침착" data={result.pigmentation} />
-          <ConditionDetail label="건조함" data={result.dryness} />
+          <ConditionDetail label="피부 건조" data={result.dryness} />
           <ConditionDetail label="손톱 건강" data={result.nail} />
         </WhiteBox>
 
         {/* Skincare Solution */}
         <WhiteBox className="mb-4">
           <h3 className="mb-6 text-lg font-bold text-[#111111]">
-            맞춤 관리 솔루션
+            지금 제일 필요한 스킨케어는?
           </h3>
 
-          <div className="mb-6 rounded-[10px] bg-[#F5F6F8] p-3 text-center">
+          <div className="mx-auto mb-6 w-fit rounded-[10px] bg-[#F5F6F8] p-3 text-center">
             <span className="text-base font-bold text-[#111111]">
               {result.solution.recommendation}
             </span>
@@ -191,7 +196,7 @@ export default function SkincareResult() {
           <div className="my-6 border-t border-[#F5F6F8]" />
 
           <h3 className="mb-4 text-base font-bold text-[#111111]">
-            추천 제품 성분
+            추천하는 국내 스킨케어 제품
           </h3>
           <div className="space-y-2">
             {result.solution.products.map((p, idx) => (
@@ -207,7 +212,9 @@ export default function SkincareResult() {
 
         {/* Total Analysis */}
         <WhiteBox className="mb-4">
-          <h3 className="mb-4 text-lg font-bold text-[#111111]">종합 분석</h3>
+          <h3 className="mb-4 text-lg font-bold text-[#111111]">
+            종합 분석 결과
+          </h3>
           <p className="text-sm leading-relaxed font-semibold text-[#696969]">
             {result.summary}
           </p>
