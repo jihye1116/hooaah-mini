@@ -1,35 +1,47 @@
+import type { TarotPeriod } from '@/app/gonnabe/tarot/types/period';
+import type { ValueOf } from 'next/dist/shared/lib/constants';
 import { TarotCardsApiItem } from './cards';
 
-export interface TarotAnalysisData {
-  // Daily
-  messageToday?: string;
-  todayFlow?: string;
-  emotionalState?: string;
-  mindfulReminder?: string;
-  quietMessage?: string;
-
-  // Weekly
-  arcanaOfWeek?: string;
-  mirrorCard?: string;
-  windsOfChange?: string;
-  shadowAndChallenge?: string;
-  threadOfStory?: string;
-  tarotsWhisper?: string;
-
-  // Monthly
-  monthlyTheme?: string;
-  opportunitiesResources?: string;
-  challengesObstacles?: string;
-  guidanceAttitude?: string;
-  growthOutcome?: string;
-  monthlySummary?: string;
-
-  // Common
-  keywords?: string[];
-  cardKeywords?: string[];
+interface BaseTarotAnalysisData {
+  keywords: string[];
+  cardKeywords: string[];
 }
 
-export interface TarotAnalysisResult {
-  analysis: TarotAnalysisData;
+export interface DailyTarotAnalysisData extends BaseTarotAnalysisData {
+  message_today: string;
+  today_flow: string;
+  emotional_state: string;
+  mindful_reminder: string;
+  quiet_message: string;
+}
+
+export interface WeeklyTarotAnalysisData extends BaseTarotAnalysisData {
+  arcana_of_week: string;
+  mirror_card: string;
+  winds_of_change: string;
+  shadow_and_challenge: string;
+  thread_of_story: string;
+  tarots_whisper: string;
+}
+
+export interface MonthlyTarotAnalysisData extends BaseTarotAnalysisData {
+  monthly_theme: string;
+  opportunities_resources: string;
+  challenges_obstacles: string;
+  guidance_attitude: string;
+  growth_outcome: string;
+  monthly_summary: string;
+}
+
+export interface TarotAnalysisResult<
+  T extends Exclude<ValueOf<typeof TarotPeriod>, 'yearly'>,
+> {
+  analysis: T extends 'daily'
+    ? DailyTarotAnalysisData
+    : T extends 'weekly'
+      ? WeeklyTarotAnalysisData
+      : T extends 'monthly'
+        ? MonthlyTarotAnalysisData
+        : never;
   selectedCards: TarotCardsApiItem[];
 }

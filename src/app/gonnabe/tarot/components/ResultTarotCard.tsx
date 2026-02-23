@@ -1,53 +1,52 @@
+import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import { cn } from '@sglara/cn';
 import Image from 'next/image';
 
 interface ResultTarotCardProps {
-  imageUrl: string;
-  name?: string;
-  isReversed?: boolean;
-  width?: number | string;
-  height?: number | string;
-  className?: string;
-  labelPosition?: 'top' | 'bottom';
+  image: string;
+  name: string;
+  isReversed: boolean;
+  width?: number;
+  height?: number;
   onClick?: () => void;
 }
 
 export default function ResultTarotCard({
-  imageUrl,
+  image,
   name,
   isReversed = false,
-  width = 120,
-  height = 180,
-  className,
-  labelPosition = 'bottom',
+  width,
+  height,
   onClick,
 }: ResultTarotCardProps) {
   return (
     <div
       onClick={onClick}
       className={cn(
-        'flex flex-col items-center gap-2 rounded-2xl bg-gray-400 px-3 pb-3',
+        'flex flex-col items-center gap-1 rounded-xl bg-gray-400 p-2',
         onClick && 'cursor-pointer hover:opacity-90',
-        className,
       )}
     >
-      {labelPosition === 'top' && name && (
-        <span className="pt-2 text-sm font-medium text-white">{name}</span>
-      )}
       <div
-        className={cn('relative overflow-hidden rounded-lg shadow-lg')}
-        style={{ width, height }}
+        className={cn(
+          'relative aspect-2/3 overflow-hidden rounded-[10px]',
+          width && `w-[${width}px]`,
+          height && `h-[${height}px]`,
+        )}
       >
         <Image
-          src={imageUrl}
+          src={`${TAROT_S3_BASE_URL}/${image}.png`}
           alt={name || 'Tarot Card'}
           fill
+          sizes="auto"
+          loading="eager"
           className={cn('object-cover', isReversed && 'rotate-180')}
         />
       </div>
-      {labelPosition === 'bottom' && name && (
-        <span className="text-sm font-medium text-white">{name}</span>
-      )}
+
+      <span className="font-playfair-display text-xs leading-tight font-bold text-white">
+        {name}
+      </span>
     </div>
   );
 }

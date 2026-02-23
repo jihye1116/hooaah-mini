@@ -85,16 +85,12 @@ export interface GenerateTarotAnalysisServerParams {
   cardId: string | string[];
   analysisType: string;
   cardReversedInfo?: Record<string, boolean>;
-  userId?: string;
-  language?: string;
 }
 
 export async function generateTarotAnalysisOnServer<TResponse = unknown>({
   cardId,
   analysisType,
   cardReversedInfo,
-  userId,
-  language = 'ko',
 }: GenerateTarotAnalysisServerParams): Promise<TResponse> {
   const backendBaseRaw = process.env.NEXT_PUBLIC_BACKEND_BASE;
   const backendBase = backendBaseRaw?.replace(/\/+$/g, '');
@@ -108,17 +104,12 @@ export async function generateTarotAnalysisOnServer<TResponse = unknown>({
     throw new Error('JWT_SECRET environment variable is not set');
   }
 
-  // Default user ID for unauthenticated requests (mirrors route handler)
-  // In a real app, this should come from session/auth context
-  const effectiveUserId = userId || '67442ba40f22df5c20ec83aa';
-
   const token = jwt.sign(
     {
       cardId,
       analysisType,
       cardReversedInfo,
-      userId: effectiveUserId,
-      language,
+      language: 'ko',
     },
     secret,
     {
