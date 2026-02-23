@@ -146,8 +146,11 @@ export default function PalmUploader({
             resultKey = 'nail_result';
             imageKey = 'nail_image';
             break;
-          case 'palmistry':
           case 'ringReading':
+            resultKey = 'ring_result';
+            imageKey = 'ring_image';
+            break;
+          case 'palmistry':
           default:
             resultKey = 'palmistry_result';
             imageKey = 'palmistry_image';
