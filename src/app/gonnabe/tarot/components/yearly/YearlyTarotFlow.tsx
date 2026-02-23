@@ -242,7 +242,7 @@ export default function YearlyTarotFlow() {
   };
 
   const handleClose = () => {
-    router.push('/gonnabe/tarot');
+    router.back();
   };
 
   const canNavigateNext = true;
