@@ -10,9 +10,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DeckDetailBackground from '@/assets/images/gonnabe/tarot/deck_detail_background.png';
 import { loadTarotCards } from '@/app/gonnabe/tarot/api/cards';
-import { loadTarotCards } from '@/app/gonnabe/tarot/api/cards';
 interface DailyTarotResultProps {
-  cards: (any)[];
+  cards: any[];
   analysis: TarotAnalysisData;
   userId: string;
 }
@@ -29,7 +28,7 @@ export default function DailyTarotResult({
 
   useEffect(() => {
     // Props의 cards가 있으면 사용
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     if (cards && cards.length > 0) {
       setCardsData(cards);
     } else {
@@ -58,7 +57,10 @@ export default function DailyTarotResult({
 
   const card = cardsData[0];
   const cardName =
-    card?.informationKo?.cardName || card?.cardName || card?.name || 'Unknown Card';
+    card?.informationKo?.cardName ||
+    card?.cardName ||
+    card?.name ||
+    'Unknown Card';
   const cardImage =
     card?.cardThumbnail || card?.image || 'dark_00_TheFool_upright';
   const cardImageUrl = `https://durumo.s3.ap-northeast-2.amazonaws.com/tarot/${cardImage}.png`;
