@@ -181,7 +181,7 @@ export default function YearlyTarotCardSelection({
 
       <div
         className={cn(
-          'fixed inset-0 z-20 flex size-full items-center justify-center bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
+          'fixed inset-0 z-40 flex size-full items-center justify-center bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
           isLoading ? 'visible opacity-100' : 'invisible opacity-0',
         )}
       >

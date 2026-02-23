@@ -12,6 +12,7 @@ interface ReportHeaderSectionProps {
   onClose?: () => void;
   backgroundColor?: string;
   className?: string;
+  maxReachableIndex?: number;
 }
 
 export default function ReportHeaderSection({
@@ -22,8 +23,10 @@ export default function ReportHeaderSection({
   onClose,
   backgroundColor = 'black',
   className,
+  maxReachableIndex,
 }: ReportHeaderSectionProps) {
   const [menuVisible, setMenuVisible] = useState(false);
+  const effectiveMaxReachable = maxReachableIndex ?? chapterTitles.length - 1;
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -57,7 +60,7 @@ export default function ReportHeaderSection({
   return (
     <div
       className={cn(
-        'relative z-50 flex flex-col items-start bg-white/50 pt-[env(safe-area-inset-top)]',
+        'relative z-30 flex flex-col items-start bg-white/50 pt-[env(safe-area-inset-top)]',
         className,
       )}
     >
@@ -103,6 +106,7 @@ export default function ReportHeaderSection({
           {chapterTitles.map((chapterTitle, idx) => {
             const isSelected = idx === currentPage;
             const isMoreItem = chapterTitle.toLowerCase() === 'keep exploring';
+            const isReachable = idx <= effectiveMaxReachable;
 
             let itemSplitIndex = 0;
             if (!isMoreItem) {
@@ -117,10 +121,17 @@ export default function ReportHeaderSection({
               <div
                 key={idx}
                 onClick={() => {
-                  onPageSelected(idx);
-                  setMenuVisible(false);
+                  if (isReachable) {
+                    onPageSelected(idx);
+                    setMenuVisible(false);
+                  }
                 }}
-                className="cursor-pointer px-4 py-3 hover:bg-gray-50"
+                className={cn(
+                  'px-4 py-3',
+                  isReachable
+                    ? 'cursor-pointer hover:bg-gray-50'
+                    : 'cursor-not-allowed opacity-40',
+                )}
               >
                 <div
                   className={cn(
@@ -155,7 +166,7 @@ export default function ReportHeaderSection({
           <div
             onClick={() => {
               setMenuVisible(false);
-              onClose?.();
+              // onClose?.();
             }}
             className="flex cursor-pointer items-center px-4 py-3 hover:bg-gray-50"
           >

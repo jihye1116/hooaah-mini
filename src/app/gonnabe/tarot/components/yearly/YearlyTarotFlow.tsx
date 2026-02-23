@@ -17,6 +17,7 @@ import YearlyQuestion from './YearlyQuestion';
 import YearlyResult from './YearlyResult';
 import YearlyTarotCardSelection from './YearlyTarotCardSelection';
 import type { TarotAnalysisResponse } from './types';
+import { useYearlyTarotStorage } from './useYearlyTarotStorage';
 
 type FlowStep = 'question' | 'select' | 'result';
 
@@ -32,6 +33,14 @@ export default function YearlyTarotFlow() {
   const [showControls, setShowControls] = useState(true);
   const [reportId, setReportId] = useState<string | null>(null);
 
+  const {
+    saveChapter,
+    getChapterData,
+    hasChapterData,
+    isLoaded,
+    progress: savedProgress,
+  } = useYearlyTarotStorage();
+
   const currentChapter = YEARLY_CHAPTERS[currentChapterIndex];
   const chapterTitles = useMemo(
     () =>
@@ -45,13 +54,71 @@ export default function YearlyTarotFlow() {
   const currentChapterTitle =
     chapterTitles[currentChapterIndex] ?? currentChapter.title;
 
-  // Load cards when entering a new chapter (if flow type)
+  // Restore state from local storage on load
   useEffect(() => {
-    if (currentChapter.type === 'flow' && cards.length === 0) {
+    if (!isLoaded) return;
+
+    if (savedProgress?.reportId) {
+      setReportId(savedProgress.reportId);
+    }
+
+    // Find the first incomplete flow chapter to resume
+    // Skip intro(0) and preview(1) for checking completion, start from 2
+    let resumeIndex = 0;
+    for (let i = 0; i < YEARLY_CHAPTERS.length; i++) {
+      const chapter = YEARLY_CHAPTERS[i];
+      if (chapter.type === 'flow') {
+        if (!hasChapterData(i)) {
+          resumeIndex = i;
+          break;
+        }
+      }
+    }
+
+    // If all flow chapters are complete (resumeIndex is still 0 loop finished, or logic needs refinement)
+    // Actually if loop finishes without break, it means all flow chapters are done?
+    // Let's refine:
+    // If hasChapterData(2) is false, resumeIndex = 2.
+    // If hasChapterData(2) is true, check 3...
+    // If all done, resumeIndex should be the last chapter or result page.
+    const lastFlowIndex = YEARLY_CHAPTERS.length - 1;
+    if (
+      resumeIndex === 0 &&
+      hasChapterData(2) // At least first flow chapter is done
+    ) {
+      // If we didn't find an incomplete chapter, it means all are done?
+      // Check the last one
+      if (hasChapterData(lastFlowIndex)) {
+        resumeIndex = lastFlowIndex;
+      }
+    }
+
+    // Only auto-jump if we have some progress
+    // if (savedProgress && Object.keys(savedProgress.chapters).length > 0) {
+    //   if (hasChapterData(resumeIndex)) {
+    //     // If the resume point is a completed chapter (e.g. all done), show result
+    //     setCurrentChapterIndex(resumeIndex);
+    //     setAnalysisResult(getChapterData(resumeIndex)!.data);
+    //     setStep('result');
+    //   } else {
+    //     // Resume at incomplete chapter
+    //     setCurrentChapterIndex(resumeIndex);
+    //     setStep('question');
+    //   }
+    // }
+  }, [isLoaded, hasChapterData, getChapterData, savedProgress]);
+
+  // Load cards when entering a new chapter (if flow type and not showing result from storage)
+  useEffect(() => {
+    if (
+      currentChapter.type === 'flow' &&
+      cards.length === 0 &&
+      step !== 'result'
+    ) {
       loadCards();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChapterIndex, currentChapter.type]);
+  }, [currentChapterIndex, currentChapter.type, step]);
 
   const loadCards = async () => {
     if (isLoadingCards) return;
@@ -117,6 +184,14 @@ export default function YearlyTarotFlow() {
         setReportId(nextReportId);
       }
 
+      // Save progress
+      saveChapter(
+        currentChapterIndex,
+        result as TarotAnalysisResponse,
+        selectedIds,
+        nextReportId || reportId,
+      );
+
       setAnalysisResult(result as TarotAnalysisResponse);
       setStep('result');
     } catch (error) {
@@ -127,12 +202,22 @@ export default function YearlyTarotFlow() {
     }
   };
 
+  // Determine the furthest chapter the user is allowed to visit
+  const getMaxReachableIndex = () => {
+    for (let i = 0; i < YEARLY_CHAPTERS.length; i++) {
+      const chapter = YEARLY_CHAPTERS[i];
+      if (chapter.type === 'flow' && !hasChapterData(i)) {
+        return i;
+      }
+    }
+    return YEARLY_CHAPTERS.length - 1;
+  };
+
+  const maxReachableIndex = getMaxReachableIndex();
+
   const handleNextChapter = () => {
     if (currentChapterIndex < YEARLY_CHAPTERS.length - 1) {
-      setCurrentChapterIndex((prev) => prev + 1);
-      setStep('question');
-      setCards([]); // Clear cards to trigger reload for next chapter
-      setAnalysisResult(null);
+      navigateToChapter(currentChapterIndex + 1);
     } else {
       alert('모든 챕터가 완료되었습니다.');
       router.push('/gonnabe/tarot');
@@ -141,19 +226,17 @@ export default function YearlyTarotFlow() {
 
   const handlePrevChapter = () => {
     if (currentChapterIndex > 0) {
-      setCurrentChapterIndex((prev) => prev - 1);
-      setStep('question');
-      setCards([]);
-      setAnalysisResult(null);
+      navigateToChapter(currentChapterIndex - 1);
     }
   };
 
   const handleJumpToChapter = (index: number) => {
-    if (index >= 0 && index < YEARLY_CHAPTERS.length) {
-      setCurrentChapterIndex(index);
-      setStep('question');
-      setCards([]);
-      setAnalysisResult(null);
+    if (
+      index >= 0 &&
+      index < YEARLY_CHAPTERS.length &&
+      index <= maxReachableIndex
+    ) {
+      navigateToChapter(index);
     }
   };
 
@@ -167,20 +250,38 @@ export default function YearlyTarotFlow() {
   // Calculate total pages: intro(1) + preview(1) + (5 flow chapters * 2 pages each = 10)
   const TOTAL_PAGES = 12;
 
+  // Helper to determine how many pages a chapter occupies
+  const getChapterPageCount = (index: number) => {
+    const chapter = YEARLY_CHAPTERS[index];
+    if (chapter.type !== 'flow') return 1;
+    // If we have data, it's 1 page (Result). Otherwise 2 (Question + Select).
+    return hasChapterData(index) ? 1 : 2;
+  };
+
+  // Calculate total pages dynamically based on completion status
+  const totalPages = YEARLY_CHAPTERS.reduce(
+    (acc, _, idx) => acc + getChapterPageCount(idx),
+    0,
+  );
+
   // Calculate current page index (0-based)
   const calculatePageIndex = () => {
     let pageIndex = 0;
 
-    // Pages 0-1: intro and preview
-    if (currentChapterIndex === 0) return 0; // intro
-    if (currentChapterIndex === 1) return 1; // preview
+    // Add up pages of previous chapters
+    for (let i = 0; i < currentChapterIndex; i++) {
+      pageIndex += getChapterPageCount(i);
+    }
 
-    // Pages 2-11: flow chapters (each has 2 pages: question + select)
-    const flowChapterIndex = currentChapterIndex - 2;
-    pageIndex = 2 + flowChapterIndex * 2;
-
-    if (step === 'select') {
-      pageIndex += 1; // select is the 2nd page of each flow chapter
+    // Add offset for current chapter
+    // If completed (1 page), offset is always 0 (Result)
+    // If incomplete (2 pages): Question=0, Select=1
+    if (
+      currentChapter.type === 'flow' &&
+      !hasChapterData(currentChapterIndex) &&
+      step === 'select'
+    ) {
+      pageIndex += 1;
     }
 
     return pageIndex;
@@ -188,11 +289,34 @@ export default function YearlyTarotFlow() {
 
   const currentPageIndex = calculatePageIndex();
 
+  const handleStepTransition = () => {
+    if (hasChapterData(currentChapterIndex)) {
+      setAnalysisResult(getChapterData(currentChapterIndex)!.data);
+      setStep('result');
+    } else {
+      setStep('select');
+    }
+  };
+
+  const navigateToChapter = (index: number) => {
+    setCurrentChapterIndex(index);
+    if (hasChapterData(index)) {
+      // Completed: Go straight to result
+      setAnalysisResult(getChapterData(index)!.data);
+      setStep('result');
+    } else {
+      // Incomplete: Go to question
+      setStep('question');
+      setCards([]); // Clear cards to trigger reload
+      setAnalysisResult(null);
+    }
+  };
+
   const content = (() => {
     if (currentChapter.type === 'intro') {
       return (
         <YearlyIntro
-          onStart={() => setCurrentChapterIndex((prev) => prev + 1)}
+          onStart={() => navigateToChapter(currentChapterIndex + 1)}
         />
       );
     }
@@ -200,7 +324,7 @@ export default function YearlyTarotFlow() {
     if (currentChapter.type === 'preview') {
       return (
         <YearlyPreview
-          onNext={() => setCurrentChapterIndex((prev) => prev + 1)}
+          onNext={() => navigateToChapter(currentChapterIndex + 1)}
         />
       );
     }
@@ -212,7 +336,7 @@ export default function YearlyTarotFlow() {
             number={currentChapter.question?.number || ''}
             title={currentChapter.question?.title || ''}
             description={currentChapter.question?.description || ''}
-            onStartSelection={() => setStep('select')}
+            onStartSelection={handleStepTransition}
           />
         );
       }
@@ -242,7 +366,14 @@ export default function YearlyTarotFlow() {
             resultType={currentChapter.resultType as 'single' | 'dual'}
             tabs={currentChapter.tabs}
             onNext={handleNextChapter}
-            onPrev={handlePrevChapter}
+            onPrev={() => {
+              // If completed, 'Prev' goes to previous chapter (since this chapter is 1 page)
+              if (hasChapterData(currentChapterIndex)) {
+                handlePrevChapter();
+              } else {
+                setStep('question');
+              }
+            }}
             isLastChapter={currentChapterIndex === YEARLY_CHAPTERS.length - 1}
           />
         );
@@ -265,6 +396,7 @@ export default function YearlyTarotFlow() {
           currentPage={currentChapterIndex}
           onPageSelected={handleJumpToChapter}
           backgroundColor="transparent"
+          maxReachableIndex={maxReachableIndex}
         />
       </div>
 
@@ -282,11 +414,15 @@ export default function YearlyTarotFlow() {
       >
         <ReportNavControl
           index={currentPageIndex + 1}
-          total={TOTAL_PAGES}
+          total={totalPages}
           onPrev={() => {
             if (currentChapterIndex === 0) {
               handleClose();
-            } else if (currentChapter.type === 'flow' && step === 'select') {
+            } else if (
+              currentChapter.type === 'flow' &&
+              !hasChapterData(currentChapterIndex) && // Only if incomplete
+              step === 'select'
+            ) {
               // Go back to question page in same chapter
               setStep('question');
             } else {
@@ -296,7 +432,11 @@ export default function YearlyTarotFlow() {
           onNext={() => {
             if (!canNavigateNext) return;
 
-            if (currentChapter.type === 'flow' && step === 'question') {
+            if (
+              currentChapter.type === 'flow' &&
+              step === 'question' &&
+              !hasChapterData(currentChapterIndex)
+            ) {
               // Move to select page in same chapter
               setStep('select');
             } else {
