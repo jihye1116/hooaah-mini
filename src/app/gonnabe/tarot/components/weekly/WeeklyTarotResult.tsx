@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DeckDetailBackground from '@/assets/images/gonnabe/tarot/deck_detail_background.png';
 interface WeeklyTarotResultProps {
-  cards: (any)[];
+  cards: TarotCardsApiItem[];
   analysis: TarotAnalysisData;
   userId: string;
 }
@@ -26,7 +26,8 @@ export default function WeeklyTarotResult({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Props의 cards가 있으면 사용    // eslint-disable-next-line react-hooks/set-state-in-effect    if (cards && cards.length > 0) {
+    // Props의 cards가 있으면 사용
+    if (cards && cards.length > 0) {
       setCardsData(cards);
     } else {
       // localStorage에서 저장된 카드 정보 읽기 (fallback)
@@ -85,7 +86,7 @@ export default function WeeklyTarotResult({
             {/* Top Card */}
             <ResultTarotCard
               imageUrl={getCardUrl(card1)}
-              name={card1.informationKo?.cardName || card1.cardName || card1.name}
+              name={card1.informationKo?.cardName || card1.cardName}
               isReversed={card1.reversed}
               width={100}
               height={160}
@@ -97,7 +98,7 @@ export default function WeeklyTarotResult({
             <div className="flex gap-8">
               <ResultTarotCard
                 imageUrl={getCardUrl(card2)}
-                name={card2.informationKo?.cardName || card2.cardName || card2.name}
+                name={card2.informationKo?.cardName || card2.cardName}
                 isReversed={card2.reversed}
                 width={100}
                 height={160}
@@ -106,7 +107,7 @@ export default function WeeklyTarotResult({
               />
               <ResultTarotCard
                 imageUrl={getCardUrl(card3)}
-                name={card3.informationKo?.cardName || card3.cardName || card3.name}
+                name={card3.informationKo?.cardName || card3.cardName}
                 isReversed={card3.reversed}
                 width={100}
                 height={160}
