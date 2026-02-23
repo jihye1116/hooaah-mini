@@ -78,8 +78,11 @@ export async function POST(request: NextRequest) {
       } else {
         payload.cardId = cardId;
         payload.analysisType = resolvedAnalysisType;
-        payload.cardReversedInfo = cardReversedInfo;
         payload.userId = userId || DEFAULT_USER_ID;
+      }
+
+      if (cardReversedInfo) {
+        payload.cardReversedInfo = cardReversedInfo;
       }
 
       token = jwt.sign(payload, JWT_SECRET, {

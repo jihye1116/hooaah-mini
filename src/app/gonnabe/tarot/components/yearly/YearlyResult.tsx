@@ -41,6 +41,7 @@ export default function YearlyResult({
   };
 
   const payload = normalizePayload();
+  console.log('data:', data);
   const stepName =
     typeof (data as { stepName?: unknown })?.stepName === 'string'
       ? String((data as { stepName?: unknown }).stepName)

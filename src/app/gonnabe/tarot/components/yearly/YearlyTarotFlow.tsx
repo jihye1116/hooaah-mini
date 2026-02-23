@@ -86,7 +86,15 @@ export default function YearlyTarotFlow() {
       const cardId = selectedIds.length === 1 ? selectedIds[0] : selectedIds;
 
       const payload: GenerateTarotAnalysisParams = reportId
-        ? { cardId, reportId, analysisType: 'premium' }
+        ? {
+            cardId,
+            reportId,
+            analysisType: 'premium',
+            cardReversedInfo:
+              Object.keys(cardReversedInfo).length > 0
+                ? cardReversedInfo
+                : null,
+          }
         : {
             cardId,
             analysisType: 'premium',
