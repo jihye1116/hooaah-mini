@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface MonthlyTarotResultProps {
-  cards: (any)[];
+  cards: TarotCardsApiItem[];
   analysis: TarotAnalysisData;
   userId: string;
 }
@@ -26,7 +26,8 @@ export default function MonthlyTarotResult({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Props의 cards가 있으면 사용    // eslint-disable-next-line react-hooks/set-state-in-effect    if (cards && cards.length > 0) {
+    // Props의 cards가 있으면 사용
+    if (cards && cards.length > 0) {
       setCardsData(cards);
     } else {
       // localStorage에서 저장된 카드 정보 읽기 (fallback)
@@ -82,7 +83,7 @@ export default function MonthlyTarotResult({
             <ResultTarotCard
               imageUrl={getCardUrl(cardsData[0])}
               name={
-                cardsData[0].informationKo?.cardName || cardsData[0].cardName || cardsData[0].name
+                cardsData[0].informationKo?.cardName || cardsData[0].cardName
               }
               isReversed={cardsData[0].reversed}
               width={70}
@@ -95,7 +96,7 @@ export default function MonthlyTarotResult({
               <ResultTarotCard
                 imageUrl={getCardUrl(cardsData[1])}
                 name={
-                  cardsData[1].informationKo?.cardName || cardsData[1].cardName || cardsData[1].name
+                  cardsData[1].informationKo?.cardName || cardsData[1].cardName
                 }
                 isReversed={cardsData[1].reversed}
                 width={70}
@@ -105,7 +106,7 @@ export default function MonthlyTarotResult({
               <ResultTarotCard
                 imageUrl={getCardUrl(cardsData[2])}
                 name={
-                  cardsData[2].informationKo?.cardName || cardsData[2].cardName || cardsData[2].name
+                  cardsData[2].informationKo?.cardName || cardsData[2].cardName
                 }
                 isReversed={cardsData[2].reversed}
                 width={70}
@@ -115,7 +116,7 @@ export default function MonthlyTarotResult({
               <ResultTarotCard
                 imageUrl={getCardUrl(cardsData[3])}
                 name={
-                  cardsData[3].informationKo?.cardName || cardsData[3].cardName || cardsData[3].name
+                  cardsData[3].informationKo?.cardName || cardsData[3].cardName
                 }
                 isReversed={cardsData[3].reversed}
                 width={70}
@@ -128,7 +129,7 @@ export default function MonthlyTarotResult({
             <ResultTarotCard
               imageUrl={getCardUrl(cardsData[4])}
               name={
-                cardsData[4].informationKo?.cardName || cardsData[4].cardName || cardsData[4].name
+                cardsData[4].informationKo?.cardName || cardsData[4].cardName
               }
               isReversed={cardsData[4].reversed}
               width={70}
@@ -206,7 +207,7 @@ export default function MonthlyTarotResult({
             subtitle="활용할 수 있는 자원"
             description={analysis.opportunitiesResources || ''}
             imageUrl={getCardUrl(cardsData[1])}
-            name={cardsData[1].informationKo?.cardName || cardsData[1].cardName || cardsData[1].name}
+            name={cardsData[1].informationKo?.cardName || cardsData[1].cardName}
             isReversed={cardsData[1].reversed}
           />
           <TarotMessageCard
@@ -214,7 +215,7 @@ export default function MonthlyTarotResult({
             subtitle="주의해야 할 점"
             description={analysis.challengesObstacles || ''}
             imageUrl={getCardUrl(cardsData[2])}
-            name={cardsData[2].informationKo?.cardName || cardsData[2].cardName || cardsData[2].name}
+            name={cardsData[2].informationKo?.cardName || cardsData[2].cardName}
             isReversed={cardsData[2].reversed}
           />
           <TarotMessageCard
@@ -222,7 +223,7 @@ export default function MonthlyTarotResult({
             subtitle="어떻게 대처할까"
             description={analysis.guidanceAttitude || ''}
             imageUrl={getCardUrl(cardsData[3])}
-            name={cardsData[3].informationKo?.cardName || cardsData[3].cardName || cardsData[3].name}
+            name={cardsData[3].informationKo?.cardName || cardsData[3].cardName}
             isReversed={cardsData[3].reversed}
           />
           <TarotMessageCard
@@ -230,7 +231,7 @@ export default function MonthlyTarotResult({
             subtitle="이달의 마무리"
             description={analysis.growthOutcome || ''}
             imageUrl={getCardUrl(cardsData[4])}
-            name={cardsData[4].informationKo?.cardName || cardsData[4].cardName || cardsData[4].name}
+            name={cardsData[4].informationKo?.cardName || cardsData[4].cardName}
             isReversed={cardsData[4].reversed}
           />
           <TarotMessageCard
