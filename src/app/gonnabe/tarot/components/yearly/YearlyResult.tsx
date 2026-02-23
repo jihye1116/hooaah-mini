@@ -29,10 +29,6 @@ export default function YearlyResult({
       const record = data as Record<string, unknown>;
       const wrapped = record.data as Record<string, unknown> | undefined;
       if (wrapped && typeof wrapped === 'object') {
-        const values = Object.values(wrapped);
-        if (values.length > 0) {
-          return values[0] as Record<string, unknown>;
-        }
         return wrapped as Record<string, unknown>;
       }
       return record as Record<string, unknown>;
@@ -46,25 +42,27 @@ export default function YearlyResult({
     typeof (data as { stepName?: unknown })?.stepName === 'string'
       ? String((data as { stepName?: unknown }).stepName)
       : '';
-  const rawAnalysis =
-    (payload.analysis as Record<string, unknown> | undefined) ??
-    ((data as { analysis?: unknown })?.analysis as
-      | Record<string, unknown>
-      | undefined) ??
-    {};
-  const selectedCardFromResponse =
-    (data as { selectedCard?: unknown })?.selectedCard ??
-    (payload.cardData as unknown);
-  const selectedCardsFromResponse =
-    (data as { selectedCards?: unknown })?.selectedCards ??
-    (payload.selectedCards as unknown);
+
+  // data.data.first_half / data.data.second_half 같은 구조 처리
+  const dataWrapper = payload;
+  const selectedCardsFromResponse = (data as { selectedCards?: unknown })
+    ?.selectedCards;
   const selectedCards = Array.isArray(selectedCardsFromResponse)
     ? selectedCardsFromResponse
-    : selectedCardFromResponse
-      ? [selectedCardFromResponse]
-      : [];
+    : [];
 
-  const analysis = rawAnalysis || {};
+  // dual 타입: first_half, second_half 등의 키에서 분석 추출
+  const analysisKeys = Object.keys(dataWrapper).filter(
+    (key) => typeof dataWrapper[key] === 'object' && dataWrapper[key] !== null,
+  );
+
+  // single vs dual 판단 로직 개선
+  const isSingleCard = selectedCards.length === 1;
+  const analysis = isSingleCard
+    ? dataWrapper
+    : analysisKeys.length > 0
+      ? dataWrapper
+      : {};
 
   // 탭 전환 시 부드러운 애니메이션을 위한 Key 처리용
   const tabKey = `tab-content-${activeTab}`;
@@ -72,84 +70,97 @@ export default function YearlyResult({
   const currentContent = () => {
     if (resultType === 'single') {
       const card = selectedCards[0];
-      const keywords =
-        (analysis as { overallInsight?: { keywords?: string[] } })
-          .overallInsight?.keywords ||
-        (analysis as { cardKeywords?: string[] }).cardKeywords ||
-        (analysis as { keywords?: string[] }).keywords ||
-        [];
+      const cardAnalysis =
+        (analysis as { analysis?: Record<string, unknown> }).analysis ?? {};
+      const keywords = (cardAnalysis as { keywords?: string[] }).keywords || [];
 
       return {
         card,
         keywords,
         title:
-          (analysis as { section_title?: string }).section_title || '종합 분석',
+          (cardAnalysis as { section_title?: string }).section_title ||
+          '종합 분석',
         subtitle: stepName || '한 해를 관통하는 주요 테마입니다.',
         sections: [
           {
             title: '카드 묘사',
-            content: (analysis as { visual_description?: string })
+            content: (cardAnalysis as { visual_description?: string })
               .visual_description,
           },
           {
             title: '예측',
-            content: (analysis as { prediction?: string }).prediction,
+            content: (cardAnalysis as { prediction?: string }).prediction,
           },
           {
             title: '개인 인사이트',
-            content: (analysis as { personalized_insight?: string })
+            content: (cardAnalysis as { personalized_insight?: string })
               .personalized_insight,
           },
           {
             title: '리스크',
-            content: (analysis as { risk?: string }).risk,
+            content: (cardAnalysis as { risk?: string }).risk,
           },
           {
             title: '마무리 조언',
-            content: (analysis as { closing_advice?: string }).closing_advice,
+            content: (cardAnalysis as { closing_advice?: string })
+              .closing_advice,
           },
         ].filter((section) => section.content),
       };
     } else {
+      // dual 타입: data.first_half / data.second_half 같은 구조
       const index = activeTab;
       const card = selectedCards[index];
-      const individualAnalysis = Array.isArray(
-        (analysis as { individualAnalysis?: unknown }).individualAnalysis,
-      )
-        ? ((analysis as { individualAnalysis?: unknown })
-            .individualAnalysis as Record<string, unknown>[])
-        : Array.isArray(analysis)
-          ? (analysis as Record<string, unknown>[])
-          : [];
-      const individual = individualAnalysis[index] || {};
-      const keywords =
-        (individual as { keywords?: string[] }).keywords ||
-        (analysis as { keywords?: string[] }).keywords ||
-        [];
+
+      // analysis 객체에서 first_half, second_half 등 키를 찾음
+      const analysisKeys = Object.keys(analysis).filter(
+        (key) =>
+          typeof analysis[key as keyof typeof analysis] === 'object' &&
+          analysis[key as keyof typeof analysis] !== null,
+      );
+
+      const currentKey = analysisKeys[index];
+      const individual = currentKey
+        ? (analysis[currentKey as keyof typeof analysis] as Record<
+            string,
+            unknown
+          >)
+        : {};
+
+      const cardAnalysis =
+        (individual as { analysis?: Record<string, unknown> }).analysis ?? {};
+      const keywords = (cardAnalysis as { keywords?: string[] }).keywords || [];
 
       return {
         card,
         keywords,
         title: tabs?.[index] || `Card ${index + 1}`,
-        subtitle: '선택하신 카드의 상세 해석입니다.', // 필요시 수정
+        subtitle:
+          (cardAnalysis as { section_title?: string }).section_title ||
+          '선택하신 카드의 상세 해석입니다.',
         sections: [
           {
-            title: '해석',
-            content:
-              (individual as { interpretation?: string }).interpretation ||
-              (individual as { cardInterpretation?: string })
-                .cardInterpretation,
+            title: '카드 묘사',
+            content: (cardAnalysis as { visual_description?: string })
+              .visual_description,
           },
           {
-            title: '현재 상황',
-            content: (individual as { currentSituation?: string })
-              .currentSituation,
+            title: '예측',
+            content: (cardAnalysis as { prediction?: string }).prediction,
           },
           {
-            title: '조언',
-            content:
-              (individual as { advice?: string }).advice ||
-              (individual as { lesson?: string }).lesson,
+            title: '개인 인사이트',
+            content: (cardAnalysis as { personalized_insight?: string })
+              .personalized_insight,
+          },
+          {
+            title: '리스크',
+            content: (cardAnalysis as { risk?: string }).risk,
+          },
+          {
+            title: '마무리 조언',
+            content: (cardAnalysis as { closing_advice?: string })
+              .closing_advice,
           },
         ].filter((section) => section.content),
       };
@@ -245,7 +256,8 @@ export default function YearlyResult({
                 )}
                 {content.card?.cardName && (
                   <span className="mt-2 text-xs text-white">
-                    {content.card.cardName}
+                    {content.card.informationKo?.cardName ||
+                      content.card.cardName}
                   </span>
                 )}
               </div>
