@@ -6,6 +6,7 @@ import type { GenerateTarotAnalysisParams } from '@/app/gonnabe/tarot/api/analys
 import { TAROT_S3_BASE_URL } from '@/app/gonnabe/tarot/constants';
 import type { TarotCardsApiItem } from '@/app/gonnabe/tarot/types/cards';
 import type { TarotCard } from '@/app/gonnabe/tarot/types/theme';
+import { cn } from '@sglara/cn';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { YEARLY_CHAPTERS } from './constants';
@@ -446,6 +447,15 @@ export default function YearlyTarotFlow() {
           onClose={handleClose}
           backgroundColor="white"
         />
+      </div>
+
+      <div
+        className={cn(
+          'fixed inset-0 z-[100] flex size-full items-center justify-center bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
+          isAnalyzing ? 'visible opacity-100' : 'invisible opacity-0',
+        )}
+      >
+        <p className="text-lg font-semibold text-white">타로 분석중...</p>
       </div>
     </div>
   );

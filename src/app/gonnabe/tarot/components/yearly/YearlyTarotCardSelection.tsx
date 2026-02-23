@@ -178,15 +178,6 @@ export default function YearlyTarotCardSelection({
         hideButton={selectedCardIds.length > 0}
         onShuffle={handleShuffle}
       />
-
-      <div
-        className={cn(
-          'fixed inset-0 z-40 flex size-full items-center justify-center bg-black/50 backdrop-blur-[2px] transition-opacity duration-300',
-          isLoading ? 'visible opacity-100' : 'invisible opacity-0',
-        )}
-      >
-        <p className="text-lg font-semibold text-white">타로 분석중...</p>
-      </div>
     </div>
   );
 }
