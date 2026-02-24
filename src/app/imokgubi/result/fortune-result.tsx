@@ -67,7 +67,7 @@ export default function FortuneResult({
         <div className="px-5 pt-8">
           <button
             onClick={onBack}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white"
           >
             <ArrowLeft className="h-5 w-5 text-[#54575D]" />
           </button>
@@ -104,7 +104,7 @@ export default function FortuneResult({
 
         {/* 전반적인 운세 */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
               종합 운세 분석
             </h2>
@@ -135,7 +135,7 @@ export default function FortuneResult({
 
         {/* 상세 분석 */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
               자세한 관상 분석
             </h2>
@@ -168,7 +168,7 @@ export default function FortuneResult({
 
         {/* 종합 결론 */}
         <div className="mb-8 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-5 text-lg font-bold text-[#111111]">
               종합 분석 결과
             </h2>

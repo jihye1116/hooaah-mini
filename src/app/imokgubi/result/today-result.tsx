@@ -39,22 +39,24 @@ interface TodayResultProps {
 }
 
 const fortuneColors: Record<string, string> = {
-  Red: '#EF4444',
-  Blue: '#3B82F6',
-  Green: '#22C55E',
-  Yellow: '#EAB308',
-  Black: '#000000',
-  White: '#FFFFFF',
-  Pink: '#EC4899',
-  Purple: '#A855F7',
-  Orange: '#F97316',
-  Brown: '#A52A2A',
-  Navy: '#1E3A8A',
-  Gray: '#6B7280',
-  Silver: '#C0C0C0',
-  Gold: '#EAB308',
-  Beige: '#F5F5DC',
-  Mint: '#4ADE80',
+  Red: '#FF3B3B',
+  red: '#FF3B3B',
+  Blue: '#3BC1FF',
+  blue: '#3BC1FF',
+  Purple: '#9A3BFF',
+  purple: '#9A3BFF',
+  Yellow: '#FFE53B',
+  yellow: '#FFE53B',
+  Violet: '#FF3BB7',
+  violet: '#FF3BB7',
+  Grass: '#55E845',
+  grass: '#55E845',
+  Green: '#0D9D63',
+  green: '#0D9D63',
+  Black: '#373737',
+  black: '#373737',
+  White: '#F5F6F8',
+  white: '#F5F6F8',
 };
 
 const ScoreBar = ({
@@ -88,13 +90,13 @@ export default function TodayResult({
 }: TodayResultProps) {
   const timeRange = ['오늘', '내일', '모레', '글피', '그글피'];
   const colorHex = fortuneColors[result.color.choice.en] || '#7A8CFF';
-
+  console.log('TodayResultData:', result.color.choice.en);
   // Svg Graph Generator
   const renderGraph = () => {
     const w = 300;
     const h = 100;
     const points = result.fortunes;
-    const paddingX = 10;
+    const paddingX = 16; // 텍스트 라벨과 중앙을 맞추기 위해 패딩 조정
     const gap = (w - paddingX * 2) / (points.length - 1);
 
     const getX = (i: number) => paddingX + gap * i;
@@ -107,9 +109,9 @@ export default function TodayResult({
     return (
       <svg
         width="100%"
-        height="100%"
+        height="auto"
         viewBox={`0 -20 ${w} ${h + 40}`}
-        preserveAspectRatio="none"
+        // preserveAspectRatio="none" 삭제하여 비율 유지 (찌그러짐 방지)
       >
         {/* Guide lines */}
         <line
@@ -178,35 +180,33 @@ export default function TodayResult({
         <div className="px-5 pt-8">
           <button
             onClick={onBack}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white"
           >
             <ArrowLeft className="h-5 w-5 text-[#54575D]" />
           </button>
         </div>
-
         <div className="pt-4 pb-6 text-center">
           <p className="text-sm font-semibold text-[#7A8CFF]">관상 분석 결과</p>
           <h1 className="mt-1 text-2xl font-bold text-[#313866]">
             오늘의 운세
           </h1>
         </div>
-
-        <div className="mb-6 px-6">
-          <div className="relative aspect-[9/10] w-full overflow-hidden rounded-3xl bg-white">
-            {resultImage && (
+        {resultImage && (
+          <div className="mb-8 px-11">
+            <div className="relative aspect-[9/10] w-full overflow-hidden rounded-3xl bg-white">
               <Image
                 src={resultImage}
-                alt="분석 결과"
+                alt="Result"
                 fill
                 className="object-cover"
+                priority
               />
-            )}
+            </div>
           </div>
-        </div>
-
+        )}
         {/* Score section */}
         <div className="mb-6 px-5">
-          <div className="flex items-center justify-between rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="flex items-center justify-between rounded-2xl bg-white px-6 py-6">
             <div>
               <p className="text-sm font-semibold text-[#54575D]">
                 {new Date().getMonth() + 1}월 {new Date().getDate()}일
@@ -223,10 +223,9 @@ export default function TodayResult({
             </div>
           </div>
         </div>
-
         {/* Condition section */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
               오늘의 얼굴 상태
             </h2>
@@ -282,10 +281,9 @@ export default function TodayResult({
             </div>
           </div>
         </div>
-
         {/* Overall Fortune section */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
               오늘의 종합 운세
             </h2>
@@ -332,10 +330,9 @@ export default function TodayResult({
             </div>
           </div>
         </div>
-
         {/* Network section */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
               오늘의 인연
             </h2>
@@ -353,10 +350,9 @@ export default function TodayResult({
             </div>
           </div>
         </div>
-
         {/* Timely section */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
               시간대별 운세
             </h2>
@@ -403,12 +399,11 @@ export default function TodayResult({
             </div>
           </div>
         </div>
-
         {/* Color / Item section */}
         <div className="mb-6 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
+          <div className="rounded-2xl bg-white px-6 py-6">
             <h2 className="mb-6 text-lg font-bold text-[#111111]">
-              오늘의 행운 컬러 & 아이템
+              오늘의 행운 색상 & 아이템
             </h2>
             <div className="flex items-center gap-3">
               <div
@@ -432,22 +427,27 @@ export default function TodayResult({
 
         {/* Graph section */}
         <div className="mb-8 px-5">
-          <div className="rounded-2xl bg-white px-6 py-6 shadow-sm">
-            <h2 className="mb-6 text-lg font-bold text-[#111111]">운세 흐름</h2>
-            <div className="h-32 w-full">{renderGraph()}</div>
-            <div className="mt-4 flex justify-between px-1">
+          <div className="rounded-2xl bg-white px-6 py-6">
+            <h2 className="mb-6 text-lg font-bold text-[#111111]">
+              예상 운세 흐름
+            </h2>
+            {/* h-32를 제거하여 세로 높이를 강제로 찌그러뜨리지 않게 합니다. */}
+            <div className="w-full">{renderGraph()}</div>
+            <div className="mt-4 flex items-center justify-between px-1">
               {timeRange.map((time, idx) => (
-                <div key={idx} className="text-center">
+                <div key={idx} className="flex w-8 flex-col items-center">
                   {idx === 0 ? (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E4E8FF]">
+                    <div className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#E4E8FF]">
                       <span className="text-xs font-semibold text-[#54575D]">
                         {time}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-xs font-semibold text-[#54575D]">
-                      {time}
-                    </span>
+                    <div className="flex h-8 w-8 items-center justify-center">
+                      <span className="text-xs font-semibold text-[#54575D]">
+                        {time}
+                      </span>
+                    </div>
                   )}
                 </div>
               ))}
