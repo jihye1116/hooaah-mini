@@ -1,6 +1,6 @@
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 
-export interface FortuneResult {
+export interface ThemeFortuneResult {
   fortuneData: FortuneData;
   luckyNumber: number;
 }
@@ -66,3 +66,36 @@ export const FortunePeriod = {
   WEEKLY: 'weekly',
   MONTHLY: 'monthly',
 } as const;
+
+export interface WeeklyFortuneResult {
+  totalMonthlyEnergy: number;
+  thisWeek: {
+    intro_summary: string;
+    turning_momentum: string;
+    potential_shift: string;
+    action_prompt: string;
+    closing_summary: string;
+  };
+}
+
+export interface MonthlyFortuneResult {
+  totalMonthlyEnergy: number;
+  thisMonth: {
+    intro_summary: string;
+    turning_momentum: string;
+    potential_shift: string;
+    action_prompt: string;
+    closing_summary: string;
+  };
+}
+
+export interface PeriodScores {
+  careerScore: number;
+  interpersonalScore: number;
+  romanticScore: number;
+  emotionalScore: number;
+  healthScore: number;
+  financialScore: number;
+  socialScore: number;
+  totalMonthlyEnergy: number;
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { loadFortune } from '@/app/gonnabe/horoscope/api/fortune';
-import type { FortuneResult } from '@/app/gonnabe/horoscope/types/fortune';
+import type { ThemeFortuneResult } from '@/app/gonnabe/horoscope/types/fortune';
 import { FortuneTheme } from '@/app/gonnabe/horoscope/types/fortune';
 import fortuneCookieAnimation from '@/lotties/fortune_cookie.json';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
@@ -38,7 +38,7 @@ export default function FortuneCookie({ birthDate }: FortuneCookieProps) {
   const router = useRouter();
   const lottieRef = useRef<LottieRefCurrentProps>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [fortuneResult, setFortuneResult] = useState<FortuneResult | null>(
+  const [fortuneResult, setFortuneResult] = useState<ThemeFortuneResult | null>(
     null,
   );
 

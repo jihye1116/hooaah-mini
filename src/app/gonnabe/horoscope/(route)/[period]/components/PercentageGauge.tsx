@@ -117,7 +117,7 @@ export default function PercentageGauge({
 
   const geometry = useMemo(() => {
     const w = width || 1;
-    const h = w * 0.5;
+    const h = w * 0.6;
 
     const center = { x: w / 2, y: h * 0.8 };
     const radius = w * 0.35;
@@ -150,8 +150,8 @@ export default function PercentageGauge({
     const needleCenter = { x: center.x, y: center.y };
     const originalAngle = Math.PI + progressAngle;
 
-    const needleLength = w * 0.175; // Flutter의 70px(대략 400px 폭 기준)을 비율로 스케일
-    const baseRadius = w * 0.0375; // Flutter의 15px을 비율로 스케일
+    const needleLength = w * 0.225; // Flutter의 70px(대략 400px 폭 기준)을 비율로 스케일
+    const baseRadius = w * 0.05; // Flutter의 15px을 비율로 스케일
     const halfAngle = 1.4;
 
     const tip = polarToCartesian(
@@ -340,8 +340,12 @@ export default function PercentageGauge({
             marginTop: -4,
           }}
         >
-          <span className="text-[11px] font-bold">{labels.left}</span>
-          <span className="text-[11px] font-bold">{labels.right}</span>
+          <span className="font-plus-jakarta-sans text-sm font-bold">
+            {labels.left}
+          </span>
+          <span className="font-plus-jakarta-sans text-sm font-bold">
+            {labels.right}
+          </span>
         </div>
       </div>
     </div>
