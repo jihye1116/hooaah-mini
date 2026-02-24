@@ -1,4 +1,5 @@
 import { FortunePeriod } from '@/app/gonnabe/horoscope/types/fortune';
+import PremiumContentGate from '@/components/PremiumContentGate';
 import type { ValueOf } from 'next/dist/shared/lib/constants';
 import { notFound } from 'next/navigation';
 import HoroscopePeriodClient from './components/HoroscopePeriodClient';
@@ -19,5 +20,12 @@ export default async function HoroscopePeriodPage({
     notFound();
   }
 
-  return <HoroscopePeriodClient period={period} />;
+  return (
+    <PremiumContentGate
+      contentId={`horoscope:${period}`}
+      title={period === FortunePeriod.WEEKLY ? '주간 운세' : '월간 운세'}
+    >
+      <HoroscopePeriodClient period={period} />
+    </PremiumContentGate>
+  );
 }
