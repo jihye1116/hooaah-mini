@@ -1,5 +1,6 @@
 'use server';
 
+import { FortunePeriod } from '@/app/gonnabe/horoscope/types/fortune';
 import { redirect } from 'next/navigation';
 
 const normalizeBirthday = (input: string) => {
@@ -36,7 +37,15 @@ export async function submitHoroscopeUserInfo(
     redirect(`/gonnabe/horoscope/theme/${encodeURIComponent(theme)}`);
   }
 
+  const fortunes = Object.values(FortunePeriod).map((v) => String(v));
   const params = new URLSearchParams({ name, birthDate });
+
+  if (fortunes.includes(theme)) {
+    redirect(
+      `/gonnabe/horoscope/${encodeURIComponent(theme)}?${params.toString()}`,
+    );
+  }
+
   redirect(
     `/gonnabe/horoscope/theme/${encodeURIComponent(theme)}?${params.toString()}`,
   );
