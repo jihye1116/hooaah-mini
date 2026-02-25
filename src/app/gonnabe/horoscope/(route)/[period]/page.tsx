@@ -27,16 +27,16 @@ export default async function HoroscopePeriodPage({
     notFound();
   }
 
-  if (!name || !birthDate) {
-    return <HoroscopeUserInfoForm theme={period} />;
-  }
-
   return (
     <PremiumContentGate
       contentId={`horoscope:${period}`}
       title={period === FortunePeriod.WEEKLY ? '주간 운세' : '월간 운세'}
     >
-      <HoroscopePeriodClient period={period} />
+      {!name || !birthDate ? (
+        <HoroscopeUserInfoForm theme={period} />
+      ) : (
+        <HoroscopePeriodClient period={period} />
+      )}
     </PremiumContentGate>
   );
 }
