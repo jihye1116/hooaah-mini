@@ -121,7 +121,7 @@ export default function AccessCodeModal({
           <div className="absolute top-0 right-0 left-0 h-px bg-gradient-to-r from-transparent via-teal-500 to-transparent opacity-40" />
 
           <div className="mb-10 text-center">
-            <h1 className="mb-4 text-2xl font-medium tracking-tight text-gray-800">
+            <h1 className="mb-4 text-lg font-medium tracking-tight text-gray-800 md:text-2xl">
               코드 번호를 입력해 주세요
             </h1>
             <p className="text-sm leading-relaxed font-light text-gray-600">
@@ -133,7 +133,7 @@ export default function AccessCodeModal({
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-              <div className="mb-6 flex justify-center gap-3">
+              <div className="mb-6 flex justify-center gap-1 md:gap-3">
                 {codes.map((code, index) => (
                   <input
                     key={index}
@@ -148,7 +148,7 @@ export default function AccessCodeModal({
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handlePaste}
                     onFocus={() => setCodeError('')}
-                    className={`h-14 w-12 rounded-xl border-[1.5px] bg-white/80 text-center font-mono text-xl font-medium tracking-tight transition-all duration-300 outline-none ${
+                    className={`h-12 w-10 rounded-xl border-[1.5px] bg-white/80 text-center font-mono text-xl font-medium tracking-tight transition-all duration-300 outline-none md:h-14 md:w-12 ${
                       codeError
                         ? 'animate-shake border-red-400'
                         : code
